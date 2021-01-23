@@ -1,0 +1,16 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
+    <string name="app_name">Go4lunch</string>
+    <string name="bottom_menu_map_view">map view</string>
+    <string name="bottom_menu_list_view">list view</string>
+    <string name="bottom_menu_workmates">workmates</string>
+    <string name="drawer_menu_your_lunch">YOUR LUNCH</string>
+    <string name="drawer_menu_logout">LOGOUT</string>
+    <string name="drawer_menu_settings">SETTINGS</string>
+    <string name="workmates_item_textview_name_restaurant">%1$s ( %2$s )</string>
+    <string name="detail_restaurant_button_like">LIKE</string>
+    <string name="detail_restaurant_button_call">CALL</string>
+    <string name="detail_restaurant_button_website">WEBSITE</string>
+    <string name="authentication_activity_error_canceled">todo</string>
+    <string name="authentication_activity_error_no_internet">Failed due to lack of network connection</string>
+    <string name="authentication_activity_error_unknow">An unknown error has occurred.</string>
+</resources>

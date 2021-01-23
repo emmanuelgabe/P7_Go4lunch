@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="workmate"
+            type="com.emmanuel.go4lunch.data.model.Workmate" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container_workmates_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/workmates_item_image_view"
+            android:layout_width="@dimen/avatar_image_view"
+            android:layout_height="@dimen/avatar_image_view"
+            android:layout_marginLeft="@dimen/spacer_3"
+            android:layout_marginTop="@dimen/spacer_2"
+            android:layout_marginBottom="@dimen/spacer_2"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:background="@drawable/ic_launcher_background" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/workmate_item_name_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacer_3"
+            android:layout_marginRight="@dimen/spacer_3"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{@string/workmates_item_textview_name_restaurant(workmate.name,workmate.userRestaurant)}"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/workmates_item_image_view"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Scarlette" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_view_decoration_height"
+            android:layout_marginStart="@dimen/divider_view_decoration_margin"
+            android:background="@color/divider_view_decoration"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

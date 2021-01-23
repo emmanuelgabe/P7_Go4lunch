@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="restaurant"
+            type="com.emmanuel.go4lunch.data.model.Restaurant" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/restaurant_item_name_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacer_2"
+            android:layout_marginTop="@dimen/spacer_2"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{restaurant.name}"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/restaurant_item_distance_text_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Le Zinc" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/restaurant_item_address_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacer_2"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{restaurant.adresse}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/restaurant_item_workmates_number_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/restaurant_item_name_text_view"
+            tools:text="French - 12 rue du faubourg poissonière" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/restaurant_item_timetable_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/spacer_2"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@{restaurant.timetable}"
+            android:textStyle="italic"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/restaurant_item_evaluation_text_view"
+            app:layout_constraintTop_toBottomOf="@+id/restaurant_item_address_text_view"
+            tools:text="Open until 7pm" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/restaurant_item_image_view"
+            android:layout_width="@dimen/restaurant_image_view"
+            android:layout_height="@dimen/restaurant_image_view"
+            android:layout_marginTop="@dimen/spacer_1"
+            android:layout_marginEnd="@dimen/spacer_1"
+            android:layout_marginBottom="@dimen/spacer_1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_launcher_background" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/restaurant_item_distance_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacer_2"
+            android:layout_marginRight="@dimen/spacer_2"
+            android:singleLine="true"
+            android:text="120m"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintEnd_toStartOf="@+id/restaurant_item_image_view"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/restaurant_item_workmates_number_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/spacer_2"
+            android:drawableLeft="@drawable/ic_person_24"
+            android:gravity="center"
+            android:text="(2)"
+            app:layout_constraintEnd_toStartOf="@+id/restaurant_item_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/restaurant_item_distance_text_view" />
+
+        <ImageView
+            android:id="@+id/restaurant_item_evaluation_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacer_1"
+            android:layout_marginRight="@dimen/spacer_2"
+            android:background="@drawable/ic_star_evaluation"
+            app:layout_constraintEnd_toStartOf="@+id/restaurant_item_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/restaurant_item_workmates_number_text_view" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_view_decoration_height"
+            android:layout_marginTop="@dimen/spacer_2"
+            android:background="@color/divider_view_decoration"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/restaurant_item_timetable_text_view" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
