@@ -16,10 +16,11 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:contentDescription="@string/description_user_avatar"
             android:id="@+id/workmates_item_image_view"
             android:layout_width="@dimen/avatar_image_view"
             android:layout_height="@dimen/avatar_image_view"
-            android:layout_marginLeft="@dimen/spacer_3"
+            android:layout_marginStart="@dimen/spacer_3"
             android:layout_marginTop="@dimen/spacer_2"
             android:layout_marginBottom="@dimen/spacer_2"
             android:scaleType="centerCrop"
@@ -36,7 +37,7 @@
             android:layout_marginRight="@dimen/spacer_3"
             android:ellipsize="end"
             android:singleLine="true"
-            android:text="@{@string/workmates_item_textview_name_restaurant(workmate.name,workmate.userRestaurant)}"
+            android:text="@{@string/workmates_item_text_view_name_restaurant(workmate.name)}"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

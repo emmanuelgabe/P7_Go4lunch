@@ -1,69 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
-    android:background="@drawable/drawer_image">
+    android:layout_height="@dimen/nav_header_height">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/drawer_image"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/app_name"
-        android:textColor="@color/white"
+        android:textColor="@color/text_white"
         android:textSize="48sp"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/drawer_header_user_image"
+    <ImageView
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginLeft="@dimen/spacer_3"
+        android:id="@+id/drawer_header_user_image"
         android:layout_marginBottom="@dimen/spacer_3"
-        app:cardCornerRadius="30dp"
-        app:cardElevation="0dp"
+        android:layout_marginStart="@dimen/spacer_3"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:singleLine="true" />
-
-    </androidx.cardview.widget.CardView>
+        android:contentDescription="@string/description_user_avatar"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/drawer_header_username_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/spacer_3"
+        android:layout_marginStart="@dimen/spacer_3"
         android:layout_marginTop="@dimen/spacer_2"
-        android:text="John SMITH"
-        android:textColor="@color/white"
+        android:textColor="@color/text_white"
         android:textSize="@dimen/material_typography_body1"
         android:textStyle="bold"
         app:layout_constraintLeft_toRightOf="@id/drawer_header_user_image"
         app:layout_constraintTop_toTopOf="@id/drawer_header_user_image"
         tools:text="John SMITH" />
-    <!-- TODO delete text = -->
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/drawer_header_user_email_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/spacer_3"
+        android:layout_marginStart="@dimen/spacer_3"
         android:singleLine="true"
-
-        android:text="fjsmith.1337@gmail.com"
-        android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textColor="@color/text_white"
+        android:textSize="@dimen/material_typography_body1"
         app:layout_constraintLeft_toRightOf="@id/drawer_header_user_image"
         app:layout_constraintTop_toBottomOf="@id/drawer_header_username_text_view"
         tools:text="fjsmith.1337@gmail.com" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

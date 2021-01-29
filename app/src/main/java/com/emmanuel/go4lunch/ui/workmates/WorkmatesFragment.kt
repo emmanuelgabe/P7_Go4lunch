@@ -12,7 +12,7 @@ import com.emmanuel.go4lunch.utils.WORKMATE_LIST_SAMPLE
 
 class WorkmatesFragment : Fragment() {
 
-    private lateinit var binding: com.emmanuel.go4lunch.databinding.FragmentWorkmatesBinding
+    private lateinit var binding: FragmentWorkmatesBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

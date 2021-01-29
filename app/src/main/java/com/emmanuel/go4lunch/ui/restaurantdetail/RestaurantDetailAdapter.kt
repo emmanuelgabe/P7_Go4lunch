@@ -13,7 +13,7 @@ class RestaurantDetailAdapter(private val items: List<Workmate>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = com.emmanuel.go4lunch.databinding.WorkmatesItemBinding.inflate(inflater)
+        val binding = WorkmatesItemBinding.inflate(inflater)
         return ViewHolder(binding)
     }
 
@@ -27,7 +27,7 @@ class RestaurantDetailAdapter(private val items: List<Workmate>) :
             binding.workmate = item
 
             Glide.with(binding.workmatesItemImageView.context)
-                .load(item.avatar).override(60, 60)
+                .load(item.avatarURL).override(60, 60)
                 .apply(RequestOptions.circleCropTransform())
                 .into(binding.workmatesItemImageView)
         }

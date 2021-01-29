@@ -29,9 +29,9 @@ class WorkmateAdapter(private val items: List<Workmate>) :
             binding.workmate = item
 
             Glide.with(binding.workmatesItemImageView.context)
-                .load(item.avatar).override(60, 60)
+                .load(item.avatarURL).override(60, 60)
                 .apply(RequestOptions.circleCropTransform())
-                .into(binding.workmatesItemImageView);
+                .into(binding.workmatesItemImageView)
             binding.containerWorkmatesItem.setOnClickListener(
                 Navigation.createNavigateOnClickListener(R.id.action_workmatesFragment_to_restaurantDetail)
             )

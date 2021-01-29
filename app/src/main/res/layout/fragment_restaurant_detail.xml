@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_detail_neighbour"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -54,13 +55,13 @@
                 android:id="@+id/fragment_detail_text_view_restaurant_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/spacer_3"
+                android:layout_marginStart="@dimen/spacer_3"
                 android:layout_marginTop="@dimen/spacer_3"
-                android:layout_marginRight="@dimen/spacer_5"
+                android:layout_marginEnd="@dimen/spacer_5"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="Le Zinc"
-                android:textColor="@color/white"
+                android:textColor="@color/text_white"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -75,7 +76,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="French restaurant description  "
-                android:textColor="@color/white"
+                android:textColor="@color/text_white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_detail_text_view_restaurant_name" />
@@ -123,7 +124,8 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/activity_detail_neighbour_fab"
+        android:contentDescription="@string/description_select_restaurant"
+        android:id="@+id/fragment_detail_restaurant_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/design_default_color_on_primary"
@@ -133,6 +135,7 @@
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         app:maxImageSize="35dp"
-        app:srcCompat="@drawable/ic_check_circle_24" />
+        android:src="@drawable/ic_check_circle_24"
+        tools:targetApi="lollipop" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="nav_header_height">190dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
     <dimen name="material_typography_body1">16sp</dimen>
+    <dimen name="material_typography_headline2">60sp</dimen>
+    <dimen name="activity_authentication_subtitle">12sp</dimen>
 
-    <dimen name="spacer_0">2dp</dimen>
+
     <dimen name="spacer_1">4dp</dimen>
     <dimen name="spacer_2">8dp</dimen>
     <dimen name="spacer_3">16dp</dimen>
-    <dimen name="spacer_4">32dp</dimen>
     <dimen name="spacer_5">64dp</dimen>
+    <dimen name="spacer_7">256dp</dimen>
     <dimen name="avatar_image_view">60dp</dimen>
     <dimen name="divider_view_decoration_height">1dp</dimen>
     <dimen name="divider_view_decoration_margin">92dp</dimen>
     <dimen name="restaurant_image_view">58dp</dimen>
+    <dimen name="activity_authentication_bowl_height_image_view">180dp</dimen>
+    <dimen name="activity_authentication_height_button">60dp</dimen>
+    <dimen name="activity_authentication_width_button">256dp</dimen>
+    <dimen name="activity_authentication_padding_left_button">23dp</dimen>
 
 
 </resources>

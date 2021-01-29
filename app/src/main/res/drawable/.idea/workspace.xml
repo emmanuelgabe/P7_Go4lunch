@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4fcb8520-f2b5-4fc8-b088-643331f489cf" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../../../../google-services.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../java/com/emmanuel/go4lunch/AuthenticationActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../java/com/emmanuel/go4lunch/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../../java/com/emmanuel/go4lunch/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go4lunchbowl.png" beforeDir="false" afterPath="$PROJECT_DIR$/go_4_lunch_bowl.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go_4_lunch_bowl.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_baseline_star_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_baseline_star_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_list_view_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_list_view_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_logout_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_logout_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_map_view_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_map_view_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_person_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_person_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_phone_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_phone_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_public_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_public_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_settings_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_settings_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_workmates_people_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_workmates_people_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ic_your_lunch_24.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ic_your_lunch_24.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../layout/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../layout/activity_main_drawer_header.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../layout/activity_main_drawer_header.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../layout/fragment_restaurant_detail.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../layout/fragment_restaurant_detail.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../menu/drawer_menu.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../menu/drawer_menu.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../values/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../values/dimens.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../values/dimens.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../values/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../values/themes.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../.." />
+  </component>
+  <component name="ProjectId" id="1neGEflJDFdUrRV71wD5qIX7MbY" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4fcb8520-f2b5-4fc8-b088-643331f489cf" name="Default Changelist" comment="" />
+      <created>1611743032719</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1611743032719</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2878" y="167" key="FileChooserDialogImpl" timestamp="1611743045187">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="2878" y="167" key="FileChooserDialogImpl/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1611743045187" />
+  </component>
+</project>

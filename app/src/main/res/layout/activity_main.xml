@@ -38,7 +38,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
-
             app:navGraph="@navigation/main_navigation">
 
 
@@ -47,22 +46,22 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
+        android:id="@+id/drawer_nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/light_color"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/activity_main_drawer_header"
-        app:itemIconTint="@color/white"
-        app:itemTextColor="@color/white"
+        app:itemIconTint="@color/design_default_color_surface"
+        app:itemTextColor="@color/text_white"
         app:menu="@menu/drawer_menu">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            app:srcCompat="@drawable/go4lunchbowl" />
+            app:srcCompat="@drawable/go_4_lunch_bowl" />
     </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

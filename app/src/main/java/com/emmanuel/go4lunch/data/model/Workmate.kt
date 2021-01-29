@@ -1,4 +1,15 @@
 package com.emmanuel.go4lunch.data.model
 
-data class Workmate(var name: String, var userRestaurant: String, var avatar: String) {
-}
+import com.google.firebase.firestore.ServerTimestamp
+
+
+import java.util.*
+
+data class Workmate(
+    val uid: String,
+    var email: String,
+    var name: String,
+    var avatarURL: String,
+    @ServerTimestamp
+    val creationDate: Date? = null
+)

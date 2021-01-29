@@ -1,16 +1,32 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
-    <string name="app_name">Go4lunch</string>
+    <string name="app_name">Go4Lunch</string>
+    <!-- Main activity -->
     <string name="bottom_menu_map_view">map view</string>
     <string name="bottom_menu_list_view">list view</string>
     <string name="bottom_menu_workmates">workmates</string>
     <string name="drawer_menu_your_lunch">YOUR LUNCH</string>
     <string name="drawer_menu_logout">LOGOUT</string>
     <string name="drawer_menu_settings">SETTINGS</string>
-    <string name="workmates_item_textview_name_restaurant">%1$s ( %2$s )</string>
+    <string name="workmates_item_text_view_name_restaurant">%1$s ( restaurant )</string>
     <string name="detail_restaurant_button_like">LIKE</string>
     <string name="detail_restaurant_button_call">CALL</string>
     <string name="detail_restaurant_button_website">WEBSITE</string>
-    <string name="authentication_activity_error_canceled">todo</string>
+       <!-- FACEBOOK PURPOSE -->
+    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb420763051691337</string>
+    <string name="facebook_app_id">877083879784588</string>
+    <string name="fb_login_protocol_scheme">fb877083879784588</string>
+    <!-- Activity_authentication_ -->
+    <string name="activity_authentication_text_view_subtitle">Find a nice restaurant and invite your co-workers for lunch!</string>
+    <string name="activity_authentication_button_facebook">Sign in with Facebook</string>
+    <string name="activity_authentication_button_google">Sign in with Google</string>
+    <string name="alert_dialog_neutral_button">Cancel</string>
+    <string name="error_no_internet">Sign in failed due to lack of network connection.</string>
+    <string name="authentication_activity_error_unknown">An error has occurred.</string>
+    <string name="error_authentication_failed">Authentication failed</string>
+    <string name="alert_dialog_title">Attention</string>
     <string name="authentication_activity_error_no_internet">Failed due to lack of network connection</string>
-    <string name="authentication_activity_error_unknow">An unknown error has occurred.</string>
+    <!-- image description -->
+    <string name="description_user_avatar">User avatar</string>
+    <string name="description_select_restaurant">select restaurant</string>
+
 </resources>

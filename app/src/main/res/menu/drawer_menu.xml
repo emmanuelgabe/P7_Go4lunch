@@ -9,6 +9,7 @@
         android:icon="@drawable/ic_settings_24"
         android:title="@string/drawer_menu_settings" />
     <item
+        android:id="@+id/logout_item"
         android:icon="@drawable/ic_logout_24"
         android:title="@string/drawer_menu_logout" />
 </menu>
