@@ -7,7 +7,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 
 class WorkmateRepository {
 
-    private val service = Injection.getFirebaseWorkmateService()
+    private val service = Injection.getFirestoreWorkmateService()
 
     fun createUser(user: Workmate) {
         service.createUser(user)

@@ -1,10 +1,17 @@
 package com.emmanuel.go4lunch
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -14,12 +21,20 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.emmanuel.go4lunch.data.api.RetrofitBuilder
 import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.emmanuel.go4lunch.databinding.ActivityMainBinding
 import com.emmanuel.go4lunch.databinding.ActivityMainDrawerHeaderBinding
+import com.emmanuel.go4lunch.ui.mapview.MapViewFragment
 import com.facebook.login.LoginManager
+import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -41,6 +56,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         mAuth = FirebaseAuth.getInstance()
 
+        initUI()
+    }
+
+    private fun initUI() {
         navController =
             (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
         binding.bottomNavView.setupWithNavController(navController)
@@ -52,13 +71,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.drawerNavView.setNavigationItemSelectedListener(this)
-
-        initUI()
-
-    }
-
-    private fun initUI() {
-
         updateUserProfile()
     }
 
@@ -87,6 +99,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 if (document != null) {
 
+
                     Log.d(TAG, "DocumentSnapshot data: " + task.result.data)
                     headerBinding.drawerHeaderUsernameTextView.text =
                         task.result.data?.get("name").toString()
@@ -105,7 +118,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
     }
-
     companion object {
         private const val TAG = "MainActivity"
     }

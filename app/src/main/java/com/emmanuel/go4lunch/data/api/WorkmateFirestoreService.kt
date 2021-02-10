@@ -8,7 +8,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-object FirebaseWorkmateService {
+object WorkmateFirestoreService {
     private const val TAG = "WorkmateService"
     private const val COLLECTION_USERS = "users"
 
@@ -63,6 +63,4 @@ object FirebaseWorkmateService {
             .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
             .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
     }
-
-
 }

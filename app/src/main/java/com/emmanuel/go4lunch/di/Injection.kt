@@ -1,12 +1,12 @@
 package com.emmanuel.go4lunch.di
 
-import com.emmanuel.go4lunch.data.api.FirebaseWorkmateService
+import com.emmanuel.go4lunch.data.api.WorkmateFirestoreService
 
 object Injection {
 
-    private val service = FirebaseWorkmateService
+    private val service = WorkmateFirestoreService
 
-    fun getFirebaseWorkmateService(): FirebaseWorkmateService {
+    fun getFirestoreWorkmateService(): WorkmateFirestoreService {
         return service
     }
 }

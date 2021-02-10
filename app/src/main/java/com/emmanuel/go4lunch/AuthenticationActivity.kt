@@ -1,11 +1,14 @@
 package com.emmanuel.go4lunch
 
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.emmanuel.go4lunch.databinding.ActivityAuthenticationBinding
