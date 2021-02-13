@@ -23,7 +23,13 @@
         android:id="@+id/mapViewFragment"
         android:name="com.emmanuel.go4lunch.ui.mapview.MapViewFragment"
         android:label="fragment_map_view"
-        tools:layout="@layout/fragment_map_view" />
+        tools:layout="@layout/fragment_map_view" >
+        <argument android:name="restaurantId"/>
+        <action
+            android:id="@+id/action_mapViewFragment_to_restaurantDetail"
+            app:destination="@id/restaurantDetail" />
+
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.emmanuel.go4lunch.ui.settings.SettingsFragment"
@@ -33,5 +39,7 @@
         android:id="@+id/restaurantDetail"
         android:name="com.emmanuel.go4lunch.ui.restaurantdetail.RestaurantDetailFragment"
         android:label="fragment_restaurant_detail"
-        tools:layout="@layout/fragment_restaurant_detail" />
+        tools:layout="@layout/fragment_restaurant_detail" >
+        <argument android:name="restaurantId"/>
+    </fragment>
 </navigation>

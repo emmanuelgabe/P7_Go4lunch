@@ -3,10 +3,9 @@ package com.emmanuel.go4lunch.ui.restaurantdetail
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.WorkmatesItemBinding
+import com.squareup.picasso.Picasso
 
 class RestaurantDetailAdapter(private val items: List<Workmate>) :
     RecyclerView.Adapter<RestaurantDetailAdapter.ViewHolder>() {
@@ -26,9 +25,9 @@ class RestaurantDetailAdapter(private val items: List<Workmate>) :
         fun bind(item: Workmate) {
             binding.workmate = item
 
-            Glide.with(binding.workmatesItemImageView.context)
-                .load(item.avatarURL).override(60, 60)
-                .apply(RequestOptions.circleCropTransform())
+            Picasso.get()
+                .load(item.avatarURL)
+                .resize(60, 60)
                 .into(binding.workmatesItemImageView)
         }
     }

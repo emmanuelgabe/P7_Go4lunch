@@ -11,11 +11,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.emmanuel.go4lunch.BuildConfig
+import androidx.navigation.Navigation
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.data.api.RetrofitBuilder
-import com.emmanuel.go4lunch.data.model.Restaurant
+import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
+import com.emmanuel.go4lunch.data.repository.RestaurantRepository
 import com.emmanuel.go4lunch.utils.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -25,6 +26,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 
 
 class MapViewFragment : Fragment(), OnMapReadyCallback {
@@ -33,11 +36,13 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
     private lateinit var supportFragmentManager: SupportMapFragment
     private var lastKnownLocation: Location? = null
     lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
+    private val TAG = "MapViewFragment"
+    private val DEFAULT_ZOOM = 15.0f
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         val rootView: View = inflater.inflate(R.layout.fragment_map_view, container, false)
         supportFragmentManager =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -45,21 +50,27 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         supportFragmentManager.getMapAsync(this)
 
         mFusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireActivity());
+            LocationServices.getFusedLocationProviderClient(requireActivity())
         return rootView
     }
 
     override fun onMapReady(p0: GoogleMap?) {
         if (p0 != null) {
             mMap = p0
-            mMap.setOnMyLocationButtonClickListener(GoogleMap.OnMyLocationButtonClickListener {
+            mMap.setOnMyLocationButtonClickListener {
                 // TODO check gps statut and active thme if nessesary
-
                 fetchNearRestaurantLocation()
                 false
-            })
+            }
             mMap.setOnMarkerClickListener { marker ->
-                Toast.makeText(requireContext(), marker.title, Toast.LENGTH_LONG)
+                Toast.makeText(requireContext(), marker.title, Toast.LENGTH_LONG).show()
+
+                val bundle = bundleOf("restaurantId" to marker.title.toString())
+                Navigation.createNavigateOnClickListener(
+                    R.id.action_mapViewFragment_to_restaurantDetail,
+                    bundle
+                )
+
                 true
             }
             // Turn on the My Location layer and the related control on the map.
@@ -103,8 +114,8 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                             )
                         }
                     } else {
-                        Log.d(Companion.TAG, "Current location is null. Using defaults.")
-                        Log.e(Companion.TAG, "Exception: %s", task.exception)
+                        Log.d(TAG, "Current location is null. Using defaults.")
+                        Log.e(TAG, "Exception: %s", task.exception)
                         // TODO add popup information if gps is disabled
                         mMap.uiSettings?.isMyLocationButtonEnabled = false
                     }
@@ -156,46 +167,31 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         updateLocationUI()
     }
 
-    companion object {
-        private const val TAG = "MapViewFragment"
-        private const val DEFAULT_ZOOM = 15.0f
-    }
-
     private fun fetchNearRestaurantLocation() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = RetrofitBuilder.googleMapsService.getNearRestaurantId(
-                "${lastKnownLocation?.latitude},${lastKnownLocation?.longitude}",               500,
-                "restaurant",
-                BuildConfig.GOOGLE_MAP_API_KEY
-            )
-            withContext(Dispatchers.Main) {
-                var list = mutableListOf<Restaurant>()
-                if (response.isSuccessful) {
-                    val items = response.body()?.results
-                    if (items != null) {
-                        for (i in 0 until items.count()) {
-                            addMarker(
-                                items[i].placeId,
-                                items[i].geometry.location.lat,
-                                items[i].geometry.location.lng
-                            )
-                        }
-                    }
-                } else {
-                    Log.e("RETROFIT_ERROR", response.code().toString())
-                }
+        CoroutineScope(IO).launch {
+            val restaurants = RestaurantRepository.getAllNearRestaurant(lastKnownLocation)
+            restaurants?.let {
+                addMarker(restaurants)
             }
         }
     }
 
-    fun addMarker(id: String, lat: Double, lng: Double) {
-
-        mMap.addMarker(
-            MarkerOptions()
-                .position(LatLng(lat, lng))
-                .title(id)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant))
-                .flat(true)
-        )
+    suspend fun addMarker(items: List<NearByRestaurant>) {
+        withContext(Main) {
+            for (i in 0 until items.count()) {
+                mMap.addMarker(
+                    MarkerOptions()
+                        .position(
+                            LatLng(
+                                items[i].geometry.location.lat,
+                                items[i].geometry.location.lng
+                            )
+                        )
+                        .title(items[i].placeId)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant))
+                        .flat(true)
+                )
+            }
+        }
     }
 }

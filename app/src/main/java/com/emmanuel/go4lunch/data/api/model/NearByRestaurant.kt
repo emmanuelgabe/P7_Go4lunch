@@ -9,17 +9,14 @@ data class NearByRestaurant(
     val name: String?,
     @SerializedName("business_status")
     val businessStatus: String?,
-    val rating: String?,
+    val rating: Double?,
     @SerializedName("user_ratings_total")
-    val ratingNumber: String?,
+    val ratingNumber: Int?,
     @SerializedName("vicinity")
     val address: String?,
     @SerializedName("price_level")
-    val price: String?,
-    @SerializedName("Photos")
-// todo get photo with ref
-// https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=ATtYBwLF1DMuzV7aI7XKH81Gws1OBFA_qthXWle3esXPQm96bE-oAs9o3CbPpXMSxi3Hof1JP6P08t-yNgnNrUTEDIlCEvJbpuhhe0LmrF670RNIAef8trgaov8urIN1lqZcSi8qMI5ipCMiT4Q4jgtCApBMq8RU92HjIJm9y-hSyVbjzThZ&key=
-    val photos: Photos?,
+    val price: Int?,
+    val photos: List<Photos>?,
     val geometry: Geometry, // contain location
     @SerializedName("opening_hours")
     val openingHours: OpeningHours?,
@@ -46,9 +43,5 @@ data class OpeningHours(
     @SerializedName("open_now")
     val openNow: Boolean?,
     @SerializedName("weekday_text")
-    val weekdayText: List<WeekdayText>
-)
-
-data class WeekdayText(
-    val timestampPerDay: String?
+    val weekdayText: List<String>
 )

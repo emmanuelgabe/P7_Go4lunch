@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitBuilder {
 
-    private const val GOOGLE_MAP_BASE_URL = "https://maps.googleapis.com"
+     const val GOOGLE_MAP_BASE_URL = "https://maps.googleapis.com"
 
     private val retrofitBuilder: Retrofit.Builder by lazy {
         Retrofit.Builder()

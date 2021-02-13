@@ -16,10 +16,8 @@ interface GoogleMapsService {
         @Query("key") key: String
     ): Response<NearByRestaurantDetailResponse>
 
-
-    // TODO suspend
     @GET("/maps/api/place/nearbysearch/json")
-    suspend fun getNearRestaurantId(
+    suspend fun getNearRestaurant(
         @Query("location", encoded = false) location: String,
         @Query("radius") radius: Int,
         @Query("type") type: String,

@@ -24,5 +24,8 @@
         <item name="android:textColor">@color/light_color</item>
         <item name="android:textSize">@dimen/material_typography_body1</item>
     </style>
+    <style name="RatingBar" parent="Base.Widget.AppCompat.RatingBar.Small">
+        <item name="colorControlActivated">@color/quantum_yellow600</item>
 
+    </style>
 </resources>
