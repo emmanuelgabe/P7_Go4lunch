@@ -1,43 +1,50 @@
 package com.emmanuel.go4lunch.ui.mapview
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.repository.RestaurantRepository
-import com.emmanuel.go4lunch.utils.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_FINE_LOCATION
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
-import kotlinx.coroutines.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MapViewFragment : Fragment(), OnMapReadyCallback {
-    private var locationPermissionGranted: Boolean = false
     private lateinit var mMap: GoogleMap
     private lateinit var supportFragmentManager: SupportMapFragment
     private var lastKnownLocation: Location? = null
-    lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
+    lateinit var locationFab: FloatingActionButton
     private val TAG = "MapViewFragment"
     private val DEFAULT_ZOOM = 15.0f
+    private val restaurants = mutableListOf<NearByRestaurant>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,51 +53,41 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         val rootView: View = inflater.inflate(R.layout.fragment_map_view, container, false)
         supportFragmentManager =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        locationFab = rootView.findViewById(R.id.fragment_map_view_gps_fab)
+        locationFab.setOnClickListener {
+            getDeviceLocation()
+            checkLocationPermission()
+        }
         // Async map
         supportFragmentManager.getMapAsync(this)
-
-        mFusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireActivity())
+        getDeviceLocation()
         return rootView
     }
 
     override fun onMapReady(p0: GoogleMap?) {
         if (p0 != null) {
             mMap = p0
-            mMap.setOnMyLocationButtonClickListener {
-                // TODO check gps statut and active thme if nessesary
-                fetchNearRestaurantLocation()
-                false
-            }
             mMap.setOnMarkerClickListener { marker ->
-                Toast.makeText(requireContext(), marker.title, Toast.LENGTH_LONG).show()
-
-                val bundle = bundleOf("restaurantId" to marker.title.toString())
-                Navigation.createNavigateOnClickListener(
-                    R.id.action_mapViewFragment_to_restaurantDetail,
-                    bundle
-                )
-
+                val action = MapViewFragmentDirections.actionMapViewFragmentToRestaurantDetail(
+                    restaurants.get(marker.title.toInt()))
+                findNavController().navigate(action)
                 true
             }
-            // Turn on the My Location layer and the related control on the map.
             updateLocationUI()
-            // Get the current location of the device and set the position of the map.
-            getDeviceLocation()
         }
     }
 
     private fun updateLocationUI() {
-        try {
-            if (locationPermissionGranted) {
-                mMap.isMyLocationEnabled = true
-                mMap.uiSettings?.isMyLocationButtonEnabled = true
-            } else {
-                mMap.isMyLocationEnabled = false
-                mMap.uiSettings?.isMyLocationButtonEnabled = false
-                lastKnownLocation = null
-                getLocationPermission()
-            }
+         try {
+             if (isPermissionLocationGranted()) {
+                 mMap.isMyLocationEnabled = true
+                 mMap.uiSettings?.isMyLocationButtonEnabled = false
+                 locationFab.setImageResource(R.drawable.ic_baseline_gps_fixed_24)
+             }else{
+                 mMap.isMyLocationEnabled = false
+                 mMap.uiSettings?.isMyLocationButtonEnabled = false
+                 locationFab.setImageResource(R.drawable.ic_baseline_gps_off_24)
+             }
         } catch (e: SecurityException) {
             Log.e("Exception: %s", e.message, e)
         }
@@ -98,8 +95,8 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
 
     private fun getDeviceLocation() {
         try {
-            if (locationPermissionGranted) {
-                val locationResult = mFusedLocationProviderClient.lastLocation
+            if (isPermissionLocationGranted()) {
+                val locationResult = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
                 locationResult.addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
                         lastKnownLocation = task.result
@@ -116,8 +113,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.")
                         Log.e(TAG, "Exception: %s", task.exception)
-                        // TODO add popup information if gps is disabled
-                        mMap.uiSettings?.isMyLocationButtonEnabled = false
                     }
                 }
             }
@@ -126,53 +121,38 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        getLocationPermission()
-    }
-
-    private fun getLocationPermission() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationPermissionGranted = true
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-            )
-        }
+    private fun checkLocationPermission() {
+        if(isPermissionLocationGranted()) {
+                fetchNearRestaurantLocation()
+            } else {
+                requestPermissions(
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    REQUEST_PERMISSIONS_CODE_FINE_LOCATION
+                )
+            }
+        updateLocationUI()
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
+        requestCode: Int, permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        locationPermissionGranted = false
-        when (requestCode) {
-            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-                ) {
-                    locationPermissionGranted = true
-                }
+        if (requestCode == REQUEST_PERMISSIONS_CODE_FINE_LOCATION) {
+            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                showPermissionDialog()
             }
         }
         updateLocationUI()
     }
 
+
     private fun fetchNearRestaurantLocation() {
         CoroutineScope(IO).launch {
-            val restaurants = RestaurantRepository.getAllNearRestaurant(lastKnownLocation)
-            restaurants?.let {
-                addMarker(restaurants)
+            RestaurantRepository.getAllNearRestaurant(lastKnownLocation)?.let {
+                restaurants.clear()
+                restaurants.addAll(it)
             }
+            restaurants.let { addMarker(restaurants) }
         }
     }
 
@@ -187,11 +167,32 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                                 items[i].geometry.location.lng
                             )
                         )
-                        .title(items[i].placeId)
+                        .title("$i")
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant))
                         .flat(true)
                 )
             }
         }
     }
+    private fun showPermissionDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.apply {
+            setMessage("Permission to access your location is required to find restaurant in the vicinity. \nTo ensure the proper functioning of this functionality the location permission must be activated in the application settings")
+            setTitle("Permission required")
+            setPositiveButton("Setting") { dialog, which ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri = Uri.fromParts("package", requireActivity().packageName, null)
+                intent.setData(uri)
+                startActivity(intent)
+            }
+            setNegativeButton("Cancel"){ dialog, which ->
+                dialog.dismiss()
+            }
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
+    fun isPermissionLocationGranted() = ContextCompat.checkSelfPermission(
+        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
 }

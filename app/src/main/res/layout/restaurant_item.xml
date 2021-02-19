@@ -11,6 +11,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/restaurant_item_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -62,7 +63,6 @@
             android:layout_marginTop="@dimen/spacer_1"
             android:layout_marginEnd="@dimen/spacer_1"
             android:layout_marginBottom="@dimen/spacer_1"
-            android:elevation="0dp"
             app:cardCornerRadius="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -71,7 +71,8 @@
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/restaurant_item_image"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.textview.MaterialTextView
@@ -100,7 +101,7 @@
         <RatingBar
             android:id="@+id/restaurant_item_rating_bar"
             style="?android:attr/ratingBarStyleSmall"
-            android:layout_width="80dp"
+            android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:numStars="5"
             android:scaleX="-1"

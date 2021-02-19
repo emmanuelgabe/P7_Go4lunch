@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -16,6 +17,7 @@ import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
+import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.firebase.ui.auth.ErrorCodes.NO_NETWORK
 import com.firebase.ui.auth.IdpResponse
@@ -49,7 +51,6 @@ class AuthenticationActivity : AppCompatActivity() {
     private fun initFacebookAuthentication() {
         // Initialize Facebook Login button
         callbackManager = CallbackManager.Factory.create()
-        // TODO Fix bug permission is not ask on facebook authentication
         binding.activityAuthenticationFacebookButton.setPermissions(
             listOf(
                 "email",
@@ -154,9 +155,7 @@ class AuthenticationActivity : AppCompatActivity() {
                     addNewUser(
                         Workmate(
                             mAuth.currentUser?.uid.toString(),
-                            // TODO delete bypass after Fix bug email permission
-                            // mAuth.currentUser?.email.toString(),
-                            "monemail@hotmail.com",
+                            mAuth.currentUser?.email.toString(),
                             mAuth.currentUser?.displayName.toString(),
                             mAuth.currentUser?.photoUrl.toString()
                         )
@@ -178,6 +177,13 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     private fun addNewUser(workmate: Workmate) {
+        /**
+         *  email can be null or blank if user if the access permissions is denied or if the email
+         *  of the account is not verified
+         */
+         if (mAuth.currentUser?.email.isNullOrBlank()) {
+            workmate.email = "${mAuth.currentUser?.displayName}@Facebook.com"
+        }
         val mWorkmateRepository = WorkmateRepository()
         mWorkmateRepository.createUser(workmate)
     }

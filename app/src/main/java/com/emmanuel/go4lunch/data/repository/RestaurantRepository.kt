@@ -4,12 +4,13 @@ import android.location.Location
 import com.emmanuel.go4lunch.BuildConfig
 import com.emmanuel.go4lunch.data.api.RetrofitBuilder
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
+import com.emmanuel.go4lunch.utils.RADIUS
 
 object RestaurantRepository {
 
     suspend fun getAllNearRestaurant(
         lastKnownLocation: Location?,
-        radius: Int = 100
+        radius: Int = RADIUS
     ): List<NearByRestaurant>? {
         val response =
             RetrofitBuilder.googleMapsService.getNearRestaurant(
@@ -34,7 +35,7 @@ object RestaurantRepository {
         return response.body()?.result
     }
 
-    suspend fun getAllDetailRestaurant(restaurantsId: List<NearByRestaurant>?): MutableList<NearByRestaurant> {
+    suspend fun getAllDetailRestaurant(restaurantsId: List<NearByRestaurant>?): List<NearByRestaurant> {
         val restaurantsDetailList = mutableListOf<NearByRestaurant>()
         if (restaurantsId?.size != 0 && restaurantsId != null) {
             for (i in 0 until restaurantsId.count()) {

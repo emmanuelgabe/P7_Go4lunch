@@ -11,7 +11,7 @@
     <string name="detail_restaurant_button_like">LIKE</string>
     <string name="detail_restaurant_button_call">CALL</string>
     <string name="detail_restaurant_button_website">WEBSITE</string>
-       <!-- FACEBOOK PURPOSE -->
+    <!-- FACEBOOK PURPOSE -->
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb420763051691337</string>
     <string name="facebook_app_id">877083879784588</string>
     <string name="fb_login_protocol_scheme">fb877083879784588</string>
@@ -27,6 +27,16 @@
     <string name="authentication_activity_error_no_internet">Failed due to lack of network connection</string>
     <!-- image description -->
     <string name="description_user_avatar">User avatar</string>
+    <string name="description_gps_location_button">gps location button</string>
     <string name="description_select_restaurant">select restaurant</string>
-
+    <!-- fragment list view -->
+    <string name="fragment_list_view_close_statut_restaurant">close</string>
+    <string name="fragment_list_view_message_information">Swipe down for display and actualize restaurants near your position.\nDon\'t forget to active internet and gps in your device</string>
+    <string name="fragment_list_view_message_no_restaurant_found">No restaurant found</string>
+    <string name="fragment_list_view_message_no_location">Device location is not yet available.\nTry again and make sure the gps and internet is activated</string>
+    <string name="fragment_list_view_distance"> %1$sm</string>
+    <!-- fragment detail restaurant -->
+    <string name="restaurant_detail_fragment_message_no_number_found">no phone found</string>
+    <string name="restaurant_detail_fragment_message_no_web_site_found">no web site found</string>
+    <string name="fragment_list_view_message_no_timetable">Timetable not available</string>
 </resources>

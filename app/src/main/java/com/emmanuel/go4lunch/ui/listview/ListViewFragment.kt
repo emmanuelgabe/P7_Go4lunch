@@ -1,15 +1,17 @@
 package com.emmanuel.go4lunch.ui.listview
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,8 +19,7 @@ import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.repository.RestaurantRepository
 import com.emmanuel.go4lunch.databinding.FragmentListViewBinding
-import com.emmanuel.go4lunch.utils.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_FINE_LOCATION
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -29,8 +30,6 @@ import kotlinx.coroutines.withContext
 import kotlin.system.measureTimeMillis
 
 class ListViewFragment : Fragment() {
-    lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
-    private var locationPermissionGranted: Boolean = false
     private var lastKnownLocation: Location? = null
     private val TAG = "ListViewFragment"
     private lateinit var binding: FragmentListViewBinding
@@ -39,33 +38,30 @@ class ListViewFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val rootvView: View = inflater.inflate(R.layout.fragment_list_view, container, false)
-
-        mFusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireActivity())
-        rootvView.setOnClickListener {
-            Toast.makeText(requireContext(), "test", Toast.LENGTH_LONG).show()
-        }
-        binding = FragmentListViewBinding.bind(rootvView)
+    ): View {
+        val rootView: View = inflater.inflate(R.layout.fragment_list_view, container, false)
+        binding = FragmentListViewBinding.bind(rootView)
         binding.fragmentListViewSwipeContainer.setOnRefreshListener {
-            fetchNearRestaurantDetail()
+            getDeviceLocation()
+            checkLocationPermission()
         }
-        binding = FragmentListViewBinding.bind(rootvView)
+        binding = FragmentListViewBinding.bind(rootView)
         binding.listViewRecyclerView.layoutManager = LinearLayoutManager(activity)
-        fetchNearRestaurantDetail()
-        return rootvView
+        mAdapter = ListViewAdapter()
+        binding.listViewRecyclerView.adapter = mAdapter
+        getDeviceLocation()
+        return rootView
     }
 
     private fun getDeviceLocation() {
         try {
-            if (locationPermissionGranted) {
-                val locationResult = mFusedLocationProviderClient.lastLocation
+            if (isPermissionLocationGranted()) {
+                val locationResult = LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
                 locationResult.addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        lastKnownLocation = task.result
-                    } else {
-                        // TODO add popup information if gps is disabled
+                        task.result?.let {
+                            lastKnownLocation = task.result
+                        }
                     }
                 }
             }
@@ -74,78 +70,86 @@ class ListViewFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        getLocationPermission()
-        getDeviceLocation()
-    }
-
-    private fun getLocationPermission() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationPermissionGranted = true
+    private fun checkLocationPermission() {
+        if (isPermissionLocationGranted()) {
+            if (lastKnownLocation != null) {
+                fetchNearRestaurantDetail()
+            } else {
+                binding.fragmentListViewMessageInformation.text =
+                    getString(R.string.fragment_list_view_message_no_location)
+                binding.fragmentListViewSwipeContainer.isRefreshing = false
+            }
         } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_PERMISSIONS_CODE_FINE_LOCATION
             )
+            binding.fragmentListViewSwipeContainer.isRefreshing = false
         }
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
+        requestCode: Int, permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        locationPermissionGranted = false
-        when (requestCode) {
-            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-                ) {
-                    locationPermissionGranted = true
-                }
+        if (requestCode == REQUEST_PERMISSIONS_CODE_FINE_LOCATION) {
+            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                showPermissionDialog()
             }
         }
-        fetchNearRestaurantDetail()
     }
 
     private fun fetchNearRestaurantDetail() {
         CoroutineScope(IO).launch {
             val executionTime = measureTimeMillis {
                 val nearRestaurants = async {
-                    Log.d(TAG, "launching gatAllNearRestaurant  ${Thread.currentThread().name}")
                     RestaurantRepository.getAllNearRestaurant(lastKnownLocation)
                 }.await()
-                Log.d(TAG, "finish getAllNearRestaurant")
-                val restaurantsDetail = async {
-                    Log.d(TAG, "launching getAllDetailRestaurant()  ${Thread.currentThread().name}")
+                val restaurantsDetailList = async {
                     RestaurantRepository.getAllDetailRestaurant(nearRestaurants)
                 }.await()
-                Log.d(TAG, "finish getAllDetailRestaurant")
-                val updateUiJob = launch {
-                    Log.d(TAG, "updating restaurant list in ui  ${Thread.currentThread().name}")
-                    updateRestaurantList(restaurantsDetail)
-                }
+                launch {
+                    updateRestaurantList(restaurantsDetailList)
+                }.join()
             }
             Log.d(TAG, "fetchNearRestaurantDetail and update ui in : ${executionTime}ms")
         }
     }
 
-    private suspend fun updateRestaurantList(restaurantsDetail: MutableList<NearByRestaurant>) {
+    private suspend fun updateRestaurantList(restaurantsDetailList: List<NearByRestaurant>) {
         withContext(Main) {
-            if (!::mAdapter.isInitialized) {
-                mAdapter = ListViewAdapter(restaurantsDetail)
-                binding.listViewRecyclerView.adapter = mAdapter
+            if (restaurantsDetailList.size > 0) {
+                mAdapter.updateRestaurantsList(restaurantsDetailList, lastKnownLocation)
+                binding.fragmentListViewMessageInformation.visibility = View.GONE
             }
-            mAdapter.updateRestaurantsList(restaurantsDetail, lastKnownLocation)
+            else{
+                val strMessage = "${getString(R.string.fragment_list_view_message_no_restaurant_found)} \n ${getString(
+                    R.string.fragment_list_view_message_information)}"
+                binding.fragmentListViewMessageInformation.text = strMessage
+            }
             binding.fragmentListViewSwipeContainer.isRefreshing = false
         }
     }
+    private fun showPermissionDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.apply {
+            setMessage("Permission to access your location is required to find restaurant in the vicinity. \nTo ensure the proper functioning of this functionality the location permission must be activated in the application settings")
+            setTitle("Permission required")
+            setPositiveButton("Setting") { dialog, which ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri = Uri.fromParts("package", requireActivity().packageName, null)
+                intent.setData(uri)
+                startActivity(intent)
+            }
+            setNegativeButton("Cancel"){ dialog, which ->
+                dialog.dismiss()
+            }
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
+    fun isPermissionLocationGranted() = ContextCompat.checkSelfPermission(
+        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+
 }

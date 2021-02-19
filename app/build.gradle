@@ -1,8 +1,10 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
     id 'com.google.gms.google-services'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -17,13 +19,10 @@ android {
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
         Properties properties = new Properties()
         properties.load(rootProject.file("local.properties").newDataInputStream())
         buildConfigField "String", "GOOGLE_MAP_API_KEY", properties.getProperty("GOOGLE_KEY", "")
-        // Inject the Maps API key into the manifest
-        manifestPlaceholders = [mapsApiKey: properties.getProperty("GOOGLE_KEY", "")]
-    }
+     }
 
     dataBinding {
         enabled = true
@@ -70,7 +69,7 @@ dependencies {
     //picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
     //firebase
-    implementation platform('com.google.firebase:firebase-bom:26.3.0')
+    implementation platform('com.google.firebase:firebase-bom:26.5.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-database:19.6.0'
     implementation 'com.google.firebase:firebase-auth:20.0.2'
@@ -78,7 +77,7 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:8.2.0'
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.firebaseui:firebase-ui-firestore:7.1.1'
-    implementation 'com.google.firebase:firebase-firestore:22.0.2'
+    implementation 'com.google.firebase:firebase-firestore:22.1.0'
     // google maps
     implementation 'com.google.android.libraries.maps:maps:3.1.0-beta'
     implementation 'com.google.android.libraries.places:places:2.4.0'
