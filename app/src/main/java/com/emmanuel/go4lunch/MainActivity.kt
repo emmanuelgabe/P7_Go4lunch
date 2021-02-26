@@ -2,7 +2,6 @@ package com.emmanuel.go4lunch
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -19,6 +18,12 @@ import com.facebook.login.LoginManager
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -76,29 +81,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun updateUserProfile() {
-        val mWorkmateRepository = WorkmateRepository()
-        mWorkmateRepository.getUser(mAuth.currentUser!!.uid).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val document = task.result
-
-                if (document != null) {
-
-                    Log.d(TAG, "DocumentSnapshot data: " + task.result.data)
-                    headerBinding.drawerHeaderUsernameTextView.text =
-                        task.result.data?.get("name").toString()
-                    headerBinding.drawerHeaderUserEmailTextView.text =
-                        task.result.data?.get("email").toString()
-                    Picasso.get()
-                        .load(task.result.data?.get("avatarURL").toString())
-                        .resize(60, 60)
-                        .into(headerBinding.drawerHeaderUserImage)
-
-                } else {
-                    Log.d(TAG, "No such document")
-                }
-
-            } else {
-                Log.d(TAG, "get failed with ", task.exception)
+        CoroutineScope(IO).launch {
+            val currentWorkmate = async {
+                WorkmateRepository.getUser(mAuth.currentUser!!.uid)
+            }.await()
+            withContext(Main){
+                headerBinding.drawerHeaderUsernameTextView.text =
+                    currentWorkmate.name
+                headerBinding.drawerHeaderUserEmailTextView.text =
+                    currentWorkmate.email
+                Picasso.get()
+                    .load(currentWorkmate.avatarURL)
+                    .resize(60, 60)
+                    .into(headerBinding.drawerHeaderUserImage)
             }
         }
     }

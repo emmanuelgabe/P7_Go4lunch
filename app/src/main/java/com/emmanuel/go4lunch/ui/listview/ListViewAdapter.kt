@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
+import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.RestaurantItemBinding
 import com.emmanuel.go4lunch.utils.MAX_WITH_ICON
 import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
@@ -16,10 +17,11 @@ import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.math.roundToInt
 
-class ListViewAdapter() :
+class ListViewAdapter :
     RecyclerView.Adapter<ListViewAdapter.ViewHolder>() {
-    private var restaurants = mutableListOf<NearByRestaurant>()
-    var mLastKnownLocation: Location? = null
+    private var mRestaurants = mutableListOf<NearByRestaurant>()
+    private var mLastKnownLocation: Location? = null
+    private var mWorkmates = mutableListOf<Workmate>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -28,9 +30,9 @@ class ListViewAdapter() :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        holder.bind(restaurants.get(position))
+        holder.bind(mRestaurants[position])
 
-    override fun getItemCount(): Int = restaurants.size
+    override fun getItemCount(): Int = mRestaurants.size
 
     inner class ViewHolder(val binding: RestaurantItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -49,8 +51,8 @@ class ListViewAdapter() :
                     binding.root.context.getString(R.string.fragment_list_view_close_statut_restaurant)
                 binding.restaurantItemTimetableTextView.setTextColor(Color.RED)
             } else {
-                    binding.restaurantItemTimetableTextView.text =
-                        getOpeningHourDayFromWeekList(restaurant.openingHours?.weekdayText)
+                binding.restaurantItemTimetableTextView.text =
+                    getOpeningHourDayFromWeekList(restaurant.openingHours?.weekdayText)
             }
             mLastKnownLocation?.let {
                 val distance = FloatArray(1)
@@ -60,13 +62,16 @@ class ListViewAdapter() :
                     mLastKnownLocation!!.latitude, mLastKnownLocation!!.longitude, distance
                 )
                 binding.restaurantItemDistanceTextView.text =
-                    binding.root.context.getString(R.string.fragment_list_view_distance, distance[0].roundToInt().toString())
+                    binding.root.context.getString(
+                        R.string.fragment_list_view_distance,
+                        distance[0].roundToInt().toString()
+                    )
             }
             if (restaurant.photos?.get(0)?.photoReference != null) {
                 Picasso.get()
                     .load(
                         getPhotoUrlFromReference(
-                            restaurant.photos.get(0).photoReference,
+                            restaurant.photos[0].photoReference,
                             MAX_WITH_ICON
                         )
                     )
@@ -77,12 +82,24 @@ class ListViewAdapter() :
             }
             binding.restaurantItemContainer.setOnClickListener {
                 val action =
-                    ListViewFragmentDirections.actionListViewFragmentToRestaurantDetail(restaurant)
+                    ListViewFragmentDirections.actionListViewFragmentToRestaurantDetail(
+                        restaurant,
+                        null
+                    )
                 it.findNavController().navigate(action)
             }
+            var workmateCount = 0
+            for (workmate in mWorkmates) {
+                if (workmate.restaurantFavorite.equals(restaurant.placeId))
+                    workmateCount++
+            }
+            binding.restaurantItemWorkmatesNumberTextView.text = binding.root.context.getString(
+                R.string.fragment_list_view_workmate_number,
+                workmateCount.toString()
+            )
         }
 
-        fun getOpeningHourDayFromWeekList(weekDay: List<String>?): String {
+        private fun getOpeningHourDayFromWeekList(weekDay: List<String>?): String {
             val openingHours = weekDay?.get(Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1)
             if (openingHours.isNullOrBlank()) {
                 return binding.root.context.getString(R.string.fragment_list_view_message_no_timetable)
@@ -93,11 +110,14 @@ class ListViewAdapter() :
 
     fun updateRestaurantsList(
         restaurantsDetail: List<NearByRestaurant>,
-        lastKnownLocation: Location?
+        lastKnownLocation: Location?,
+        workmatesList: List<Workmate>
     ) {
         mLastKnownLocation = lastKnownLocation
-        restaurants.clear()
-        restaurants.addAll(restaurantsDetail)
+        mRestaurants.clear()
+        mRestaurants.addAll(restaurantsDetail)
+        mWorkmates.clear()
+        mWorkmates.addAll(workmatesList)
         notifyDataSetChanged()
     }
 }

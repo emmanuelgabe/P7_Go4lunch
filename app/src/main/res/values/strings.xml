@@ -7,7 +7,6 @@
     <string name="drawer_menu_your_lunch">YOUR LUNCH</string>
     <string name="drawer_menu_logout">LOGOUT</string>
     <string name="drawer_menu_settings">SETTINGS</string>
-    <string name="workmates_item_text_view_name_restaurant">%1$s ( restaurant )</string>
     <string name="detail_restaurant_button_like">LIKE</string>
     <string name="detail_restaurant_button_call">CALL</string>
     <string name="detail_restaurant_button_website">WEBSITE</string>
@@ -31,12 +30,21 @@
     <string name="description_select_restaurant">select restaurant</string>
     <!-- fragment list view -->
     <string name="fragment_list_view_close_statut_restaurant">close</string>
-    <string name="fragment_list_view_message_information">Swipe down for display and actualize restaurants near your position.\nDon\'t forget to active internet and gps in your device</string>
-    <string name="fragment_list_view_message_no_restaurant_found">No restaurant found</string>
-    <string name="fragment_list_view_message_no_location">Device location is not yet available.\nTry again and make sure the gps and internet is activated</string>
-    <string name="fragment_list_view_distance"> %1$sm</string>
+    <string name="fragment_list_view_message_download">Download restaurant and users information</string>
+    <string name="fragment_list_view_message_no_permission">Permission to access your location is required to find restaurant swipe down to try again</string>
+    <string name="fragment_list_view_message_search_position">Search for current position</string>
+    <string name="fragment_list_view_message_no_restaurant_found">No restaurant found swipe down to try again</string>
+    <string name="fragment_list_view_distance">%1$sm</string>
+    <string name="fragment_list_view_workmate_number">(%1$s)</string>
+    <!-- fragment detail restaurant -->
+    <string name="fragment_workmates_name">%1$s! (%2$s)</string>
     <!-- fragment detail restaurant -->
     <string name="restaurant_detail_fragment_message_no_number_found">no phone found</string>
     <string name="restaurant_detail_fragment_message_no_web_site_found">no web site found</string>
     <string name="fragment_list_view_message_no_timetable">Timetable not available</string>
+    <!-- AlertDialog permission  -->
+    <string name="alert_dialog_permission_button_setting">Setting</string>
+    <string name="alert_dialog_permission_button_cancel">Cancel</string>
+    <string name="alert_dialog_permission_title">Permission required</string>
+    <string name="alert_dialog_permission_message">Permission to access your location is required to find restaurant in the vicinity. \nTo ensure the proper functioning of this functionality the location permission must be activated in the application settings</string>
 </resources>

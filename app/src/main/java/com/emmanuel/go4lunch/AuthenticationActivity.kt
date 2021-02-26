@@ -1,15 +1,11 @@
 package com.emmanuel.go4lunch
 
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.emmanuel.go4lunch.databinding.ActivityAuthenticationBinding
@@ -17,7 +13,6 @@ import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
-import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.firebase.ui.auth.ErrorCodes.NO_NETWORK
 import com.firebase.ui.auth.IdpResponse
@@ -30,6 +25,9 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
 class AuthenticationActivity : AppCompatActivity() {
 
@@ -182,10 +180,11 @@ class AuthenticationActivity : AppCompatActivity() {
          *  of the account is not verified
          */
          if (mAuth.currentUser?.email.isNullOrBlank()) {
-            workmate.email = "${mAuth.currentUser?.displayName}@Facebook.com"
+            workmate.email = "${mAuth.currentUser?.displayName}@Facebook.com".replace("\\s+", "")
         }
-        val mWorkmateRepository = WorkmateRepository()
-        mWorkmateRepository.createUser(workmate)
+        CoroutineScope(IO).launch {
+            WorkmateRepository.createWorkmate(workmate)
+        }
     }
 
     override fun onStart() {

@@ -35,16 +35,14 @@ object RestaurantRepository {
         return response.body()?.result
     }
 
-    suspend fun getAllDetailRestaurant(restaurantsId: List<NearByRestaurant>?): List<NearByRestaurant> {
+    suspend fun getAllDetailRestaurant(lastKnownLocation: Location?): List<NearByRestaurant> {
+        val restaurants = this.getAllNearRestaurant(lastKnownLocation)
         val restaurantsDetailList = mutableListOf<NearByRestaurant>()
-        if (restaurantsId?.size != 0 && restaurantsId != null) {
-            for (i in 0 until restaurantsId.count()) {
-                restaurantsDetailList.add(
-                    getDetailRestaurant(restaurantsId.get(i).placeId)!!
-                )
+        restaurants?.let {
+            for (restaurant in restaurants) {
+                restaurantsDetailList.add(getDetailRestaurant(restaurant.placeId)!!)
             }
         }
         return restaurantsDetailList
     }
-
 }

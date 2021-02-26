@@ -7,26 +7,33 @@ import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.WorkmatesItemBinding
 import com.squareup.picasso.Picasso
 
-class RestaurantDetailAdapter(private val items: List<Workmate>) :
+class RestaurantDetailAdapter :
     RecyclerView.Adapter<RestaurantDetailAdapter.ViewHolder>() {
-
+    private var mWorkmatesIsJoining = mutableListOf<Workmate>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = WorkmatesItemBinding.inflate(inflater)
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(items[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) =
+        holder.bind(mWorkmatesIsJoining[position])
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int = mWorkmatesIsJoining.size
+
+    fun updateWorkmateList(workmateList: List<Workmate>) {
+        mWorkmatesIsJoining.clear()
+        mWorkmatesIsJoining.addAll(workmateList)
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(val binding: WorkmatesItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Workmate) {
-            binding.workmate = item
-
+        fun bind(workmate: Workmate) {
+            val workmateName = "${workmate.name} is joining!"
+            binding.workmateItemNameTextView.text = workmateName
             Picasso.get()
-                .load(item.avatarURL)
+                .load(workmate.avatarURL)
                 .resize(60, 60)
                 .into(binding.workmatesItemImageView)
         }

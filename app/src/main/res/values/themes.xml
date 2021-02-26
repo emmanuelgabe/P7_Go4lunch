@@ -26,6 +26,9 @@
     </style>
     <style name="RatingBar" parent="Base.Widget.AppCompat.RatingBar.Small">
         <item name="colorControlActivated">@color/quantum_yellow600</item>
-
+    </style>
+    <!-- Progress bar-->
+    <style name="progressBar" >
+        <item name="colorAccent">@color/primary_color</item>
     </style>
 </resources>
