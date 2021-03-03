@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
     <string name="drawer_menu_your_lunch">VOTRE DEJEUNER</string>
-    <string name="bottom_menu_workmates">collègues</string>
+    <string name="bottom_menu_workmates">Collègues</string>
     <string name="detail_restaurant_button_website">SITE INTERNET</string>
     <string name="description_user_avatar">avatar de l\'utilisateur</string>
     <string name="fragment_list_view_message_no_timetable">Horaire non disponible</string>
@@ -19,7 +19,7 @@
     <string name="restaurant_detail_fragment_message_no_web_site_found">aucun site web trouvé</string>
     <string name="fragment_list_view_message_no_restaurant_found">"Aucun restaurant trouvé, faites glisser vers le bas pour réessayer  "</string>
     <string name="restaurant_detail_fragment_message_no_number_found">aucun téléphone trouvé</string>
-    <string name="bottom_menu_map_view">carte</string>
+    <string name="bottom_menu_map_view">Carte</string>
     <string name="drawer_menu_logout">SE DÉCONNECTER</string>
     <string name="bottom_menu_list_view">Restaurants</string>
     <string name="detail_restaurant_button_like">AIMER</string>
@@ -34,4 +34,8 @@
     <string name="error_authentication_failed">Échec de l\'authentification</string>
     <string name="alert_dialog_title">Attention</string>
     <string name="authentication_activity_error_unknown">Une erreur est survenue</string>
+    <string name="setting_fragment_message_account_delete">Votre compte a été supprimé</string>
+    <string name="setting_fragment_dialog_message_account_delete">Êtes-vous sur de vouloir supprimer votre compte ?\nToutes vos données seront supprimé\nLa suppression sera irréversible.</string>
+    <string name="setting_fragment_dialog_title_account_delete">Suppression du compte</string>
+    <string name="setting_fragment_dialog_button_validate">Valiser</string>
 </resources>

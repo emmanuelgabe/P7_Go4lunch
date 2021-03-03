@@ -89,12 +89,12 @@
                     android:layout_marginStart="@dimen/spacer_1"
                     android:layout_marginTop="@dimen/spacer_3"
                     android:layout_marginEnd="@dimen/spacer_5"
-                    android:numStars="5"
+                    android:numStars="3"
                     android:theme="@style/RatingBar"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/fragment_detail_text_view_restaurant_name"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:rating="3.5" />
+                    tools:rating="3" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/fragment_detail_text_view_restaurant_detail"

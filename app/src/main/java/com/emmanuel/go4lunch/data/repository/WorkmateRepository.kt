@@ -4,6 +4,7 @@ import com.emmanuel.go4lunch.data.api.FirestoreService
 import com.emmanuel.go4lunch.data.model.Restaurant
 import com.emmanuel.go4lunch.data.model.Workmate
 import kotlinx.coroutines.tasks.await
+import java.sql.Timestamp
 
 object WorkmateRepository {
 
@@ -39,7 +40,8 @@ object WorkmateRepository {
                     document.get("name").toString(),
                     document.get("avatarURL").toString(),
                     document.get("restaurantsLike") as? List<String>?,
-                    document.get("restaurantFavorite")?.toString()
+                    document.get("restaurantFavorite")?.toString(),
+                    document.getTimestamp("favoriteDate")?.toDate()
                 )
             )
         }
@@ -63,7 +65,8 @@ object WorkmateRepository {
             "name" to workmate.name,
             "avatarURL" to workmate.avatarURL,
             "restaurantsLike" to workmate.restaurantsIdLike,
-            "restaurantFavorite" to workmate.restaurantFavorite
+            "restaurantFavorite" to workmate.restaurantFavorite,
+            "favoriteDate" to workmate.favoriteDate
         )
         FirestoreService().updateUser(workmate.uid, workmateDataMap)
     }

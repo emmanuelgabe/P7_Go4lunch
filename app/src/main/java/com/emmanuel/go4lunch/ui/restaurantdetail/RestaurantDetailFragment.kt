@@ -28,6 +28,7 @@ import com.emmanuel.go4lunch.databinding.FragmentRestaurantDetailBinding
 import com.emmanuel.go4lunch.utils.MAX_WITH_IMAGE
 import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_CALL_PHONE
 import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
+import com.emmanuel.go4lunch.utils.isSameDay
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +36,8 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.math.roundToInt
 import kotlin.system.measureTimeMillis
 
 class RestaurantDetailFragment : Fragment() {
@@ -43,7 +46,8 @@ class RestaurantDetailFragment : Fragment() {
     private lateinit var mCurrentUser:Workmate
     private lateinit var mWorkmates: List<Workmate>
     private lateinit var mAdapter: RestaurantDetailAdapter
-    override fun onCreateView(inflater: LayoutInflater,container: ViewGroup?,savedInstanceState: Bundle?
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_restaurant_detail, container, false)
         mCurrentRestaurant = (arguments?.getSerializable("restaurantDetail") as? NearByRestaurant)
@@ -56,13 +60,19 @@ class RestaurantDetailFragment : Fragment() {
     private fun initUi() {
         binding.restaurant = mCurrentRestaurant
         if (mCurrentRestaurant?.rating != null) {
-            binding.fragmentRestaurantDetailRatingBar.rating = mCurrentRestaurant?.rating!!.toFloat()
+            val rating = mCurrentRestaurant?.rating!!.toFloat()*3/5
+            binding.fragmentRestaurantDetailRatingBar.rating = rating.roundToInt().toFloat()
         } else {
             binding.fragmentRestaurantDetailRatingBar.visibility = View.GONE
         }
         if (mCurrentRestaurant?.photos?.get(0)?.photoReference != null) {
             Picasso.get()
-                .load(getPhotoUrlFromReference(mCurrentRestaurant!!.photos?.get(0)?.photoReference,MAX_WITH_IMAGE))
+                .load(
+                    getPhotoUrlFromReference(
+                        mCurrentRestaurant!!.photos?.get(0)?.photoReference,
+                        MAX_WITH_IMAGE
+                    )
+                )
                 .into(binding.activityDetailRestaurantImage)
         } else {
             binding.activityDetailRestaurantImage.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -75,13 +85,17 @@ class RestaurantDetailFragment : Fragment() {
                         callRestaurant()
                     } else {
                         ActivityCompat.requestPermissions(
-                            requireActivity(),arrayOf(Manifest.permission.CALL_PHONE),
+                            requireActivity(), arrayOf(Manifest.permission.CALL_PHONE),
                             REQUEST_PERMISSIONS_CODE_CALL_PHONE
                         )
                     }
                 }
             } else {
-                Toast.makeText(binding.root.context,getString(R.string.restaurant_detail_fragment_message_no_number_found),Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    binding.root.context,
+                    getString(R.string.restaurant_detail_fragment_message_no_number_found),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
         mAdapter = RestaurantDetailAdapter()
@@ -93,9 +107,11 @@ class RestaurantDetailFragment : Fragment() {
                 val intent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(mCurrentRestaurant?.website))
                 startActivity(intent)
             }else{
-                Toast.makeText(binding.root.context,
+                Toast.makeText(
+                    binding.root.context,
                     getString(R.string.restaurant_detail_fragment_message_no_web_site_found),
-                    Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
         binding.fragmentDetailButtonLike.setOnClickListener {
@@ -157,17 +173,29 @@ class RestaurantDetailFragment : Fragment() {
        // update like button
         binding.fragmentDetailButtonLike.setCompoundDrawablesWithIntrinsicBounds(
             null,
-            ContextCompat.getDrawable(requireActivity(),R.drawable.ic_baseline_thumb_up_off_alt_24), null, null
+            ContextCompat.getDrawable(
+                requireActivity(),
+                R.drawable.ic_baseline_thumb_up_off_alt_24
+            ), null, null
         )
         if (mCurrentUser.restaurantsIdLike != null) {
             if (mCurrentUser.restaurantsIdLike!!.contains(mCurrentRestaurant?.placeId))
                 binding.fragmentDetailButtonLike.setCompoundDrawablesWithIntrinsicBounds(
-                    null,ContextCompat.getDrawable(requireActivity(),R.drawable.ic_baseline_thumb_up_alt_24), null, null)
+                    null, ContextCompat.getDrawable(
+                        requireActivity(),
+                        R.drawable.ic_baseline_thumb_up_alt_24
+                    ), null, null
+                )
             else
-                binding.fragmentDetailButtonLike.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(requireActivity(), R.drawable.ic_baseline_thumb_up_off_alt_24), null, null)
+                binding.fragmentDetailButtonLike.setCompoundDrawablesWithIntrinsicBounds(
+                    null, ContextCompat.getDrawable(
+                        requireActivity(),
+                        R.drawable.ic_baseline_thumb_up_off_alt_24
+                    ), null, null
+                )
         }
         // update favorite button
-        if (mCurrentUser.restaurantFavorite.equals(mCurrentRestaurant?.placeId)) {
+        if (mCurrentUser.restaurantFavorite.equals(mCurrentRestaurant?.placeId) && isSameDay(mCurrentUser.favoriteDate,Calendar.getInstance().time)) {
             binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_check_favorite_restaurant)
         } else {
             binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_uncheck_favorite_restaurant)
@@ -182,11 +210,18 @@ class RestaurantDetailFragment : Fragment() {
                 val updatedWorkmate = mCurrentUser
                 if (mCurrentUser.restaurantFavorite.equals(mCurrentRestaurant?.placeId)) {
                     updatedWorkmate.restaurantFavorite = null
+                    updatedWorkmate.favoriteDate = null
                 } else {
                     launch {
-                        WorkmateRepository.addRestaurant(Restaurant(mCurrentRestaurant?.placeId!!,mCurrentRestaurant?.name))
+                        WorkmateRepository.addRestaurant(
+                            Restaurant(
+                                mCurrentRestaurant?.placeId!!,
+                                mCurrentRestaurant?.name
+                            )
+                        )
                     }.join()
                     updatedWorkmate.restaurantFavorite = mCurrentRestaurant?.placeId
+                    updatedWorkmate.favoriteDate = Calendar.getInstance().time
                 }
                 launch {
                     WorkmateRepository.updateWorkmate(updatedWorkmate)
@@ -212,7 +247,14 @@ class RestaurantDetailFragment : Fragment() {
 
     private fun callRestaurant() {
         val intent = Intent(Intent.ACTION_CALL)
-        intent.data = Uri.parse("tel:${mCurrentRestaurant?.phoneNumber!!.replace("\\s".toRegex(), "")}")
+        intent.data = Uri.parse(
+            "tel:${
+                mCurrentRestaurant?.phoneNumber!!.replace(
+                    "\\s".toRegex(),
+                    ""
+                )
+            }"
+        )
         startActivity(intent)
     }
 
@@ -246,12 +288,14 @@ class RestaurantDetailFragment : Fragment() {
     }
 
     private fun isPermissionCallGranted() = ContextCompat.checkSelfPermission(
-        requireContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED
+        requireContext(), Manifest.permission.CALL_PHONE
+    ) == PackageManager.PERMISSION_GRANTED
 
     private fun updateWorkmateList() {
         val workmatesIsJoining = mutableListOf<Workmate>()
         for (workmate in mWorkmates) {
-            if (workmate.restaurantFavorite.equals(mCurrentRestaurant?.placeId)) {
+
+            if (workmate.restaurantFavorite.equals(mCurrentRestaurant?.placeId) && isSameDay(workmate.favoriteDate,Calendar.getInstance().time)) {
                 workmatesIsJoining.add(workmate)
             }
         }

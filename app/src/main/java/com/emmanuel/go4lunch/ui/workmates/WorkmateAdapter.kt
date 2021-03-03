@@ -10,7 +10,9 @@ import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.model.Restaurant
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.WorkmatesItemBinding
+import com.emmanuel.go4lunch.utils.isSameDay
 import com.squareup.picasso.Picasso
+import java.util.*
 
 class WorkmateAdapter :
     RecyclerView.Adapter<WorkmateAdapter.ViewHolder>() {
@@ -31,13 +33,17 @@ class WorkmateAdapter :
     inner class ViewHolder(val binding: WorkmatesItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(workmate: Workmate) {
-            var restaurantName: String? = null
+            var favoriteRestaurantName: String? = null
             for (restaurant in mRestaurants) {
-                if (workmate.restaurantFavorite.equals(restaurant.id))
-                    restaurantName = restaurant.name.toString()
+                if (workmate.restaurantFavorite.equals(restaurant.id) && isSameDay(
+                        workmate.favoriteDate,
+                        Calendar.getInstance().time
+                    )
+                )
+                    favoriteRestaurantName = restaurant.name.toString()
             }
 
-            if (restaurantName.isNullOrBlank()) {
+            if (favoriteRestaurantName.isNullOrBlank()) {
                 binding.workmateItemNameTextView.text = ""
                 binding.workmateItemNameTextView.hint = "${workmate.name} hasn't decided yet"
                 binding.workmateItemNameTextView.setTypeface(
@@ -48,7 +54,7 @@ class WorkmateAdapter :
                 binding.workmateItemNameTextView.text = binding.root.context.getString(
                     R.string.fragment_workmates_name,
                     workmate.name,
-                    restaurantName
+                    favoriteRestaurantName
                 )
                 binding.workmateItemNameTextView.hint = ""
                 binding.workmateItemNameTextView.setTypeface(
@@ -60,7 +66,11 @@ class WorkmateAdapter :
                 .load(workmate.avatarURL)
                 .resize(60, 60)
                 .into(binding.workmatesItemImageView)
-            workmate.restaurantFavorite?.let {
+            if (workmate.restaurantFavorite != null && isSameDay(
+                    workmate.favoriteDate,
+                    Calendar.getInstance().time
+                )
+            ) {
                 binding.containerWorkmatesItem.setOnClickListener {
                     val action =
                         WorkmatesFragmentDirections.actionWorkmatesFragmentToRestaurantDetail(
@@ -85,6 +95,7 @@ class WorkmateAdapter :
             mRestaurants.addAll(restaurantsList)
         }
         mWorkmates.sortBy { it.restaurantFavorite }
+        mWorkmates.sortBy { it.favoriteDate }
         mWorkmates.reverse()
         notifyDataSetChanged()
     }

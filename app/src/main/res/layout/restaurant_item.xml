@@ -103,12 +103,12 @@
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:numStars="5"
+            android:numStars="3"
             android:scaleX="-1"
             android:theme="@style/RatingBar"
             app:layout_constraintEnd_toStartOf="@+id/restaurant_item_image_card_view"
             app:layout_constraintTop_toBottomOf="@+id/restaurant_item_workmates_number_text_view"
-            tools:rating="4.5" />
+            tools:rating="3" />
 
         <View
             android:layout_width="match_parent"

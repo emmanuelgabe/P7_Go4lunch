@@ -2,7 +2,6 @@ package com.emmanuel.go4lunch
 
 
 import androidx.multidex.MultiDexApplication
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.libraries.places.api.Places
 
 class App : MultiDexApplication() {

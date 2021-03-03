@@ -39,9 +39,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         mAccountDialogPreference.setOnPreferenceClickListener {
             val builder = android.app.AlertDialog.Builder(requireContext())
             builder.apply {
-                setMessage("Are you sure you want to delete your account?\n All your data will be deleted.\n The removal will be irreversible")
-                setTitle("Delete Account")
-                setPositiveButton("Ok") { _, _ ->
+                setMessage(getString(R.string.setting_fragment_dialog_message_account_delete))
+                setTitle(getString(R.string.setting_fragment_dialog_title_account_delete))
+                setPositiveButton(getString(R.string.setting_fragment_dialog_button_validate)) { _, _ ->
                     mAuth = FirebaseAuth.getInstance()
                     val user = mAuth.currentUser
                     CoroutineScope(IO).launch {
@@ -63,7 +63,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                             requireActivity().finish()
                             Toast.makeText(
                                 requireContext(),
-                                "Your account has been deleted",
+                                getString(R.string.setting_fragment_message_account_delete),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

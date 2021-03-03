@@ -11,5 +11,4 @@ class MainViewModel(private val restaurantRepo: RestaurantRepository) : ViewMode
     fun getRestaurantId(){
     //   return restaurantRepo.getNearRestaurantId().body().
     }
-
 }

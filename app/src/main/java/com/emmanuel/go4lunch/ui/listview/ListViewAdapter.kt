@@ -13,6 +13,7 @@ import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.RestaurantItemBinding
 import com.emmanuel.go4lunch.utils.MAX_WITH_ICON
 import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
+import com.emmanuel.go4lunch.utils.isSameDay
 import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.math.roundToInt
@@ -41,7 +42,8 @@ class ListViewAdapter :
 
             binding.restaurant = restaurant
             if (restaurant.rating != null) {
-                binding.restaurantItemRatingBar.rating = restaurant.rating.toFloat()
+                val rating = restaurant.rating.toFloat()*3/5
+                binding.restaurantItemRatingBar.rating = rating.roundToInt().toFloat()
             } else {
                 binding.restaurantItemRatingBar.visibility = View.GONE
             }
@@ -90,7 +92,11 @@ class ListViewAdapter :
             }
             var workmateCount = 0
             for (workmate in mWorkmates) {
-                if (workmate.restaurantFavorite.equals(restaurant.placeId))
+                if (workmate.restaurantFavorite.equals(restaurant.placeId) && isSameDay(
+                        workmate.favoriteDate,
+                        Calendar.getInstance().time
+                    )
+                )
                     workmateCount++
             }
             binding.restaurantItemWorkmatesNumberTextView.text = binding.root.context.getString(

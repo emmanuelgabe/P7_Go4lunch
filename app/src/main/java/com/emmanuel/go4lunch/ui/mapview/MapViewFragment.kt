@@ -22,6 +22,7 @@ import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.data.repository.RestaurantRepository
 import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_FINE_LOCATION
+import com.emmanuel.go4lunch.utils.isSameDay
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -37,6 +38,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 
 class MapViewFragment : Fragment(), OnMapReadyCallback {
@@ -176,11 +178,17 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
     ) {
         withContext(Main) {
             for (i in 0 until restaurantNear.count()) {
-                var icon: BitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant)
+                var icon: BitmapDescriptor =
+                    BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant)
                 for (workmate in workmates) {
                     workmate.restaurantFavorite?.let {
-                        if (workmate.restaurantFavorite.equals(restaurantNear[i].placeId))
-                            icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant_favorite)
+                        if (workmate.restaurantFavorite.equals(restaurantNear[i].placeId) && isSameDay(
+                                workmate.favoriteDate,
+                                Calendar.getInstance().time
+                            )
+                        )
+                            icon =
+                                BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant_favorite)
                     }
                 }
                 mMap?.addMarker(
