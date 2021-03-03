@@ -3,8 +3,12 @@ package com.emmanuel.go4lunch
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -14,6 +18,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.emmanuel.go4lunch.databinding.ActivityMainBinding
 import com.emmanuel.go4lunch.databinding.ActivityMainDrawerHeaderBinding
+import com.emmanuel.go4lunch.ui.listview.ListViewFragmentDirections
 import com.facebook.login.LoginManager
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -76,8 +81,48 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(Intent(this, AuthenticationActivity::class.java))
                 finish()
             }
+            R.id.yourLunch -> {
+                fetchWorkmateFavorite()
+            }
+            R.id.settingsFragment -> {
+                val action =
+                    MainNavigationDirections.actionGlobalSettingsFragment()
+                findNavController(this@MainActivity, R.id.nav_host_fragment).navigate(
+                    action
+                )
+                binding.drawerLayout.close()
+            }
         }
         return true
+    }
+
+    private fun fetchWorkmateFavorite() {
+        CoroutineScope(IO).launch {
+            val workmateList = WorkmateRepository.getAllWorkmate()
+            var yourLunchId: String? = null
+            for (workmate in workmateList) {
+                if (workmate.uid.equals(mAuth.currentUser!!.uid))
+                    yourLunchId = workmate.restaurantFavorite
+            }
+            withContext(Main) {
+                if (!yourLunchId.isNullOrBlank()) {
+                    val action =
+                        MainNavigationDirections.actionGlobalRestaurantDetail(null, yourLunchId)
+                    findNavController(this@MainActivity, R.id.nav_host_fragment)
+                        .navigate(
+                            action
+                        )
+                    binding.drawerLayout.close()
+                } else {
+
+                    Toast.makeText(
+                        baseContext,
+                        "You have not yet chosen a restaurant.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
     }
 
     private fun updateUserProfile() {
@@ -85,7 +130,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val currentWorkmate = async {
                 WorkmateRepository.getUser(mAuth.currentUser!!.uid)
             }.await()
-            withContext(Main){
+            withContext(Main) {
                 headerBinding.drawerHeaderUsernameTextView.text =
                     currentWorkmate.name
                 headerBinding.drawerHeaderUserEmailTextView.text =

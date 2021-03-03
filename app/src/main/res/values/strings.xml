@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
-    <string name="app_name">Go4Lunch</string>
+    <string name="app_name" translatable="false">Go4Lunch</string>
     <!-- Main activity -->
     <string name="bottom_menu_map_view">map view</string>
     <string name="bottom_menu_list_view">list view</string>
@@ -12,8 +12,8 @@
     <string name="detail_restaurant_button_website">WEBSITE</string>
     <!-- FACEBOOK PURPOSE -->
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb420763051691337</string>
-    <string name="facebook_app_id">877083879784588</string>
-    <string name="fb_login_protocol_scheme">fb877083879784588</string>
+    <string name="facebook_app_id" translatable="false">877083879784588</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb877083879784588</string>
     <!-- Activity_authentication_ -->
     <string name="activity_authentication_text_view_subtitle">Find a nice restaurant and invite your co-workers for lunch!</string>
     <string name="activity_authentication_button_facebook">Sign in with Facebook</string>
@@ -30,14 +30,14 @@
     <string name="description_select_restaurant">select restaurant</string>
     <!-- fragment list view -->
     <string name="fragment_list_view_close_statut_restaurant">close</string>
-    <string name="fragment_list_view_message_download">Download restaurant and users information</string>
+    <string name="fragment_list_view_message_download">Downloading restaurants and users informations</string>
     <string name="fragment_list_view_message_no_permission">Permission to access your location is required to find restaurant swipe down to try again</string>
     <string name="fragment_list_view_message_search_position">Search for current position</string>
     <string name="fragment_list_view_message_no_restaurant_found">No restaurant found swipe down to try again</string>
-    <string name="fragment_list_view_distance">%1$sm</string>
-    <string name="fragment_list_view_workmate_number">(%1$s)</string>
+    <string name="fragment_list_view_distance" translatable="false">%1$sm</string>
+    <string name="fragment_list_view_workmate_number" translatable="false">(%1$s)</string>
     <!-- fragment detail restaurant -->
-    <string name="fragment_workmates_name">%1$s! (%2$s)</string>
+    <string name="fragment_workmates_name" translatable="false">%1$s! (%2$s)</string>
     <!-- fragment detail restaurant -->
     <string name="restaurant_detail_fragment_message_no_number_found">no phone found</string>
     <string name="restaurant_detail_fragment_message_no_web_site_found">no web site found</string>
@@ -46,5 +46,5 @@
     <string name="alert_dialog_permission_button_setting">Setting</string>
     <string name="alert_dialog_permission_button_cancel">Cancel</string>
     <string name="alert_dialog_permission_title">Permission required</string>
-    <string name="alert_dialog_permission_message">Permission to access your location is required to find restaurant in the vicinity. \nTo ensure the proper functioning of this functionality the location permission must be activated in the application settings</string>
+    <string name="alert_dialog_permission_message">Permission to access your location is required to find restaurants in the vicinity. \nTo ensure the proper functioning of this functionality the location permission must be activated in the application settings</string>
 </resources>

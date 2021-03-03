@@ -78,4 +78,8 @@ object WorkmateRepository {
     fun deleteRestaurant(id: String) {
         FirestoreService().deleteRestaurant(id)
     }
+
+    fun deleteWorkmate(id: String){
+        FirestoreService().deleteUser(id)
+    }
 }

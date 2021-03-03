@@ -198,7 +198,7 @@ class AuthenticationActivity : AppCompatActivity() {
         builder.setMessage(message)
         builder.setCancelable(false)
         builder.setTitle(resources.getString(R.string.alert_dialog_title))
-        builder.setNeutralButton(getString(R.string.alert_dialog_neutral_button)) { dialog, which ->
+        builder.setNeutralButton(getString(R.string.alert_dialog_neutral_button)) { dialog, _ ->
             dialog.dismiss()
         }
         val dialog: AlertDialog = builder.create()

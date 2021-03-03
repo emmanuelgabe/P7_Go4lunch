@@ -36,8 +36,7 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.emmanuel.go4lunch.ui.settings.SettingsFragment"
-        android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        android:label="fragment_settings" />
     <fragment
         android:id="@+id/restaurantDetail"
         android:name="com.emmanuel.go4lunch.ui.restaurantdetail.RestaurantDetailFragment"
@@ -51,4 +50,10 @@
             android:name="restaurantId"
             app:nullable="true"/>
     </fragment>
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/settingsFragment" />
+    <action
+        android:id="@+id/action_global_restaurantDetail"
+        app:destination="@id/restaurantDetail" />
 </navigation>

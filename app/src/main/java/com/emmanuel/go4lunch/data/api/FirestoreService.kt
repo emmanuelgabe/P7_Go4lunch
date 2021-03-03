@@ -29,6 +29,10 @@ class FirestoreService {
         usersCollectionRef.document(id).set(user)
     }
 
+    fun deleteUser(id: String){
+        usersCollectionRef.document(id).delete()
+    }
+
     fun getAllRestaurants(): Task<QuerySnapshot> {
         return restaurantsCollection.get()
     }

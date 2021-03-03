@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="drawer_menu_your_lunch">VOTRE DEJEUNER</string>
+    <string name="bottom_menu_workmates">collègues</string>
+    <string name="detail_restaurant_button_website">SITE INTERNET</string>
+    <string name="description_user_avatar">avatar de l\'utilisateur</string>
+    <string name="fragment_list_view_message_no_timetable">Horaire non disponible</string>
+    <string name="activity_authentication_button_google">Se connecter avec Google</string>
+    <string name="activity_authentication_button_facebook">Se connecter avec Facebook</string>
+    <string name="error_no_internet">L\'inscription a échoué en raison d\'un manque de connexion au réseau.</string>
+    <string name="drawer_menu_settings">PARAMÈTRES</string>
+    <string name="alert_dialog_permission_button_setting">Paramètre</string>
+    <string name="description_select_restaurant">sélectionner un restaurant</string>
+    <string name="fragment_list_view_message_search_position">Recherche de la position actuelle</string>
+    <string name="fragment_list_view_message_no_permission">L\'autorisation d\'accéder à votre emplacement est nécessaire pour trouver le restaurant. Balayer vers le bas pour essayer à nouveau.</string>
+    <string name="alert_dialog_permission_message">"L'autorisation d'accéder à votre emplacement est nécessaire pour trouver les restaurants à proximité. Pour garantir le bon fonctionnement de cette fonctionnalité, l'autorisation de localisation doit être activée dans les paramètres de l'application "</string>
+    <string name="alert_dialog_permission_title">Autorisation requise</string>
+    <string name="restaurant_detail_fragment_message_no_web_site_found">aucun site web trouvé</string>
+    <string name="fragment_list_view_message_no_restaurant_found">"Aucun restaurant trouvé, faites glisser vers le bas pour réessayer  "</string>
+    <string name="restaurant_detail_fragment_message_no_number_found">aucun téléphone trouvé</string>
+    <string name="bottom_menu_map_view">carte</string>
+    <string name="drawer_menu_logout">SE DÉCONNECTER</string>
+    <string name="bottom_menu_list_view">Restaurants</string>
+    <string name="detail_restaurant_button_like">AIMER</string>
+    <string name="description_gps_location_button">bouton de localisation GPS</string>
+    <string name="activity_authentication_text_view_subtitle">Trouvez un bon restaurant et invitez vos collègues à déjeuner!</string>
+    <string name="authentication_activity_error_no_internet">Échec en raison d\'un manque de connexion réseau</string>
+    <string name="fragment_list_view_message_download">Téléchargement des informations sur les restaurants et les utilisateurs</string>
+    <string name="fragment_list_view_close_statut_restaurant">"Fermer  "</string>
+    <string name="alert_dialog_neutral_button">Annuler</string>
+    <string name="alert_dialog_permission_button_cancel">Annuler</string>
+    <string name="detail_restaurant_button_call">APPELER</string>
+    <string name="error_authentication_failed">Échec de l\'authentification</string>
+    <string name="alert_dialog_title">Attention</string>
+    <string name="authentication_activity_error_unknown">Une erreur est survenue</string>
+</resources>

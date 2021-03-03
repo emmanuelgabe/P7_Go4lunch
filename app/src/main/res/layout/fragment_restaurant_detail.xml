@@ -11,7 +11,7 @@
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/activity_detail_neighbour"
+        android:id="@+id/activity_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -22,7 +22,7 @@
             android:fitsSystemWindows="true">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/activity_detail_neighbour_collapsingToolbar"
+                android:id="@+id/activity_detail_collapsingToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/background_light"
