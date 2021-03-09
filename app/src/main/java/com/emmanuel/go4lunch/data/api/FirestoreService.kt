@@ -5,13 +5,11 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 
-class FirestoreService {
-
-    private val firestoreDB = FirebaseFirestore.getInstance()
+class FirestoreService(firestore: FirebaseFirestore) {
 
     // --- COLLECTION REFERENCE ---
-    private val usersCollectionRef = firestoreDB.collection(COLLECTION_USERS)
-    private val restaurantsCollection = firestoreDB.collection(COLLECTION_RESTAURANTS)
+    private val usersCollectionRef = firestore.collection(COLLECTION_USERS)
+    private val restaurantsCollection = firestore.collection(COLLECTION_RESTAURANTS)
 
     fun getAllUser(): Task<QuerySnapshot> {
         return usersCollectionRef.get()

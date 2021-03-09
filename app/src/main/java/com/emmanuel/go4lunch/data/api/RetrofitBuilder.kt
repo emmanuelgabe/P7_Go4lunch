@@ -3,9 +3,7 @@ package com.emmanuel.go4lunch.data.api
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitBuilder {
-
-     private const val GOOGLE_MAP_BASE_URL = "https://maps.googleapis.com"
+class RetrofitBuilder {
 
     private val retrofitBuilder: Retrofit.Builder by lazy {
         Retrofit.Builder()
@@ -17,5 +15,9 @@ object RetrofitBuilder {
         retrofitBuilder
             .build()
             .create(GoogleMapsService::class.java)
+    }
+
+    companion object {
+        private const val GOOGLE_MAP_BASE_URL = "https://maps.googleapis.com"
     }
 }

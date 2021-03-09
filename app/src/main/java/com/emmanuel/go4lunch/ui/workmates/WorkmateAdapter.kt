@@ -86,10 +86,13 @@ class WorkmateAdapter :
     }
 
     fun updateWorkmateList(
-        workmateList: List<Workmate>, restaurantsList: List<Restaurant>?
+        workmateList: List<Workmate>?, restaurantsList: List<Restaurant>?
     ) {
-        mWorkmates.clear()
-        mWorkmates.addAll(workmateList)
+
+        workmateList?.let {
+            mWorkmates.clear()
+            mWorkmates.addAll(it)
+        }
         if (restaurantsList?.size!! > 0) {
             mRestaurants.clear()
             mRestaurants.addAll(restaurantsList)

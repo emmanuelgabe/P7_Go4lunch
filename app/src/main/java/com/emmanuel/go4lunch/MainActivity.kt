@@ -3,11 +3,10 @@ package com.emmanuel.go4lunch
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -15,20 +14,13 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.emmanuel.go4lunch.databinding.ActivityMainBinding
 import com.emmanuel.go4lunch.databinding.ActivityMainDrawerHeaderBinding
-import com.emmanuel.go4lunch.ui.listview.ListViewFragmentDirections
+import com.emmanuel.go4lunch.di.Injection
 import com.facebook.login.LoginManager
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -38,10 +30,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var mAuth: FirebaseAuth
     private lateinit var headerBinding: ActivityMainDrawerHeaderBinding
+    private var factory = Injection.provideViewModelFactory()
+
+    private val mainViewModel: MainViewModel by lazy {
+        ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         headerBinding =
             ActivityMainDrawerHeaderBinding.bind(binding.drawerNavView.getHeaderView(0))
@@ -65,7 +61,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.drawerNavView.setNavigationItemSelectedListener(this)
-        updateUserProfile()
+
+        mainViewModel.workmatesLiveData.observe(this, { currentUser ->
+            headerBinding.drawerHeaderUsernameTextView.text =
+                currentUser!!.name
+            headerBinding.drawerHeaderUserEmailTextView.text =
+                currentUser.email
+            Picasso.get()
+                .load(currentUser.avatarURL)
+                .resize(60, 60)
+                .into(headerBinding.drawerHeaderUserImage)
+        })
+        mainViewModel.getUser(mAuth.currentUser!!.uid)
     }
 
 
@@ -82,32 +89,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 finish()
             }
             R.id.yourLunch -> {
-                fetchWorkmateFavorite()
-            }
-            R.id.settingsFragment -> {
-                val action =
-                    MainNavigationDirections.actionGlobalSettingsFragment()
-                findNavController(this@MainActivity, R.id.nav_host_fragment).navigate(
-                    action
-                )
-                binding.drawerLayout.close()
-            }
-        }
-        return true
-    }
-
-    private fun fetchWorkmateFavorite() {
-        CoroutineScope(IO).launch {
-            val workmateList = WorkmateRepository.getAllWorkmate()
-            var yourLunchId: String? = null
-            for (workmate in workmateList) {
-                if (workmate.uid.equals(mAuth.currentUser!!.uid))
-                    yourLunchId = workmate.restaurantFavorite
-            }
-            withContext(Main) {
-                if (!yourLunchId.isNullOrBlank()) {
+                if (!mainViewModel.workmatesLiveData.value?.restaurantFavorite.isNullOrBlank()) {
                     val action =
-                        MainNavigationDirections.actionGlobalRestaurantDetail(null, yourLunchId)
+                        MainNavigationDirections.actionGlobalRestaurantDetail(null, mainViewModel.workmatesLiveData.value!!.restaurantFavorite)
                     findNavController(this@MainActivity, R.id.nav_host_fragment)
                         .navigate(
                             action
@@ -122,28 +106,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     ).show()
                 }
             }
-        }
-    }
-
-    private fun updateUserProfile() {
-        CoroutineScope(IO).launch {
-            val currentWorkmate = async {
-                WorkmateRepository.getUser(mAuth.currentUser!!.uid)
-            }.await()
-            withContext(Main) {
-                headerBinding.drawerHeaderUsernameTextView.text =
-                    currentWorkmate.name
-                headerBinding.drawerHeaderUserEmailTextView.text =
-                    currentWorkmate.email
-                Picasso.get()
-                    .load(currentWorkmate.avatarURL)
-                    .resize(60, 60)
-                    .into(headerBinding.drawerHeaderUserImage)
+            R.id.settingsFragment -> {
+                val action =
+                    MainNavigationDirections.actionGlobalSettingsFragment()
+                findNavController(this@MainActivity, R.id.nav_host_fragment).navigate(
+                    action
+                )
+                binding.drawerLayout.close()
             }
         }
-    }
-
-    companion object {
-        private const val TAG = "MainActivity"
+        return true
     }
 }

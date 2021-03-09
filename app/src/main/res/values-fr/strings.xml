@@ -14,7 +14,7 @@
     <string name="description_select_restaurant">sélectionner un restaurant</string>
     <string name="fragment_list_view_message_search_position">Recherche de la position actuelle</string>
     <string name="fragment_list_view_message_no_permission">L\'autorisation d\'accéder à votre emplacement est nécessaire pour trouver le restaurant. Balayer vers le bas pour essayer à nouveau.</string>
-    <string name="alert_dialog_permission_message">"L'autorisation d'accéder à votre emplacement est nécessaire pour trouver les restaurants à proximité. Pour garantir le bon fonctionnement de cette fonctionnalité, l'autorisation de localisation doit être activée dans les paramètres de l'application "</string>
+    <string name="alert_dialog_permission_location_message">"L'autorisation d'accéder à votre emplacement est nécessaire pour trouver les restaurants à proximité. Pour garantir le bon fonctionnement de cette fonctionnalité, l'autorisation de localisation doit être activée dans les paramètres de l'application "</string>
     <string name="alert_dialog_permission_title">Autorisation requise</string>
     <string name="restaurant_detail_fragment_message_no_web_site_found">aucun site web trouvé</string>
     <string name="fragment_list_view_message_no_restaurant_found">"Aucun restaurant trouvé, faites glisser vers le bas pour réessayer  "</string>
@@ -38,4 +38,7 @@
     <string name="setting_fragment_dialog_message_account_delete">Êtes-vous sur de vouloir supprimer votre compte ?\nToutes vos données seront supprimé\nLa suppression sera irréversible.</string>
     <string name="setting_fragment_dialog_title_account_delete">Suppression du compte</string>
     <string name="setting_fragment_dialog_button_validate">Valiser</string>
+    <string name="fragment_list_view_message_search_workmates">Téléchargement des informations utilisateurs</string>
+    <string name="fragment_list_view_message_download_restaurant">Téléchargement des informations des restaurants</string>
+    <string name="alert_dialog_permission_call_phone_message">L\'autorisation de passer des apelles téléphonique est nécessaire. \nPour garantir le bon fonctionnement de cette fonctionnalité, l\'autorisation de passer des apelles doit être activée dans les paramètres de l\'application</string>
 </resources>

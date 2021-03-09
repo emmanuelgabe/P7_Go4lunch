@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ExtraTranslation">
-    <string name="app_name" translatable="false">Go4Lunch</string>
+    <string name="app_name">Go4Lunch</string>
     <!-- Main activity -->
     <string name="bottom_menu_map_view">map view</string>
     <string name="bottom_menu_list_view">list view</string>
@@ -46,11 +46,14 @@
     <string name="alert_dialog_permission_button_setting">Setting</string>
     <string name="alert_dialog_permission_button_cancel">Cancel</string>
     <string name="alert_dialog_permission_title">Permission required</string>
-    <string name="alert_dialog_permission_message">Permission to access your location is required to find restaurants in the vicinity. \nTo ensure the proper functioning of this functionality the location permission must be activated in the application settings</string>
+    <string name="alert_dialog_permission_location_message">Permission to access your location is required to find restaurants in the vicinity. \nTo ensure the proper functioning of this functionality the location permission must be activated in the application settings</string>
+    <string name="alert_dialog_permission_call_phone_message">Permission call phone is required. \nTo ensure the proper functioning of this functionality the call phone must be activated in the application settings</string>
 
     <string name="setting_fragment_message_account_delete">Your account has been deleted</string>
     <string name="setting_fragment_dialog_message_account_delete">Are you sure you want to delete your account?\nAll your data will be deleted\nThe removal will be irreversible</string>
     <string name="setting_fragment_dialog_title_account_delete">Delete Account</string>
     <string name="setting_fragment_dialog_button_validate">OK</string>
+    <string name="fragment_list_view_message_download_restaurant">Downloading restaurants informations</string>
+    <string name="fragment_list_view_message_search_workmates">Downloading users informations</string>
 
 </resources>

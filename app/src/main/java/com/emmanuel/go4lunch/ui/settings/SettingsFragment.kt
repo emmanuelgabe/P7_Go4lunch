@@ -10,7 +10,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.emmanuel.go4lunch.AuthenticationActivity
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.data.repository.WorkmateRepository
+import com.emmanuel.go4lunch.di.Injection
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
@@ -46,7 +46,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     val user = mAuth.currentUser
                     CoroutineScope(IO).launch {
                         launch {
-                            WorkmateRepository.deleteWorkmate(user!!.uid)
+                            val workmateRepository = Injection.provideWorkmateDataSource()
+                            workmateRepository.deleteWorkmate(user!!.uid)
                         }.join()
                         launch {
                             user!!.delete()

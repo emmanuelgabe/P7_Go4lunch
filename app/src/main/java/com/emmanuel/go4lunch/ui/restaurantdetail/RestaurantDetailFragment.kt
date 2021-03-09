@@ -7,69 +7,88 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
-import com.emmanuel.go4lunch.data.model.Restaurant
 import com.emmanuel.go4lunch.data.model.Workmate
-import com.emmanuel.go4lunch.data.repository.RestaurantRepository
-import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.emmanuel.go4lunch.databinding.FragmentRestaurantDetailBinding
+import com.emmanuel.go4lunch.di.Injection
 import com.emmanuel.go4lunch.utils.MAX_WITH_IMAGE
 import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_CALL_PHONE
 import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
 import com.emmanuel.go4lunch.utils.isSameDay
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.math.roundToInt
-import kotlin.system.measureTimeMillis
 
 class RestaurantDetailFragment : Fragment() {
     private lateinit var binding: FragmentRestaurantDetailBinding
-    private  var mCurrentRestaurant: NearByRestaurant? = null
-    private lateinit var mCurrentUser:Workmate
-    private lateinit var mWorkmates: List<Workmate>
+    private lateinit var mCurrentUser: Workmate
+    private var mRestaurantDetail: NearByRestaurant? = null
+    private var mWorkmates: List<Workmate>? = null
     private lateinit var mAdapter: RestaurantDetailAdapter
+    private var factory = Injection.provideViewModelFactory()
+    private lateinit var restaurantDetailViewModel: RestaurantDetailViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        restaurantDetailViewModel =
+            ViewModelProvider(this, factory).get(RestaurantDetailViewModel::class.java)
         val view = inflater.inflate(R.layout.fragment_restaurant_detail, container, false)
-        mCurrentRestaurant = (arguments?.getSerializable("restaurantDetail") as? NearByRestaurant)
+
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         binding = FragmentRestaurantDetailBinding.bind(view)
-        fetchWorkmates()
+        mAdapter = RestaurantDetailAdapter()
+        restaurantDetailViewModel.init(
+            arguments?.getString("restaurantId"),
+            (arguments?.getSerializable("restaurantDetail") as? NearByRestaurant)
+        )
+        restaurantDetailViewModel.workmatesLiveData.observe(
+            viewLifecycleOwner,
+            { workmates ->
+                mWorkmates = workmates
+                for (workmate in workmates) {
+                    if (workmate.uid == FirebaseAuth.getInstance().uid) {
+                        mCurrentUser = workmate
+                    }
+                }
+                updateUi()
+            })
+
+        restaurantDetailViewModel.currentRestaurantsDetailLiveData.observe(
+            viewLifecycleOwner,
+            { restaurant ->
+                mRestaurantDetail = restaurant
+                updateUi()
+                initUi(restaurant)
+            })
         return view
     }
 
-    private fun initUi() {
+    private fun initUi(mCurrentRestaurant: NearByRestaurant) {
         binding.restaurant = mCurrentRestaurant
-        if (mCurrentRestaurant?.rating != null) {
-            val rating = mCurrentRestaurant?.rating!!.toFloat()*3/5
+        if (mCurrentRestaurant.rating != null) {
+            val rating = mCurrentRestaurant.rating.toFloat() * 3 / 5
             binding.fragmentRestaurantDetailRatingBar.rating = rating.roundToInt().toFloat()
         } else {
             binding.fragmentRestaurantDetailRatingBar.visibility = View.GONE
         }
-        if (mCurrentRestaurant?.photos?.get(0)?.photoReference != null) {
+        if (mCurrentRestaurant.photos?.get(0)?.photoReference != null) {
             Picasso.get()
                 .load(
                     getPhotoUrlFromReference(
-                        mCurrentRestaurant!!.photos?.get(0)?.photoReference,
+                        mCurrentRestaurant.photos[0].photoReference,
                         MAX_WITH_IMAGE
                     )
                 )
@@ -79,13 +98,13 @@ class RestaurantDetailFragment : Fragment() {
             binding.activityDetailRestaurantImage.setImageResource(R.drawable.ic_no_photography_24)
         }
         binding.fragmentDetailButtonCall.setOnClickListener {
-            if (mCurrentRestaurant?.phoneNumber != null) {
-                if (mCurrentRestaurant?.phoneNumber!!.isNotBlank()) {
+            if (mCurrentRestaurant.phoneNumber != null) {
+                if (mCurrentRestaurant.phoneNumber.isNotBlank()) {
                     if (isPermissionCallGranted()) {
                         callRestaurant()
                     } else {
-                        ActivityCompat.requestPermissions(
-                            requireActivity(), arrayOf(Manifest.permission.CALL_PHONE),
+                        requestPermissions(
+                            arrayOf(Manifest.permission.CALL_PHONE),
                             REQUEST_PERMISSIONS_CODE_CALL_PHONE
                         )
                     }
@@ -98,15 +117,15 @@ class RestaurantDetailFragment : Fragment() {
                 ).show()
             }
         }
-        mAdapter = RestaurantDetailAdapter()
         binding.fragmentRestaurantDetailRecyclerView.layoutManager = LinearLayoutManager(activity)
         binding.fragmentRestaurantDetailRecyclerView.adapter = mAdapter
 
         binding.detailFragmentButtonWebsite.setOnClickListener {
-            if (!mCurrentRestaurant?.website.isNullOrBlank()) {
-                val intent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(mCurrentRestaurant?.website))
+            if (!mCurrentRestaurant.website.isNullOrBlank()) {
+                val intent =
+                    Intent(Intent.ACTION_VIEW).setData(Uri.parse(mCurrentRestaurant.website))
                 startActivity(intent)
-            }else{
+            } else {
                 Toast.makeText(
                     binding.root.context,
                     getString(R.string.restaurant_detail_fragment_message_no_web_site_found),
@@ -115,71 +134,21 @@ class RestaurantDetailFragment : Fragment() {
             }
         }
         binding.fragmentDetailButtonLike.setOnClickListener {
-            updateLikeRestaurant()
+            restaurantDetailViewModel.updateLikeRestaurant()
         }
         binding.fragmentDetailRestaurantFab.setOnClickListener {
-            updateFavoriteRestaurant()
-        }
-    }
-
-    private fun updateLikeRestaurant() {
-        CoroutineScope(IO).launch {
-            launch {
-                val newLikeList = mutableListOf<String>()
-                mCurrentUser.restaurantsIdLike?.let {
-                    newLikeList.addAll(mCurrentUser.restaurantsIdLike!!)
-                    if (mCurrentUser.restaurantsIdLike!!.contains(mCurrentRestaurant?.placeId))
-                    {
-                        newLikeList.remove(mCurrentRestaurant?.placeId.toString())
-                    }else{
-                        newLikeList.add(mCurrentRestaurant?.placeId.toString())
-                    }
-                }
-                val updatedWorkmate = mCurrentUser
-                updatedWorkmate.restaurantsIdLike = newLikeList
-                WorkmateRepository.updateWorkmate(updatedWorkmate)
-            }.join()
-            fetchWorkmates()
-        }
-    }
-
-    private fun fetchWorkmates() {
-        CoroutineScope(IO).launch {
-            val executionTime = measureTimeMillis {
-                // if detail fragment is open from workmate fragment or mal fragment the detail restaurant is not fetch
-                if (mCurrentRestaurant == null) {
-                    mCurrentRestaurant =
-                        RestaurantRepository.getDetailRestaurant(arguments?.getString("restaurantId")!!)
-                }
-                mWorkmates = WorkmateRepository.getAllWorkmate()
-                launch {
-                    val mAuth = FirebaseAuth.getInstance()
-                    for (workmate in mWorkmates){
-                        if (workmate.uid == mAuth.uid){
-                            mCurrentUser = workmate
-                        }
-                    }
-                }.join()
-                withContext(Main) {
-                    initUi()
-                    updateUi()
-                }
-            }
-            Log.d(TAG, "fetchNearWorkmates and update ui in : ${executionTime}ms")
+            restaurantDetailViewModel.updateFavoriteRestaurant()
+            // updateFavoriteRestaurant()
         }
     }
 
     private fun updateUi() {
-       // update like button
-        binding.fragmentDetailButtonLike.setCompoundDrawablesWithIntrinsicBounds(
-            null,
-            ContextCompat.getDrawable(
-                requireActivity(),
-                R.drawable.ic_baseline_thumb_up_off_alt_24
-            ), null, null
-        )
-        if (mCurrentUser.restaurantsIdLike != null) {
-            if (mCurrentUser.restaurantsIdLike!!.contains(mCurrentRestaurant?.placeId))
+        if (mRestaurantDetail != null && mWorkmates != null) {
+            // update like button
+            if (!mCurrentUser.restaurantsIdLike.isNullOrEmpty() && mCurrentUser.restaurantsIdLike!!.contains(
+                    mRestaurantDetail!!.placeId
+                )
+            )
                 binding.fragmentDetailButtonLike.setCompoundDrawablesWithIntrinsicBounds(
                     null, ContextCompat.getDrawable(
                         requireActivity(),
@@ -193,63 +162,27 @@ class RestaurantDetailFragment : Fragment() {
                         R.drawable.ic_baseline_thumb_up_off_alt_24
                     ), null, null
                 )
+            // update favorite button
+            if (mCurrentUser.restaurantFavorite.equals(
+                    mRestaurantDetail!!.placeId
+                ) && isSameDay(
+                    mCurrentUser.favoriteDate,
+                    Calendar.getInstance().time
+                )
+            ) {
+                binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_check_favorite_restaurant)
+            } else {
+                binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_uncheck_favorite_restaurant)
+            }
+            updateWorkmateList()
         }
-        // update favorite button
-        if (mCurrentUser.restaurantFavorite.equals(mCurrentRestaurant?.placeId) && isSameDay(mCurrentUser.favoriteDate,Calendar.getInstance().time)) {
-            binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_check_favorite_restaurant)
-        } else {
-            binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_uncheck_favorite_restaurant)
-        }
-        updateWorkmateList()
-    }
-
-    private fun updateFavoriteRestaurant() {
-        CoroutineScope(IO).launch {
-            launch {
-                val idRestaurantToDeleteIfNeverUse = mCurrentUser.restaurantFavorite.toString()
-                val updatedWorkmate = mCurrentUser
-                if (mCurrentUser.restaurantFavorite.equals(mCurrentRestaurant?.placeId)) {
-                    updatedWorkmate.restaurantFavorite = null
-                    updatedWorkmate.favoriteDate = null
-                } else {
-                    launch {
-                        WorkmateRepository.addRestaurant(
-                            Restaurant(
-                                mCurrentRestaurant?.placeId!!,
-                                mCurrentRestaurant?.name
-                            )
-                        )
-                    }.join()
-                    updatedWorkmate.restaurantFavorite = mCurrentRestaurant?.placeId
-                    updatedWorkmate.favoriteDate = Calendar.getInstance().time
-                }
-                launch {
-                    WorkmateRepository.updateWorkmate(updatedWorkmate)
-                }.join()
-                launch {
-                    if (restaurantIsNeverUse(idRestaurantToDeleteIfNeverUse)) {
-                        WorkmateRepository.deleteRestaurant(idRestaurantToDeleteIfNeverUse)
-                    }
-                }.join()
-            }.join()
-            fetchWorkmates()
-        }
-    }
-
-    private fun restaurantIsNeverUse(IdRestaurantToDeleteIfNeverUse: String): Boolean {
-        var isNeverUse = true
-        for (workmate in mWorkmates){
-            if (workmate.restaurantFavorite.equals(IdRestaurantToDeleteIfNeverUse))
-                isNeverUse = false
-        }
-        return isNeverUse
     }
 
     private fun callRestaurant() {
         val intent = Intent(Intent.ACTION_CALL)
         intent.data = Uri.parse(
             "tel:${
-                mCurrentRestaurant?.phoneNumber!!.replace(
+                restaurantDetailViewModel.currentRestaurantsDetailLiveData.value?.phoneNumber!!.replace(
                     "\\s".toRegex(),
                     ""
                 )
@@ -271,7 +204,7 @@ class RestaurantDetailFragment : Fragment() {
     private fun showPermissionDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.apply {
-            setMessage(getString(R.string.alert_dialog_permission_message))
+            setMessage(getString(R.string.alert_dialog_permission_call_phone_message))
             setTitle(getString(R.string.alert_dialog_permission_title))
             setPositiveButton(getString(R.string.alert_dialog_permission_button_setting)) { _, _ ->
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -279,7 +212,7 @@ class RestaurantDetailFragment : Fragment() {
                 intent.data = uri
                 startActivity(intent)
             }
-            setNegativeButton(getString(R.string.alert_dialog_permission_button_cancel)){ dialog, _ ->
+            setNegativeButton(getString(R.string.alert_dialog_permission_button_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
         }
@@ -293,16 +226,17 @@ class RestaurantDetailFragment : Fragment() {
 
     private fun updateWorkmateList() {
         val workmatesIsJoining = mutableListOf<Workmate>()
-        for (workmate in mWorkmates) {
-
-            if (workmate.restaurantFavorite.equals(mCurrentRestaurant?.placeId) && isSameDay(workmate.favoriteDate,Calendar.getInstance().time)) {
+        for (workmate in mWorkmates!!) {
+            if (mCurrentUser.restaurantFavorite.equals(
+                    mRestaurantDetail!!.placeId
+                ) && isSameDay(
+                    workmate.favoriteDate,
+                    Calendar.getInstance().time
+                )
+            ) {
                 workmatesIsJoining.add(workmate)
             }
         }
         mAdapter.updateWorkmateList(workmatesIsJoining.toList())
-    }
-
-    companion object {
-        const val TAG = "RestaurantDetailFrag"
     }
 }

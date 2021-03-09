@@ -6,14 +6,14 @@ import com.emmanuel.go4lunch.data.api.RetrofitBuilder
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.utils.RADIUS
 
-object RestaurantRepository {
+class RestaurantRepository(private val retrofitBuilder: RetrofitBuilder) {
 
     suspend fun getAllNearRestaurant(
         lastKnownLocation: Location?,
         radius: Int = RADIUS
     ): List<NearByRestaurant>? {
         val response =
-            RetrofitBuilder.googleMapsService.getNearRestaurant(
+            retrofitBuilder.googleMapsService.getNearRestaurant(
                 "${lastKnownLocation?.latitude},${lastKnownLocation?.longitude}", radius,
                 "restaurant",
                 BuildConfig.GOOGLE_MAP_API_KEY
@@ -27,7 +27,7 @@ object RestaurantRepository {
             "vicinity", "formatted_phone_number", "price_level", "geometry",
             "photo", "opening_hours", "formatted_phone_number", "website"
         )
-        val response = RetrofitBuilder.googleMapsService.getDetails(
+        val response = retrofitBuilder.googleMapsService.getDetails(
             restaurantsId,
             fields.joinToString(separator = ","),
             BuildConfig.GOOGLE_MAP_API_KEY

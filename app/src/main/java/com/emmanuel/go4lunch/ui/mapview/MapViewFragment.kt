@@ -15,12 +15,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.model.Workmate
-import com.emmanuel.go4lunch.data.repository.RestaurantRepository
-import com.emmanuel.go4lunch.data.repository.WorkmateRepository
+import com.emmanuel.go4lunch.di.Injection
 import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_FINE_LOCATION
 import com.emmanuel.go4lunch.utils.isSameDay
 import com.google.android.gms.location.*
@@ -33,11 +33,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.*
 
 
@@ -49,13 +44,17 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private val restaurants = mutableListOf<NearByRestaurant>()
+    private lateinit var mRestaurantsDetails: List<NearByRestaurant>
+    private lateinit var mWorkmates: List<Workmate>
+    private val factory = Injection.provideViewModelFactory()
+    private lateinit var mapViewViewModel: MapViewViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         val rootView: View = inflater.inflate(R.layout.fragment_map_view, container, false)
+        mapViewViewModel = ViewModelProvider(this, factory).get(MapViewViewModel::class.java)
         supportFragmentManager =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         locationFab = rootView.findViewById(R.id.fragment_map_view_gps_fab)
@@ -64,6 +63,15 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         }
         supportFragmentManager.getMapAsync(this)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        mapViewViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
+            mWorkmates = workmates
+            addMarker()
+        })
+        mapViewViewModel.restaurantsDetailLiveData.observe(viewLifecycleOwner, { restaurants ->
+           mRestaurantsDetails = restaurants
+            addMarker()
+        })
+        mapViewViewModel.getAllWorkmate()
         return rootView
     }
 
@@ -72,7 +80,8 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
             mMap = p0
             mMap!!.setOnMarkerClickListener { marker ->
                 val action = MapViewFragmentDirections.actionMapViewFragmentToRestaurantDetail(
-                    null, restaurants[marker.title.toInt()].placeId)
+                    null, mRestaurantsDetails[marker.title.toInt()].placeId
+                )
                 findNavController().navigate(action)
                 true
             }
@@ -101,7 +110,8 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
 
     /**
      * Register for location updates from [mFusedLocationClient], through callback on the main looper.
-     * Once the location is available the device will be able to launch the requests with [fetchNearRestaurantLocation]
+     * Once the location is available the device will be able to launch the query for get restaurant
+     * detail near the current place through [mapViewViewModel]
      */
     private fun registerLocationUpdate() {
         if (isPermissionLocationGranted()) {
@@ -122,7 +132,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                                     ), DEFAULT_ZOOM
                                 )
                             )
-                            fetchNearRestaurantLocation()
+                            mapViewViewModel.getAllNearRestaurant(lastKnownLocation)
                             mFusedLocationClient.removeLocationUpdates(locationCallback)
                         }
                     }
@@ -150,39 +160,22 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         if (requestCode == REQUEST_PERMISSIONS_CODE_FINE_LOCATION) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 showPermissionDialog()
-            }else if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-               registerLocationUpdate()
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                registerLocationUpdate()
             }
         }
         updateLocationUI()
     }
 
-    private fun fetchNearRestaurantLocation() {
-        lastKnownLocation?.let {
-            CoroutineScope(IO).launch {
-                launch {
-                    RestaurantRepository.getAllNearRestaurant(lastKnownLocation)?.let {
-                        restaurants.clear()
-                        restaurants.addAll(it)
-                    }
-                }.join()
-                val workmates = WorkmateRepository.getAllWorkmate()
-                addMarker(restaurants, workmates)
-            }
-        }
-    }
+    private fun addMarker() {
+        if (this::mRestaurantsDetails.isInitialized  && this::mWorkmates.isInitialized) {
 
-    private suspend fun addMarker(
-        restaurantNear: List<NearByRestaurant>,
-        workmates: List<Workmate>
-    ) {
-        withContext(Main) {
-            for (i in 0 until restaurantNear.count()) {
+            for (i in 0 until mRestaurantsDetails.count()) {
                 var icon: BitmapDescriptor =
                     BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant)
-                for (workmate in workmates) {
+                for (workmate in mWorkmates) {
                     workmate.restaurantFavorite?.let {
-                        if (workmate.restaurantFavorite.equals(restaurantNear[i].placeId) && isSameDay(
+                        if (workmate.restaurantFavorite.equals(mRestaurantsDetails[i].placeId) && isSameDay(
                                 workmate.favoriteDate,
                                 Calendar.getInstance().time
                             )
@@ -195,8 +188,8 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                     MarkerOptions()
                         .position(
                             LatLng(
-                                restaurantNear[i].geometry.location.lat,
-                                restaurantNear[i].geometry.location.lng
+                                mRestaurantsDetails[i].geometry.location.lat,
+                                mRestaurantsDetails[i].geometry.location.lng
                             )
                         )
                         .title("$i")
@@ -204,12 +197,14 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                         .flat(true)
                 )
             }
+
         }
     }
+
     private fun showPermissionDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.apply {
-            setMessage(getString(R.string.alert_dialog_permission_message))
+            setMessage(getString(R.string.alert_dialog_permission_location_message))
             setTitle(getString(R.string.alert_dialog_permission_title))
             setPositiveButton(getString(R.string.alert_dialog_permission_button_setting)) { _, _ ->
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -217,13 +212,14 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                 intent.data = uri
                 startActivity(intent)
             }
-            setNegativeButton(getString(R.string.alert_dialog_permission_button_cancel)){ dialog, _ ->
+            setNegativeButton(getString(R.string.alert_dialog_permission_button_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
         }
         val dialog = builder.create()
         dialog.show()
     }
+
     private fun isPermissionLocationGranted() = ContextCompat.checkSelfPermission(
         requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
     ) == PackageManager.PERMISSION_GRANTED

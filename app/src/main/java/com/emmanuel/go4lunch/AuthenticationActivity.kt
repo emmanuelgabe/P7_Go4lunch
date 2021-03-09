@@ -7,8 +7,8 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.emmanuel.go4lunch.data.model.Workmate
-import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.emmanuel.go4lunch.databinding.ActivityAuthenticationBinding
+import com.emmanuel.go4lunch.di.Injection
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -183,7 +183,8 @@ class AuthenticationActivity : AppCompatActivity() {
             workmate.email = "${mAuth.currentUser?.displayName}@Facebook.com".replace("\\s+", "")
         }
         CoroutineScope(IO).launch {
-            WorkmateRepository.createWorkmate(workmate)
+            val workmateRepository = Injection.provideWorkmateDataSource()
+            workmateRepository.createWorkmate(workmate)
         }
     }
 
