@@ -30,13 +30,14 @@
     <string name="description_select_restaurant">select restaurant</string>
     <!-- fragment list view -->
     <string name="fragment_list_view_close_statut_restaurant">close</string>
-    <string name="fragment_list_view_message_download">Downloading restaurants and users informations</string>
+    <string name="fragment_list_view_message_download">Downloading restaurants and users information</string>
     <string name="fragment_list_view_message_no_permission">Permission to access your location is required to find restaurant swipe down to try again</string>
     <string name="fragment_list_view_message_search_position">Search for current position</string>
     <string name="fragment_list_view_message_no_restaurant_found">No restaurant found swipe down to try again</string>
     <string name="fragment_list_view_distance" translatable="false">%1$sm</string>
     <string name="fragment_list_view_workmate_number" translatable="false">(%1$s)</string>
-    <!-- fragment detail restaurant -->
+    <string name="fragment_list_view_message_download_restaurant">Downloading restaurants information</string>
+    <string name="fragment_list_view_message_search_workmates">Downloading users information</string>
     <string name="fragment_workmates_name" translatable="false">%1$s (%2$s)</string>
     <!-- fragment detail restaurant -->
     <string name="restaurant_detail_fragment_message_no_number_found">no phone found</string>
@@ -48,12 +49,16 @@
     <string name="alert_dialog_permission_title">Permission required</string>
     <string name="alert_dialog_permission_location_message">Permission to access your location is required to find restaurants in the vicinity. \nTo ensure the proper functioning of this functionality the location permission must be activated in the application settings</string>
     <string name="alert_dialog_permission_call_phone_message">Permission call phone is required. \nTo ensure the proper functioning of this functionality the call phone must be activated in the application settings</string>
-
     <string name="setting_fragment_message_account_delete">Your account has been deleted</string>
     <string name="setting_fragment_dialog_message_account_delete">Are you sure you want to delete your account?\nAll your data will be deleted\nThe removal will be irreversible</string>
     <string name="setting_fragment_dialog_title_account_delete">Delete Account</string>
     <string name="setting_fragment_dialog_button_validate">OK</string>
-    <string name="fragment_list_view_message_download_restaurant">Downloading restaurants informations</string>
-    <string name="fragment_list_view_message_search_workmates">Downloading users informations</string>
-
+    <!-- fragment workmate  -->
+    <string name="fragment_workmates_not_decide">%1$s hasn\'t decided yet</string>
+    <string name="detail_restaurant_joining_message">%1$s is joining!</string>
+    <!-- tools bar  -->
+    <string name="search_restaurants_hint">Search restaurants</string>
+    <string name="main_activity_tools_bar_valid_button_description">button for valid search</string>
+    <string name="main_activity_tools_bar_clear_button_description">button for close search bar</string>
+    <string name="main_activity_tools_bar_open_button_description">button for open search bar</string>
 </resources>

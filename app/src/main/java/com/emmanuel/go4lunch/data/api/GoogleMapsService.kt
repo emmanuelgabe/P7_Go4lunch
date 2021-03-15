@@ -3,6 +3,7 @@ package com.emmanuel.go4lunch.data.api
 
 import com.emmanuel.go4lunch.data.api.response.NearByRestaurantDetailResponse
 import com.emmanuel.go4lunch.data.api.response.NearByRestaurantListResponse
+import com.emmanuel.go4lunch.data.api.response.PlaceAutoComplete
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -23,4 +24,15 @@ interface GoogleMapsService {
         @Query("type") type: String,
         @Query("key") key: String
     ): Response<NearByRestaurantListResponse>
+
+    @GET("/maps/api/place/autocomplete/json")
+    suspend fun getPlaces(
+        @Query("offset") offset: String,
+        @Query("input") input: String,
+        @Query("types") types: String,
+        @Query("location", encoded = false) location: String,
+        @Query("radius") radius: Int,
+        @Query("key") key: String
+    ): Response<PlaceAutoComplete>
+
 }

@@ -8,7 +8,6 @@ import com.emmanuel.go4lunch.data.model.Restaurant
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.data.repository.RestaurantRepository
 import com.emmanuel.go4lunch.data.repository.WorkmateRepository
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -17,11 +16,8 @@ class RestaurantDetailViewModel(
     private val workmateRepository: WorkmateRepository
 ) : ViewModel() {
     val currentRestaurantsDetailLiveData = MutableLiveData<NearByRestaurant>()
-    val workmatesLiveData = MutableLiveData<List<Workmate>>()
-    private val currentWorkmate = MutableLiveData<Workmate>()
 
     private var getDetailRestaurantJob: Job? = null
-    private var getAllWorkmatesJob: Job? = null
     private var updateRestaurant: Job? = null
 
 
@@ -45,25 +41,6 @@ class RestaurantDetailViewModel(
         }
     }
 
-    private fun getAllWorkmate() {
-        getAllWorkmatesJob?.let {
-            if (it.isActive) {
-                it.cancel()
-            }
-        }
-        getAllWorkmatesJob = viewModelScope.launch(Dispatchers.IO) {
-            val workmates = workmateRepository.getAllWorkmate()
-            withContext(Dispatchers.Main) {
-                workmatesLiveData.value = workmates
-                for (workmate in workmates) {
-                    if (workmate.uid == FirebaseAuth.getInstance().uid) {
-                        currentWorkmate.value = workmate
-                    }
-                }
-            }
-        }
-    }
-
     private fun addRestaurant(restaurant: Restaurant) {
         viewModelScope.launch {
             workmateRepository.addRestaurant(restaurant)
@@ -74,22 +51,20 @@ class RestaurantDetailViewModel(
         if (currentRestaurantsDetailLiveData.value == null) {
             getDetailRestaurant(restaurantId, currentRestaurantDetail)
         }
-        getAllWorkmate()
     }
 
-    fun updateLikeRestaurant() {
+    fun updateLikeRestaurant(currentWorkmate: Workmate) {
         updateRestaurant?.let {
             if (it.isActive) {
                 it.cancel()
             }
         }
         updateRestaurant = viewModelScope.launch(Dispatchers.IO) {
-            workmateRepository.updateWorkmate(getWorkmateWithUpdateLike())
-            getAllWorkmate()
+            workmateRepository.updateWorkmate(getWorkmateWithUpdateLike(currentWorkmate))
         }
     }
 
-    fun updateFavoriteRestaurant() {
+    fun updateFavoriteRestaurant(currentWorkmate: Workmate, workmates: List<Workmate>) {
         updateRestaurant?.let {
             if (it.isActive) {
                 it.cancel()
@@ -98,25 +73,23 @@ class RestaurantDetailViewModel(
         updateRestaurant = viewModelScope.launch(Dispatchers.IO) {
 
             launch {
-                val updatedWorkmate = currentWorkmate.value
-                if (currentWorkmate.value?.restaurantFavorite.equals(
+                if (currentWorkmate.restaurantFavorite.equals(
                         currentRestaurantsDetailLiveData.value?.placeId
                     )
                 ) {
                     // Delete favorite restaurant if the current restaurant is already present in favorite
-                    updatedWorkmate!!.restaurantFavorite = null
-                    updatedWorkmate.favoriteDate = null
+                    currentWorkmate.restaurantFavorite = null
+                    currentWorkmate.favoriteDate = null
                     launch {
-                        workmateRepository.updateWorkmate(updatedWorkmate)
-                        getAllWorkmate()
+                        workmateRepository.updateWorkmate(currentWorkmate)
                     }.join()
                     // Delete current restaurant information if the current restaurant no longer in favorites for any users
-                    if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.placeId)) {
+                    if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.placeId,workmates)) {
                         workmateRepository.deleteRestaurant(currentRestaurantsDetailLiveData.value!!.placeId)
                     }
                 } else {
                     // Before add restaurant to favorite add in db if it is not yet listed for any users
-                    if (restaurantIsNeverUse(currentWorkmate.value?.restaurantFavorite.toString())) {
+                    if (restaurantIsNeverUse(currentWorkmate.restaurantFavorite.toString(),workmates)) {
                         launch {
                             addRestaurant(
                                 Restaurant(
@@ -126,21 +99,20 @@ class RestaurantDetailViewModel(
                             )
                         }.join()
                     }
-                    updatedWorkmate!!.restaurantFavorite =
+                    currentWorkmate.restaurantFavorite =
                         currentRestaurantsDetailLiveData.value?.placeId
-                    updatedWorkmate.favoriteDate = Calendar.getInstance().time
-                    workmateRepository.updateWorkmate(updatedWorkmate)
-                    getAllWorkmate()
+                    currentWorkmate.favoriteDate = Calendar.getInstance().time
+                    workmateRepository.updateWorkmate(currentWorkmate)
                 }
             }
         }
     }
 
-    private fun getWorkmateWithUpdateLike(): Workmate {
+    private fun getWorkmateWithUpdateLike(currentWorkmate: Workmate): Workmate {
         val newLikeList = mutableListOf<String>()
-        currentWorkmate.value?.restaurantsIdLike?.let {
-            newLikeList.addAll(currentWorkmate.value?.restaurantsIdLike!!)
-            if (currentWorkmate.value?.restaurantsIdLike!!.contains(
+        currentWorkmate.restaurantsIdLike?.let {
+            newLikeList.addAll(currentWorkmate.restaurantsIdLike!!)
+            if (currentWorkmate.restaurantsIdLike!!.contains(
                     currentRestaurantsDetailLiveData.value?.placeId
                 )
             ) {
@@ -149,14 +121,16 @@ class RestaurantDetailViewModel(
                 newLikeList.add(currentRestaurantsDetailLiveData.value?.placeId.toString())
             }
         }
-        val updatedWorkmate = currentWorkmate.value
-        updatedWorkmate!!.restaurantsIdLike = newLikeList
-        return updatedWorkmate
+        currentWorkmate.restaurantsIdLike = newLikeList
+        return currentWorkmate
     }
 
-    private fun restaurantIsNeverUse(IdRestaurantToDeleteIfNeverUse: String): Boolean {
+    private fun restaurantIsNeverUse(
+        IdRestaurantToDeleteIfNeverUse: String,
+        workmates: List<Workmate>
+    ): Boolean {
         var isNeverUse = true
-        for (workmate in workmatesLiveData.value!!) {
+        for (workmate in workmates) {
             if (workmate.restaurantFavorite.equals(IdRestaurantToDeleteIfNeverUse))
                 isNeverUse = false
         }

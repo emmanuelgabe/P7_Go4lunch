@@ -1,6 +1,8 @@
 package com.emmanuel.go4lunch.ui.mapview
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,10 +15,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.model.Workmate
@@ -28,13 +33,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
-
 
 class MapViewFragment : Fragment(), OnMapReadyCallback {
     private var mMap: GoogleMap? = null
@@ -48,6 +49,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mWorkmates: List<Workmate>
     private val factory = Injection.provideViewModelFactory()
     private lateinit var mapViewViewModel: MapViewViewModel
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,18 +65,36 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         }
         supportFragmentManager.getMapAsync(this)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        mapViewViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
+
+        initObserver()
+        return rootView
+    }
+
+    private fun initObserver() {
+        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
             mWorkmates = workmates
             addMarker()
         })
         mapViewViewModel.restaurantsDetailLiveData.observe(viewLifecycleOwner, { restaurants ->
-           mRestaurantsDetails = restaurants
+            mRestaurantsDetails = restaurants
             addMarker()
         })
-        mapViewViewModel.getAllWorkmate()
-        return rootView
+        mainViewModel.placesAutocompleteLiveData.observe(viewLifecycleOwner,
+            { restaurantsPlaceSearch ->
+                if (restaurantsPlaceSearch.isEmpty()) {
+                    addMarker()
+                } else {
+                    val restaurantPlaceId = mutableListOf<String>()
+                    for (restaurant in restaurantsPlaceSearch) {
+                        if (restaurant.types.contains("restaurant"))
+                            restaurantPlaceId.add(restaurant.place_id)
+                    }
+                    addMarker(restaurantPlaceId)
+                }
+            })
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(p0: GoogleMap?) {
         if (p0 != null) {
             mMap = p0
@@ -101,6 +121,17 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                     mMap!!.isMyLocationEnabled = false
                     mMap!!.uiSettings?.isMyLocationButtonEnabled = false
                     locationFab.setImageResource(R.drawable.ic_baseline_gps_off_24)
+                }
+                mMap!!.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                        context,
+                        R.raw.map_style
+                    )
+                )
+                it.setOnMapClickListener {
+                    val imm: InputMethodManager = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                    if (imm.isActive)
+                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
                 }
             } catch (e: SecurityException) {
                 Log.e("Exception: %s", e.message, e)
@@ -132,6 +163,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                                     ), DEFAULT_ZOOM
                                 )
                             )
+                            mainViewModel.saveLocation(lastKnownLocation)
                             mapViewViewModel.getAllNearRestaurant(lastKnownLocation)
                             mFusedLocationClient.removeLocationUpdates(locationCallback)
                         }
@@ -167,37 +199,38 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         updateLocationUI()
     }
 
-    private fun addMarker() {
-        if (this::mRestaurantsDetails.isInitialized  && this::mWorkmates.isInitialized) {
-
+    private fun addMarker(placesSearchId: List<String>? = null) {
+        if (this::mRestaurantsDetails.isInitialized && this::mWorkmates.isInitialized) {
+            mMap!!.clear()
             for (i in 0 until mRestaurantsDetails.count()) {
-                var icon: BitmapDescriptor =
-                    BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant)
-                for (workmate in mWorkmates) {
-                    workmate.restaurantFavorite?.let {
-                        if (workmate.restaurantFavorite.equals(mRestaurantsDetails[i].placeId) && isSameDay(
-                                workmate.favoriteDate,
-                                Calendar.getInstance().time
+                if (placesSearchId == null || placesSearchId.contains(mRestaurantsDetails[i].placeId)) {
+                    var icon: BitmapDescriptor =
+                        BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant)
+                    for (workmate in mWorkmates) {
+                        workmate.restaurantFavorite?.let {
+                            if (workmate.restaurantFavorite.equals(mRestaurantsDetails[i].placeId) && isSameDay(
+                                    workmate.favoriteDate,
+                                    Calendar.getInstance().time
+                                )
                             )
-                        )
-                            icon =
-                                BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant_favorite)
+                                icon =
+                                    BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant_favorite)
+                        }
                     }
-                }
-                mMap?.addMarker(
-                    MarkerOptions()
-                        .position(
-                            LatLng(
-                                mRestaurantsDetails[i].geometry.location.lat,
-                                mRestaurantsDetails[i].geometry.location.lng
+                    mMap?.addMarker(
+                        MarkerOptions()
+                            .position(
+                                LatLng(
+                                    mRestaurantsDetails[i].geometry.location.lat,
+                                    mRestaurantsDetails[i].geometry.location.lng
+                                )
                             )
-                        )
-                        .title("$i")
-                        .icon(icon)
-                        .flat(true)
-                )
+                            .title("$i")
+                            .icon(icon)
+                            .flat(true)
+                    )
+                }
             }
-
         }
     }
 

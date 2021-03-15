@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:fitsSystemWindows="false"
     tools:context=".MainActivity">
 
@@ -16,58 +15,140 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container_main"
             android:layout_width="match_parent"
-        android:layout_height="match_parent">
+            android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            app:layout_constraintTop_toTopOf="parent"
-            app:theme="@style/ToolBarStyle" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/primary_color"
+                android:minHeight="?attr/actionBarSize"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_nav_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/windowBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:menu="@menu/bottom_menu" />
+                <androidx.constraintlayout.widget.ConstraintLayout
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/nav_host_fragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:defaultNavHost="true"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar"
-            app:navGraph="@navigation/main_navigation">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/toolbar_search_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        tools:visibility="visible">
+
+                        <ImageButton
+                            android:id="@+id/toolbar_valid_search_button"
+                            android:layout_width="?attr/actionBarSize"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@color/text_white"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_baseline_search_24"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:contentDescription="@string/main_activity_tools_bar_valid_button_description" />
+
+                        <AutoCompleteTextView
+                            android:id="@+id/search_auto_complete_text_view"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@color/text_white"
+                            android:completionThreshold="1"
+                            android:hint="@string/search_restaurants_hint"
+                            android:imeOptions="actionSearch"
+                            android:inputType="textAutoComplete|textAutoCorrect"
+                            android:textColor="@color/black"
+                            android:textColorHint="#939393"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/toolbar_clear_search_button"
+                            app:layout_constraintStart_toEndOf="@+id/toolbar_valid_search_button"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageButton
+                            android:id="@+id/toolbar_clear_search_button"
+                            android:layout_width="?attr/actionBarSize"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@color/text_white"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_baseline_clear_24"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/search_auto_complete_text_view"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:contentDescription="@string/main_activity_tools_bar_clear_button_description" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <ImageButton
+                        android:id="@+id/toolbar_open_search_button"
+                        android:layout_width="?attr/actionBarSize"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_baseline_search_24_white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/main_activity_tools_bar_open_button_description" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.appcompat.widget.Toolbar>
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottom_nav_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/windowBackground"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:menu="@menu/bottom_menu" />
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/nav_host_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:defaultNavHost="true"
+                app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar"
+                app:navGraph="@navigation/main_navigation">
 
 
-        </androidx.fragment.app.FragmentContainerView>
+            </androidx.fragment.app.FragmentContainerView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/drawer_nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/light_color"
-        app:headerLayout="@layout/activity_main_drawer_header"
-        app:itemIconTint="@color/design_default_color_surface"
-        app:itemTextColor="@color/text_white"
-        app:menu="@menu/drawer_menu">
-
-        <androidx.appcompat.widget.AppCompatImageView
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/drawer_nav_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            app:srcCompat="@drawable/go_4_lunch_bowl" />
-    </com.google.android.material.navigation.NavigationView>
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/light_color"
+            app:headerLayout="@layout/activity_main_drawer_header"
+            app:itemIconTint="@color/design_default_color_surface"
+            app:itemTextColor="@color/text_white"
+            app:menu="@menu/drawer_menu">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                app:srcCompat="@drawable/go_4_lunch_bowl" />
+        </com.google.android.material.navigation.NavigationView>
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

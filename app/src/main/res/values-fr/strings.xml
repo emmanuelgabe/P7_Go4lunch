@@ -41,4 +41,10 @@
     <string name="fragment_list_view_message_search_workmates">Téléchargement des informations utilisateurs</string>
     <string name="fragment_list_view_message_download_restaurant">Téléchargement des informations des restaurants</string>
     <string name="alert_dialog_permission_call_phone_message">L\'autorisation de passer des apelles téléphonique est nécessaire. \nPour garantir le bon fonctionnement de cette fonctionnalité, l\'autorisation de passer des apelles doit être activée dans les paramètres de l\'application</string>
+    <string name="fragment_workmates_not_decide">%1$s n\'a pas encore décidé</string>
+    <string name="search_restaurants_hint">recherche de restaurants</string>
+    <string name="detail_restaurant_joining_message">%1$s se joint à nous !</string>
+    <string name="main_activity_tools_bar_valid_button_description">bouton de validation de recherche</string>
+    <string name="main_activity_tools_bar_clear_button_description">bouton de fermeture de la bar de recherche</string>
+    <string name="main_activity_tools_bar_open_button_description">bouton d\'ouverture de de la bar de recherche</string>
 </resources>

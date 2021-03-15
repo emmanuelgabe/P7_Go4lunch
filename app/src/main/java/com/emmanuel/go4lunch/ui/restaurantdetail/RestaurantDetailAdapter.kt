@@ -3,6 +3,7 @@ package com.emmanuel.go4lunch.ui.restaurantdetail
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.WorkmatesItemBinding
 import com.squareup.picasso.Picasso
@@ -30,8 +31,11 @@ class RestaurantDetailAdapter :
     inner class ViewHolder(val binding: WorkmatesItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(workmate: Workmate) {
-            val workmateName = "${workmate.name} is joining!"
-            binding.workmateItemNameTextView.text = workmateName
+
+            binding.workmateItemNameTextView.text = binding.root.context.getString(
+                R.string.detail_restaurant_joining_message,
+                workmate.name
+            )
             Picasso.get()
                 .load(workmate.avatarURL)
                 .resize(60, 60)

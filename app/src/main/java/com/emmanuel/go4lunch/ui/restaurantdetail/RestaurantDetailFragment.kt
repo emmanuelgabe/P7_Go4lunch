@@ -15,8 +15,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.model.Workmate
@@ -26,19 +28,19 @@ import com.emmanuel.go4lunch.utils.MAX_WITH_IMAGE
 import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_CALL_PHONE
 import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
 import com.emmanuel.go4lunch.utils.isSameDay
-import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.math.roundToInt
 
 class RestaurantDetailFragment : Fragment() {
     private lateinit var binding: FragmentRestaurantDetailBinding
-    private lateinit var mCurrentUser: Workmate
+    private lateinit var mCurrentWorkmate: Workmate
     private var mRestaurantDetail: NearByRestaurant? = null
     private var mWorkmates: List<Workmate>? = null
     private lateinit var mAdapter: RestaurantDetailAdapter
     private var factory = Injection.provideViewModelFactory()
     private lateinit var restaurantDetailViewModel: RestaurantDetailViewModel
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -54,17 +56,12 @@ class RestaurantDetailFragment : Fragment() {
             arguments?.getString("restaurantId"),
             (arguments?.getSerializable("restaurantDetail") as? NearByRestaurant)
         )
-        restaurantDetailViewModel.workmatesLiveData.observe(
-            viewLifecycleOwner,
-            { workmates ->
-                mWorkmates = workmates
-                for (workmate in workmates) {
-                    if (workmate.uid == FirebaseAuth.getInstance().uid) {
-                        mCurrentUser = workmate
-                    }
-                }
-                updateUi()
-            })
+        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
+            mWorkmates = workmates
+            mCurrentWorkmate = mainViewModel.currentUserLiveData.value!!
+            updateUi()
+
+        })
 
         restaurantDetailViewModel.currentRestaurantsDetailLiveData.observe(
             viewLifecycleOwner,
@@ -134,10 +131,10 @@ class RestaurantDetailFragment : Fragment() {
             }
         }
         binding.fragmentDetailButtonLike.setOnClickListener {
-            restaurantDetailViewModel.updateLikeRestaurant()
+            restaurantDetailViewModel.updateLikeRestaurant(mCurrentWorkmate)
         }
         binding.fragmentDetailRestaurantFab.setOnClickListener {
-            restaurantDetailViewModel.updateFavoriteRestaurant()
+            restaurantDetailViewModel.updateFavoriteRestaurant(mCurrentWorkmate, mWorkmates!!)
             // updateFavoriteRestaurant()
         }
     }
@@ -145,7 +142,7 @@ class RestaurantDetailFragment : Fragment() {
     private fun updateUi() {
         if (mRestaurantDetail != null && mWorkmates != null) {
             // update like button
-            if (!mCurrentUser.restaurantsIdLike.isNullOrEmpty() && mCurrentUser.restaurantsIdLike!!.contains(
+            if (!mCurrentWorkmate.restaurantsIdLike.isNullOrEmpty() && mCurrentWorkmate.restaurantsIdLike!!.contains(
                     mRestaurantDetail!!.placeId
                 )
             )
@@ -163,10 +160,10 @@ class RestaurantDetailFragment : Fragment() {
                     ), null, null
                 )
             // update favorite button
-            if (mCurrentUser.restaurantFavorite.equals(
+            if (mCurrentWorkmate.restaurantFavorite.equals(
                     mRestaurantDetail!!.placeId
                 ) && isSameDay(
-                    mCurrentUser.favoriteDate,
+                    mCurrentWorkmate.favoriteDate,
                     Calendar.getInstance().time
                 )
             ) {
@@ -227,7 +224,7 @@ class RestaurantDetailFragment : Fragment() {
     private fun updateWorkmateList() {
         val workmatesIsJoining = mutableListOf<Workmate>()
         for (workmate in mWorkmates!!) {
-            if (mCurrentUser.restaurantFavorite.equals(
+            if (workmate.restaurantFavorite.equals(
                     mRestaurantDetail!!.placeId
                 ) && isSameDay(
                     workmate.favoriteDate,

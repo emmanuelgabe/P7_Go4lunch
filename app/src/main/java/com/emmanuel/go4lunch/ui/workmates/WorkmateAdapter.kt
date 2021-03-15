@@ -45,7 +45,10 @@ class WorkmateAdapter :
 
             if (favoriteRestaurantName.isNullOrBlank()) {
                 binding.workmateItemNameTextView.text = ""
-                binding.workmateItemNameTextView.hint = "${workmate.name} hasn't decided yet"
+                binding.workmateItemNameTextView.hint = binding.root.context.getString(
+                    R.string.fragment_workmates_not_decide,
+                    workmate.name
+                )
                 binding.workmateItemNameTextView.setTypeface(
                     binding.workmateItemNameTextView.typeface,
                     Typeface.ITALIC

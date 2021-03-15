@@ -16,10 +16,13 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
+import com.emmanuel.go4lunch.data.api.response.Prediction
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.FragmentListViewBinding
 import com.emmanuel.go4lunch.di.Injection
@@ -37,6 +40,7 @@ class ListViewFragment : Fragment() {
     private lateinit var listViewModel: ListViewViewModel
     private lateinit var mRestaurantsDetailList: List<NearByRestaurant>
     private lateinit var mWorkmatesList: List<Workmate>
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,17 +57,8 @@ class ListViewFragment : Fragment() {
         mAdapter = ListViewAdapter()
         binding.listViewRecyclerView.adapter = mAdapter
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-        listViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
-            mWorkmatesList = workmates
-            updateRestaurantList()
-        })
-        listViewModel.restaurantsDetailLiveData.observe(
-            viewLifecycleOwner,
-            { restaurants ->
-                mRestaurantsDetailList = restaurants
-                updateRestaurantList()
-            })
-        listViewModel.getAllWorkmate()
+        initObserver()
+        updateRestaurantList()
         registerLocationUpdate()
         return rootView
     }
@@ -84,6 +79,7 @@ class ListViewFragment : Fragment() {
                         locationResult ?: return
                         if (locationResult.locations.isNotEmpty()) {
                             lastKnownLocation = locationResult.lastLocation
+                            mainViewModel.saveLocation(lastKnownLocation)
                             listViewModel.getAllDetailRestaurant(lastKnownLocation)
                             mFusedLocationClient.removeLocationUpdates(locationCallback)
                         }
@@ -125,18 +121,34 @@ class ListViewFragment : Fragment() {
         }
     }
 
-    private fun updateRestaurantList(
-        /*     restaurantsDetailList: List<NearByRestaurant>,
-             workmatesList: List<Workmate>*/
-    ) {
+    private fun updateRestaurantList(restaurantsPlacesSearch: List<Prediction>? = null) {
         when {
             this::mRestaurantsDetailList.isInitialized && this::mWorkmatesList.isInitialized -> {
                 if (mRestaurantsDetailList.isNotEmpty()) {
-                    mAdapter.updateRestaurantsList(
-                        mRestaurantsDetailList,
-                        lastKnownLocation,
-                        mWorkmatesList
-                    )
+                    // Display all near restaurants if no research has been done or search field is empty
+                    if (restaurantsPlacesSearch == null || restaurantsPlacesSearch.isEmpty()) {
+                        mAdapter.updateRestaurantsList(
+                            mRestaurantsDetailList,
+                            lastKnownLocation,
+                            mWorkmatesList
+                        )
+                    } else {  // Display near restaurants corresponding to the search
+                        val restaurantPlaceIdSearch = mutableListOf<String>()
+                        for (restaurant in restaurantsPlacesSearch) {
+                            if (restaurant.types.contains("restaurant"))
+                                restaurantPlaceIdSearch.add(restaurant.place_id)
+                        }
+                        val restaurantDetailSearchList = mutableListOf<NearByRestaurant>()
+                        for (restaurantDetail in mRestaurantsDetailList) {
+                            if (restaurantPlaceIdSearch.contains(restaurantDetail.placeId))
+                                restaurantDetailSearchList.add(restaurantDetail)
+                        }
+                        mAdapter.updateRestaurantsList(
+                            restaurantDetailSearchList,
+                            lastKnownLocation,
+                            mWorkmatesList
+                        )
+                    }
                     binding.fragmentListViewMessageInformation.visibility = View.GONE
                     binding.fragmentListViewProgressBar.visibility = View.GONE
                     binding.fragmentListViewMessageInformation.text = ""
@@ -149,13 +161,13 @@ class ListViewFragment : Fragment() {
             }
             !this::mRestaurantsDetailList.isInitialized && this::mWorkmatesList.isInitialized -> {
                 binding.fragmentListViewMessageInformation.text =
-                    getString(R.string.fragment_list_view_message_search_workmates)
+                    getString(R.string.fragment_list_view_message_download_restaurant)
             }
             this::mRestaurantsDetailList.isInitialized && !this::mWorkmatesList.isInitialized -> {
                 binding.fragmentListViewMessageInformation.text =
-                    getString(R.string.fragment_list_view_message_download_restaurant)
+                getString(R.string.fragment_list_view_message_search_workmates)
             }
-            !(this::mRestaurantsDetailList.isInitialized && this::mWorkmatesList.isInitialized) -> {
+            !(this::mRestaurantsDetailList.isInitialized && !this::mWorkmatesList.isInitialized) -> {
                 binding.fragmentListViewMessageInformation.text =
                     getString(R.string.fragment_list_view_message_download)
             }
@@ -190,5 +202,21 @@ class ListViewFragment : Fragment() {
         if (!::locationCallback.isInitialized && !::mFusedLocationClient.isInitialized) {
             mFusedLocationClient.removeLocationUpdates(locationCallback)
         }
+    }
+    private fun initObserver() {
+        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
+            mWorkmatesList = workmates
+            updateRestaurantList()
+        })
+        listViewModel.restaurantsDetailLiveData.observe(
+            viewLifecycleOwner,
+            { restaurants ->
+                mRestaurantsDetailList = restaurants
+                updateRestaurantList()
+            })
+       mainViewModel.placesAutocompleteLiveData.observe(viewLifecycleOwner,
+            { restaurantsPlaceSearch ->
+                updateRestaurantList(restaurantsPlaceSearch)
+            })
     }
 }

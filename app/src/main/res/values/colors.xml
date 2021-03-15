@@ -8,7 +8,7 @@
     <color name="primary_color">#ff5722</color>
     <color name="primary_variant_color">#ba000d</color>
     <color name="light_color">#ff8a50</color>
-    <color name="divider_view_decoration">#979797</color>
+    <color name="divider_view_decoration">#D8D8D8</color>
     <color name="activity_authentication_facebook_button">#507cc0</color>
     <color name="activity_authentication_google_button">#dc4a38</color>
 </resources>
