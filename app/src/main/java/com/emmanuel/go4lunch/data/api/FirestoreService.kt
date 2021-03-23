@@ -33,12 +33,13 @@ class FirestoreService(firestore: FirebaseFirestore) {
         restaurantsCollectionRef.document(id).delete()
     }
 
+    fun getAllUserCollectionReference(): CollectionReference {
+        return usersCollectionRef
+    }
+
     companion object {
         const val COLLECTION_RESTAURANTS = "restaurants"
         const val COLLECTION_USERS = "users"
     }
 
-    fun getAllUser(): CollectionReference {
-        return usersCollectionRef
-    }
 }

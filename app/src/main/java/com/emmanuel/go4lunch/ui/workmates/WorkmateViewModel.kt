@@ -30,10 +30,7 @@ class WorkmateViewModel(private val workmateRepository: WorkmateRepository) : Vi
                             Restaurant(document.id, document.get("name").toString())
                         )
                     }
-
-                    viewModelScope.launch(Dispatchers.Main) {
-                        restaurantLiveData.value = restaurantList
-                    }
+                        restaurantLiveData.postValue(restaurantList)
                 }
             }
         }

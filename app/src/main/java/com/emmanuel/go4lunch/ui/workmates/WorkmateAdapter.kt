@@ -10,9 +10,11 @@ import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.model.Restaurant
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.WorkmatesItemBinding
+import com.emmanuel.go4lunch.utils.CircleTransform
 import com.emmanuel.go4lunch.utils.isSameDay
 import com.squareup.picasso.Picasso
 import java.util.*
+
 
 class WorkmateAdapter :
     RecyclerView.Adapter<WorkmateAdapter.ViewHolder>() {
@@ -68,6 +70,7 @@ class WorkmateAdapter :
             Picasso.get()
                 .load(workmate.avatarURL)
                 .resize(60, 60)
+                .transform(CircleTransform())
                 .into(binding.workmatesItemImageView)
             if (workmate.restaurantFavorite != null && isSameDay(
                     workmate.favoriteDate,
@@ -77,7 +80,6 @@ class WorkmateAdapter :
                 binding.containerWorkmatesItem.setOnClickListener {
                     val action =
                         WorkmatesFragmentDirections.actionWorkmatesFragmentToRestaurantDetail(
-                            null,
                             workmate.restaurantFavorite.toString()
                         )
                     it.findNavController().navigate(action)

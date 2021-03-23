@@ -19,7 +19,6 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var mAccountDialogPreference: Preference
     private lateinit var mAuth: FirebaseAuth
@@ -82,5 +81,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_settings, rootKey)
+    }
+
+    companion object {
+        const val KEY_PREF_NOTIFICATION_PREFERENCE = "notification_preference"
+        const val KEY_PREF_NOTIFICATION_HOUR_PREFERENCE = "notification_hour_preference"
+        const val KEY_PREF_MAP_ZOOM = "map_zoom_preference"
+        const val KEY_PREF_RESTAURANT_RADIUS = "restaurant_radius_preference"
     }
 }

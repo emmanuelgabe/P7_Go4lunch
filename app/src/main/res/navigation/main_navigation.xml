@@ -43,10 +43,6 @@
         android:label="fragment_restaurant_detail"
         tools:layout="@layout/fragment_restaurant_detail">
         <argument
-            android:name="restaurantDetail"
-            app:argType="com.emmanuel.go4lunch.data.api.model.NearByRestaurant"
-            app:nullable="true"/>
-        <argument
             android:name="restaurantId"
             app:nullable="true"/>
     </fragment>

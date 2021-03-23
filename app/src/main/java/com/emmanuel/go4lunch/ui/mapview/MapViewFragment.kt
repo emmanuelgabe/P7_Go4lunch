@@ -2,53 +2,42 @@ package com.emmanuel.go4lunch.ui.mapview
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
-import com.emmanuel.go4lunch.data.model.Workmate
-import com.emmanuel.go4lunch.di.Injection
+import com.emmanuel.go4lunch.ui.settings.SettingsFragment
+import com.emmanuel.go4lunch.utils.FetchLocationEvent
 import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_FINE_LOCATION
+import com.emmanuel.go4lunch.utils.hideKeyboard
 import com.emmanuel.go4lunch.utils.isSameDay
-import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 class MapViewFragment : Fragment(), OnMapReadyCallback {
-    private var mMap: GoogleMap? = null
+    private lateinit var mMap: GoogleMap
     private lateinit var supportFragmentManager: SupportMapFragment
-    private var lastKnownLocation: Location? = null
     private lateinit var locationFab: FloatingActionButton
-    private lateinit var locationRequest: LocationRequest
-    private lateinit var locationCallback: LocationCallback
-    private lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private lateinit var mRestaurantsDetails: List<NearByRestaurant>
-    private lateinit var mWorkmates: List<Workmate>
-    private val factory = Injection.provideViewModelFactory()
-    private lateinit var mapViewViewModel: MapViewViewModel
+    private var isFirstZoom = true
     private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -56,7 +45,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?,
     ): View {
         val rootView: View = inflater.inflate(R.layout.fragment_map_view, container, false)
-        mapViewViewModel = ViewModelProvider(this, factory).get(MapViewViewModel::class.java)
         supportFragmentManager =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         locationFab = rootView.findViewById(R.id.fragment_map_view_gps_fab)
@@ -64,19 +52,15 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
             registerLocationUpdate()
         }
         supportFragmentManager.getMapAsync(this)
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-
         initObserver()
         return rootView
     }
 
     private fun initObserver() {
-        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
-            mWorkmates = workmates
+        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, {
             addMarker()
         })
-        mapViewViewModel.restaurantsDetailLiveData.observe(viewLifecycleOwner, { restaurants ->
-            mRestaurantsDetails = restaurants
+        mainViewModel.nearRestaurantLiveData.observe(viewLifecycleOwner, {
             addMarker()
         })
         mainViewModel.placesAutocompleteLiveData.observe(viewLifecycleOwner,
@@ -92,46 +76,89 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                     addMarker(restaurantPlaceId)
                 }
             })
+        mainViewModel.lastKnownLocation.observe(viewLifecycleOwner, { lastKnownLocation ->
+            if (::mMap.isInitialized) {
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val mapZoomPreference =
+                    sharedPreferences.getInt(SettingsFragment.KEY_PREF_MAP_ZOOM, 15)
+                val cameraUpdateFactory = CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        lastKnownLocation.latitude,
+                        lastKnownLocation.longitude
+                    ), mapZoomPreference.toFloat()
+                )
+                if (isFirstZoom) {
+                    mMap.moveCamera(
+                        cameraUpdateFactory
+                    )
+                    isFirstZoom = false
+                } else {
+                    mMap.animateCamera(
+                        cameraUpdateFactory
+                    )
+                }
+            }
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            val radiusPreference =
+                sharedPreferences.getInt(SettingsFragment.KEY_PREF_RESTAURANT_RADIUS, 1000)
+            mainViewModel.getAllNearRestaurant(radiusPreference)
+        })
     }
 
     @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(p0: GoogleMap?) {
         if (p0 != null) {
             mMap = p0
-            mMap!!.setOnMarkerClickListener { marker ->
+            mMap.setOnMarkerClickListener { marker ->
                 val action = MapViewFragmentDirections.actionMapViewFragmentToRestaurantDetail(
-                    null, mRestaurantsDetails[marker.title.toInt()].placeId
+                    marker.title
                 )
                 findNavController().navigate(action)
                 true
             }
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val mapZoomPreference = sharedPreferences.getInt(SettingsFragment.KEY_PREF_MAP_ZOOM, 15)
+            if (mainViewModel.lastKnownLocation.value == null) {
+                mMap.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(LatLng(0.0, 0.0), mapZoomPreference.toFloat())
+                )
+            } else {
+                val location = mainViewModel.lastKnownLocation.value
+                mMap.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(
+                            location!!.latitude,
+                            location.longitude,
+                        ), mapZoomPreference.toFloat()
+                    )
+                )
+            }
+            addMarker()
             registerLocationUpdate()
             updateLocationUI()
         }
     }
 
     private fun updateLocationUI() {
-        mMap?.let {
+        mMap.let {
             try {
                 if (isPermissionLocationGranted()) {
-                    mMap!!.isMyLocationEnabled = true
-                    mMap!!.uiSettings?.isMyLocationButtonEnabled = false
+                    mMap.isMyLocationEnabled = true
+                    mMap.uiSettings?.isMyLocationButtonEnabled = false
                     locationFab.setImageResource(R.drawable.ic_baseline_gps_fixed_24)
                 } else {
-                    mMap!!.isMyLocationEnabled = false
-                    mMap!!.uiSettings?.isMyLocationButtonEnabled = false
+                    mMap.isMyLocationEnabled = false
+                    mMap.uiSettings?.isMyLocationButtonEnabled = false
                     locationFab.setImageResource(R.drawable.ic_baseline_gps_off_24)
                 }
-                mMap!!.setMapStyle(
+                mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                         context,
                         R.raw.map_style
                     )
                 )
-                it.setOnMapClickListener {
-                    val imm: InputMethodManager = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                    if (imm.isActive)
-                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+                mMap.setOnMapClickListener {
+                    hideKeyboard()
                 }
             } catch (e: SecurityException) {
                 Log.e("Exception: %s", e.message, e)
@@ -139,43 +166,9 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    /**
-     * Register for location updates from [mFusedLocationClient], through callback on the main looper.
-     * Once the location is available the device will be able to launch the query for get restaurant
-     * detail near the current place through [mapViewViewModel]
-     */
     private fun registerLocationUpdate() {
         if (isPermissionLocationGranted()) {
-            try {
-                locationRequest = LocationRequest.create()
-                locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                locationRequest.interval = 3000
-                locationCallback = object : LocationCallback() {
-                    override fun onLocationResult(locationResult: LocationResult?) {
-                        locationResult ?: return
-                        if (locationResult.locations.isNotEmpty()) {
-                            lastKnownLocation = locationResult.lastLocation
-                            mMap?.animateCamera(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    LatLng(
-                                        lastKnownLocation!!.latitude,
-                                        lastKnownLocation!!.longitude
-                                    ), DEFAULT_ZOOM
-                                )
-                            )
-                            mainViewModel.saveLocation(lastKnownLocation)
-                            mapViewViewModel.getAllNearRestaurant(lastKnownLocation)
-                            mFusedLocationClient.removeLocationUpdates(locationCallback)
-                        }
-                    }
-                }
-                mFusedLocationClient.requestLocationUpdates(
-                    locationRequest, locationCallback,
-                    Looper.getMainLooper()
-                )
-            } catch (e: SecurityException) {
-                Log.e("Exception: %s", e.message, e)
-            }
+            EventBus.getDefault().post(FetchLocationEvent())
         } else {
             requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -200,32 +193,32 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addMarker(placesSearchId: List<String>? = null) {
-        if (this::mRestaurantsDetails.isInitialized && this::mWorkmates.isInitialized) {
-            mMap!!.clear()
-            for (i in 0 until mRestaurantsDetails.count()) {
-                if (placesSearchId == null || placesSearchId.contains(mRestaurantsDetails[i].placeId)) {
+        if (mainViewModel.nearRestaurantLiveData.value != null
+            && mainViewModel.workmatesLiveData.value != null
+            && ::mMap.isInitialized
+        ) {
+            mMap.clear()
+            for (restaurant in mainViewModel.nearRestaurantLiveData.value!!) {
+                if (placesSearchId == null || placesSearchId.contains(restaurant.placeId)) {
                     var icon: BitmapDescriptor =
                         BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant)
-                    for (workmate in mWorkmates) {
+                    for (workmate in mainViewModel.workmatesLiveData.value!!) {
                         workmate.restaurantFavorite?.let {
-                            if (workmate.restaurantFavorite.equals(mRestaurantsDetails[i].placeId) && isSameDay(
+                            if (workmate.restaurantFavorite.equals(restaurant.placeId) && isSameDay(
                                     workmate.favoriteDate,
-                                    Calendar.getInstance().time
-                                )
-                            )
-                                icon =
-                                    BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant_favorite)
+                                    Calendar.getInstance().time))
+                                icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant_favorite)
                         }
                     }
-                    mMap?.addMarker(
+                    mMap.addMarker(
                         MarkerOptions()
                             .position(
                                 LatLng(
-                                    mRestaurantsDetails[i].geometry.location.lat,
-                                    mRestaurantsDetails[i].geometry.location.lng
+                                    restaurant.geometry.location.lat,
+                                    restaurant.geometry.location.lng
                                 )
                             )
-                            .title("$i")
+                            .title(restaurant.placeId)
                             .icon(icon)
                             .flat(true)
                     )
@@ -256,15 +249,4 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
     private fun isPermissionLocationGranted() = ContextCompat.checkSelfPermission(
         requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
     ) == PackageManager.PERMISSION_GRANTED
-
-    companion object {
-        private const val DEFAULT_ZOOM = 15.0f
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (!::locationCallback.isInitialized && !::mFusedLocationClient.isInitialized) {
-            mFusedLocationClient.removeLocationUpdates(locationCallback)
-        }
-    }
 }

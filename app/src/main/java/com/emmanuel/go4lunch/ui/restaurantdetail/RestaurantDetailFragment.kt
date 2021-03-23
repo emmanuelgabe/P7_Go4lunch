@@ -1,4 +1,4 @@
-package com.emmanuel.go4lunch.ui.restaurantdetail
+  package com.emmanuel.go4lunch.ui.restaurantdetail
 
 import android.Manifest
 import android.app.AlertDialog
@@ -17,75 +17,85 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.*
 import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
+import com.emmanuel.go4lunch.data.database.model.RestaurantDetail
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.FragmentRestaurantDetailBinding
 import com.emmanuel.go4lunch.di.Injection
-import com.emmanuel.go4lunch.utils.MAX_WITH_IMAGE
-import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_CALL_PHONE
-import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
-import com.emmanuel.go4lunch.utils.isSameDay
+import com.emmanuel.go4lunch.notification.NotificationWorker
+import com.emmanuel.go4lunch.ui.settings.SettingsFragment
+import com.emmanuel.go4lunch.utils.*
 import com.squareup.picasso.Picasso
+import org.greenrobot.eventbus.EventBus
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
-class RestaurantDetailFragment : Fragment() {
+  class RestaurantDetailFragment : Fragment() {
     private lateinit var binding: FragmentRestaurantDetailBinding
-    private lateinit var mCurrentWorkmate: Workmate
-    private var mRestaurantDetail: NearByRestaurant? = null
-    private var mWorkmates: List<Workmate>? = null
     private lateinit var mAdapter: RestaurantDetailAdapter
-    private var factory = Injection.provideViewModelFactory()
     private lateinit var restaurantDetailViewModel: RestaurantDetailViewModel
     private val mainViewModel: MainViewModel by activityViewModels()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        val factory = Injection.provideViewModelFactory(requireContext())
         restaurantDetailViewModel =
             ViewModelProvider(this, factory).get(RestaurantDetailViewModel::class.java)
         val view = inflater.inflate(R.layout.fragment_restaurant_detail, container, false)
-
+        EventBus.getDefault().post(ResetSearchView())
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         binding = FragmentRestaurantDetailBinding.bind(view)
         mAdapter = RestaurantDetailAdapter()
-        restaurantDetailViewModel.init(
-            arguments?.getString("restaurantId"),
-            (arguments?.getSerializable("restaurantDetail") as? NearByRestaurant)
-        )
-        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
-            mWorkmates = workmates
-            mCurrentWorkmate = mainViewModel.currentUserLiveData.value!!
-            updateUi()
-
-        })
-
-        restaurantDetailViewModel.currentRestaurantsDetailLiveData.observe(
-            viewLifecycleOwner,
-            { restaurant ->
-                mRestaurantDetail = restaurant
-                updateUi()
-                initUi(restaurant)
-            })
+        restaurantDetailViewModel.init(arguments?.getString("restaurantId")!!)
+        initObserver()
         return view
     }
 
-    private fun initUi(mCurrentRestaurant: NearByRestaurant) {
-        binding.restaurant = mCurrentRestaurant
-        if (mCurrentRestaurant.rating != null) {
-            val rating = mCurrentRestaurant.rating.toFloat() * 3 / 5
+    private fun initObserver() {
+        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, {
+            updateUi()
+        })
+        mainViewModel.textSearchInput.observe(viewLifecycleOwner, { workmateSearch ->
+            if (restaurantDetailViewModel.currentRestaurantsDetailLiveData.value != null && mainViewModel.workmatesLiveData.value != null) {
+                if (workmateSearch.isNotBlank()) {
+                    val workmateSearchList = mutableListOf<Workmate>()
+                    for (workmate in mainViewModel.workmatesLiveData.value!!) {
+                        if (workmate.name!!.contains(workmateSearch, true)) {
+                            workmateSearchList.add(workmate)
+                        }
+                    }
+                    updateWorkmateList(workmateSearchList)
+                } else {
+                    updateWorkmateList()
+                }
+            }
+        })
+        restaurantDetailViewModel.currentRestaurantsDetailLiveData.observe(
+            viewLifecycleOwner,
+            { restaurantDetail ->
+                updateUi()
+                initUi(restaurantDetail)
+            })
+    }
+
+    private fun initUi(currentRestaurant: RestaurantDetail) {
+        binding.restaurant = currentRestaurant
+        if (currentRestaurant.rating != null) {
+            val rating = currentRestaurant.rating.toFloat() * 3 / 5
             binding.fragmentRestaurantDetailRatingBar.rating = rating.roundToInt().toFloat()
         } else {
             binding.fragmentRestaurantDetailRatingBar.visibility = View.GONE
         }
-        if (mCurrentRestaurant.photos?.get(0)?.photoReference != null) {
+        if (currentRestaurant.photoReference != null) {
             Picasso.get()
                 .load(
                     getPhotoUrlFromReference(
-                        mCurrentRestaurant.photos[0].photoReference,
+                        currentRestaurant.photoReference,
                         MAX_WITH_IMAGE
                     )
                 )
@@ -95,8 +105,8 @@ class RestaurantDetailFragment : Fragment() {
             binding.activityDetailRestaurantImage.setImageResource(R.drawable.ic_no_photography_24)
         }
         binding.fragmentDetailButtonCall.setOnClickListener {
-            if (mCurrentRestaurant.phoneNumber != null) {
-                if (mCurrentRestaurant.phoneNumber.isNotBlank()) {
+            if (currentRestaurant.phoneNumber != null) {
+                if (currentRestaurant.phoneNumber.isNotBlank()) {
                     if (isPermissionCallGranted()) {
                         callRestaurant()
                     } else {
@@ -118,9 +128,9 @@ class RestaurantDetailFragment : Fragment() {
         binding.fragmentRestaurantDetailRecyclerView.adapter = mAdapter
 
         binding.detailFragmentButtonWebsite.setOnClickListener {
-            if (!mCurrentRestaurant.website.isNullOrBlank()) {
+            if (!currentRestaurant.website.isNullOrBlank()) {
                 val intent =
-                    Intent(Intent.ACTION_VIEW).setData(Uri.parse(mCurrentRestaurant.website))
+                    Intent(Intent.ACTION_VIEW).setData(Uri.parse(currentRestaurant.website))
                 startActivity(intent)
             } else {
                 Toast.makeText(
@@ -131,21 +141,20 @@ class RestaurantDetailFragment : Fragment() {
             }
         }
         binding.fragmentDetailButtonLike.setOnClickListener {
-            restaurantDetailViewModel.updateLikeRestaurant(mCurrentWorkmate)
+            restaurantDetailViewModel.updateLikeRestaurant(mainViewModel.currentUserLiveData.value!!)
         }
         binding.fragmentDetailRestaurantFab.setOnClickListener {
-            restaurantDetailViewModel.updateFavoriteRestaurant(mCurrentWorkmate, mWorkmates!!)
-            // updateFavoriteRestaurant()
+            restaurantDetailViewModel.updateFavoriteRestaurant(mainViewModel.currentUserLiveData.value!!,
+                mainViewModel.workmatesLiveData.value!!
+            )
         }
     }
 
     private fun updateUi() {
-        if (mRestaurantDetail != null && mWorkmates != null) {
+        if (restaurantDetailViewModel.currentRestaurantsDetailLiveData.value != null && mainViewModel.workmatesLiveData.value != null) {
             // update like button
-            if (!mCurrentWorkmate.restaurantsIdLike.isNullOrEmpty() && mCurrentWorkmate.restaurantsIdLike!!.contains(
-                    mRestaurantDetail!!.placeId
-                )
-            )
+            if (!mainViewModel.currentUserLiveData.value?.restaurantsIdLike.isNullOrEmpty() && mainViewModel.currentUserLiveData.value!!.restaurantsIdLike!!.contains(
+                    restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.id))
                 binding.fragmentDetailButtonLike.setCompoundDrawablesWithIntrinsicBounds(
                     null, ContextCompat.getDrawable(
                         requireActivity(),
@@ -160,16 +169,21 @@ class RestaurantDetailFragment : Fragment() {
                     ), null, null
                 )
             // update favorite button
-            if (mCurrentWorkmate.restaurantFavorite.equals(
-                    mRestaurantDetail!!.placeId
+            if (mainViewModel.currentUserLiveData.value!!.restaurantFavorite.equals(
+                    restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.id
                 ) && isSameDay(
-                    mCurrentWorkmate.favoriteDate,
+                    mainViewModel.currentUserLiveData.value!!.favoriteDate,
                     Calendar.getInstance().time
                 )
             ) {
                 binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_check_favorite_restaurant)
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val notificationPreference = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIFICATION_PREFERENCE,false)
+                if (notificationPreference)
+                setUpAlarmManager()
             } else {
                 binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_uncheck_favorite_restaurant)
+                cancelAlarmManger()
             }
             updateWorkmateList()
         }
@@ -221,19 +235,73 @@ class RestaurantDetailFragment : Fragment() {
         requireContext(), Manifest.permission.CALL_PHONE
     ) == PackageManager.PERMISSION_GRANTED
 
-    private fun updateWorkmateList() {
+    private fun updateWorkmateList(workmateSearchList: List<Workmate>? = null) {
+        val workmates = mutableListOf<Workmate>()
+        if (workmateSearchList == null) {
+            workmates.addAll(mainViewModel.workmatesLiveData.value!!)
+        } else {
+            workmates.addAll(workmateSearchList)
+        }
         val workmatesIsJoining = mutableListOf<Workmate>()
-        for (workmate in mWorkmates!!) {
-            if (workmate.restaurantFavorite.equals(
-                    mRestaurantDetail!!.placeId
-                ) && isSameDay(
-                    workmate.favoriteDate,
-                    Calendar.getInstance().time
-                )
-            ) {
+        for (workmate in workmates) {
+            if (workmate.restaurantFavorite.equals(restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.id) && isSameDay(workmate.favoriteDate,Calendar.getInstance().time))
                 workmatesIsJoining.add(workmate)
-            }
         }
         mAdapter.updateWorkmateList(workmatesIsJoining.toList())
     }
+
+    private fun setUpAlarmManager() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val notificationHour = sharedPreferences.getString(SettingsFragment.KEY_PREF_NOTIFICATION_HOUR_PREFERENCE,"12")!!
+            .toInt()
+
+        val alarmTime = Calendar.getInstance()
+        val currentTime = alarmTime.timeInMillis
+        val currentHour = alarmTime.get(Calendar.HOUR_OF_DAY)
+        if (currentHour >= notificationHour) {
+            alarmTime.add(Calendar.DAY_OF_MONTH, 1)
+        }
+        alarmTime.set(Calendar.HOUR_OF_DAY, notificationHour)
+        alarmTime.set(Calendar.MINUTE, 0)
+        alarmTime.set(Calendar.SECOND, 0)
+        alarmTime.set(Calendar.MILLISECOND, 0)
+
+        val timeDiff = alarmTime.timeInMillis - currentTime
+
+        val workerConstraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val workerData = workDataOf(
+            "userId" to mainViewModel.currentUserLiveData.value!!.uid,
+            "restaurantId" to mainViewModel.currentUserLiveData.value!!.restaurantFavorite,
+            "restaurantName" to restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.name,
+            "restaurantAddress" to restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.address
+        )
+
+        val workRequest: OneTimeWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
+            .setInputData(workerData)
+            .setConstraints(workerConstraints)
+            .setInitialDelay(20, TimeUnit.SECONDS) // 20s for check
+          //  .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+            .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+            .build()
+
+        WorkManager.getInstance(requireContext()).enqueueUniqueWork(NOTIFICATION_WORKER_NAME,ExistingWorkPolicy.REPLACE,workRequest)
+    }
+
+    private fun cancelAlarmManger() {
+        WorkManager.getInstance(requireContext()).cancelUniqueWork(NOTIFICATION_WORKER_NAME)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().post(ResetSearchView())
+    }
+    companion object {
+        private const val NOTIFICATION_WORKER_NAME = "notificationWorker"
+    }
 }
+
+

@@ -19,33 +19,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/app_name"
-        android:textColor="@color/text_white"
+        android:textColor="@color/white"
         android:textSize="48sp"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/drawer_header_user_card_view"
+    <ImageView
+        android:id="@+id/drawer_header_user_image"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="@dimen/spacer_3"
         android:layout_marginBottom="@dimen/spacer_3"
+        android:contentDescription="@string/description_user_avatar"
         android:elevation="0dp"
-        app:cardCornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        tools:targetApi="lollipop">
-
-        <ImageView
-            android:id="@+id/drawer_header_user_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/description_user_avatar"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent" />
-    </androidx.cardview.widget.CardView>
+        tools:background="@drawable/ic_launcher_background"
+        tools:targetApi="lollipop" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/drawer_header_username_text_view"
@@ -53,11 +45,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacer_3"
         android:layout_marginTop="@dimen/spacer_2"
-        android:textColor="@color/text_white"
+        android:textColor="@color/white"
         android:textSize="@dimen/material_typography_body1"
         android:textStyle="bold"
-        app:layout_constraintLeft_toRightOf="@id/drawer_header_user_card_view"
-        app:layout_constraintTop_toTopOf="@id/drawer_header_user_card_view"
+        app:layout_constraintLeft_toRightOf="@id/drawer_header_user_image"
+        app:layout_constraintTop_toTopOf="@id/drawer_header_user_image"
         tools:text="John SMITH" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -66,9 +58,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacer_3"
         android:singleLine="true"
-        android:textColor="@color/text_white"
+        android:textColor="@color/white"
         android:textSize="@dimen/material_typography_body1"
-        app:layout_constraintLeft_toRightOf="@id/drawer_header_user_card_view"
+        app:layout_constraintLeft_toRightOf="@id/drawer_header_user_image"
         app:layout_constraintTop_toBottomOf="@id/drawer_header_username_text_view"
         tools:text="fjsmith.1337@gmail.com" />
 </androidx.constraintlayout.widget.ConstraintLayout>

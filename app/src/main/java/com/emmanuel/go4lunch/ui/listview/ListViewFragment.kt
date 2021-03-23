@@ -4,12 +4,9 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,36 +14,27 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.api.response.Prediction
-import com.emmanuel.go4lunch.data.model.Workmate
+import com.emmanuel.go4lunch.data.database.model.RestaurantDetail
 import com.emmanuel.go4lunch.databinding.FragmentListViewBinding
-import com.emmanuel.go4lunch.di.Injection
+import com.emmanuel.go4lunch.ui.settings.SettingsFragment
+import com.emmanuel.go4lunch.utils.FetchLocationEvent
 import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_FINE_LOCATION
-import com.google.android.gms.location.*
+import org.greenrobot.eventbus.EventBus
 
 class ListViewFragment : Fragment() {
-    private var lastKnownLocation: Location? = null
     private lateinit var binding: FragmentListViewBinding
     private lateinit var mAdapter: ListViewAdapter
-    private lateinit var locationRequest: LocationRequest
-    private lateinit var locationCallback: LocationCallback
-    private lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private var factory = Injection.provideViewModelFactory()
-    private lateinit var listViewModel: ListViewViewModel
-    private lateinit var mRestaurantsDetailList: List<NearByRestaurant>
-    private lateinit var mWorkmatesList: List<Workmate>
     private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        listViewModel = ViewModelProvider(this, factory).get(ListViewViewModel::class.java)
         val rootView: View = inflater.inflate(R.layout.fragment_list_view, container, false)
         binding = FragmentListViewBinding.bind(rootView)
         binding.fragmentListViewSwipeContainer.setOnRefreshListener {
@@ -56,46 +44,19 @@ class ListViewFragment : Fragment() {
         binding.listViewRecyclerView.layoutManager = LinearLayoutManager(activity)
         mAdapter = ListViewAdapter()
         binding.listViewRecyclerView.adapter = mAdapter
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         initObserver()
         updateRestaurantList()
         registerLocationUpdate()
         return rootView
     }
-    /**
-     * Register for location updates from [mFusedLocationClient], through callback on the main looper.
-     * Once the location is available the device will be able to launch the query for get restaurant
-     * detail near the current place through [listViewModel]
-     */
 
     private fun registerLocationUpdate() {
         if (isPermissionLocationGranted()) {
-            try {
-                locationRequest = LocationRequest.create()
-                locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                locationRequest.interval = 3000
-                locationCallback = object : LocationCallback() {
-                    override fun onLocationResult(locationResult: LocationResult?) {
-                        locationResult ?: return
-                        if (locationResult.locations.isNotEmpty()) {
-                            lastKnownLocation = locationResult.lastLocation
-                            mainViewModel.saveLocation(lastKnownLocation)
-                            listViewModel.getAllDetailRestaurant(lastKnownLocation)
-                            mFusedLocationClient.removeLocationUpdates(locationCallback)
-                        }
-                    }
-                }
-                mFusedLocationClient.requestLocationUpdates(
-                    locationRequest, locationCallback,
-                    Looper.getMainLooper()
-                )
-                if (!binding.fragmentListViewSwipeContainer.isVisible) {
-                    binding.fragmentListViewProgressBar.visibility = View.VISIBLE
-                    binding.fragmentListViewMessageInformation.text =
-                        getString(R.string.fragment_list_view_message_search_position)
-                }
-            } catch (e: SecurityException) {
-                Log.e("Exception: %s", e.message, e)
+            EventBus.getDefault().post(FetchLocationEvent())
+            if (!binding.fragmentListViewSwipeContainer.isVisible) {
+                binding.fragmentListViewProgressBar.visibility = View.VISIBLE
+                binding.fragmentListViewMessageInformation.text =
+                    getString(R.string.fragment_list_view_message_search_position)
             }
         } else {
             requestPermissions(
@@ -123,14 +84,30 @@ class ListViewFragment : Fragment() {
 
     private fun updateRestaurantList(restaurantsPlacesSearch: List<Prediction>? = null) {
         when {
-            this::mRestaurantsDetailList.isInitialized && this::mWorkmatesList.isInitialized -> {
-                if (mRestaurantsDetailList.isNotEmpty()) {
+            mainViewModel.lastKnownLocation.value == null -> {
+                binding.fragmentListViewMessageInformation.text =
+                    getString(R.string.fragment_list_view_message_localization)
+            }
+            mainViewModel.restaurantsDetailLiveData.value == null && mainViewModel.workmatesLiveData.value != null -> {
+                binding.fragmentListViewMessageInformation.text =
+                    getString(R.string.fragment_list_view_message_download_restaurant)
+            }
+            mainViewModel.restaurantsDetailLiveData.value != null  && mainViewModel.workmatesLiveData.value == null -> {
+                binding.fragmentListViewMessageInformation.text =
+                getString(R.string.fragment_list_view_message_search_workmates)
+            }
+            mainViewModel.restaurantsDetailLiveData.value == null && mainViewModel.workmatesLiveData.value != null -> {
+                binding.fragmentListViewMessageInformation.text =
+                    getString(R.string.fragment_list_view_message_download)
+            }
+            mainViewModel.restaurantsDetailLiveData.value != null && mainViewModel.workmatesLiveData.value != null  -> {
+                if ( mainViewModel.restaurantsDetailLiveData.value!!.isNotEmpty()) {
                     // Display all near restaurants if no research has been done or search field is empty
                     if (restaurantsPlacesSearch == null || restaurantsPlacesSearch.isEmpty()) {
                         mAdapter.updateRestaurantsList(
-                            mRestaurantsDetailList,
-                            lastKnownLocation,
-                            mWorkmatesList
+                            mainViewModel.restaurantsDetailLiveData.value!!,
+                            mainViewModel.lastKnownLocation.value,
+                            mainViewModel.workmatesLiveData.value!!
                         )
                     } else {  // Display near restaurants corresponding to the search
                         val restaurantPlaceIdSearch = mutableListOf<String>()
@@ -138,15 +115,15 @@ class ListViewFragment : Fragment() {
                             if (restaurant.types.contains("restaurant"))
                                 restaurantPlaceIdSearch.add(restaurant.place_id)
                         }
-                        val restaurantDetailSearchList = mutableListOf<NearByRestaurant>()
-                        for (restaurantDetail in mRestaurantsDetailList) {
-                            if (restaurantPlaceIdSearch.contains(restaurantDetail.placeId))
+                        val restaurantDetailSearchList = mutableListOf<RestaurantDetail>()
+                        for (restaurantDetail in mainViewModel.restaurantsDetailLiveData.value!!) {
+                            if (restaurantPlaceIdSearch.contains(restaurantDetail.id))
                                 restaurantDetailSearchList.add(restaurantDetail)
                         }
                         mAdapter.updateRestaurantsList(
                             restaurantDetailSearchList,
-                            lastKnownLocation,
-                            mWorkmatesList
+                            mainViewModel.lastKnownLocation.value,
+                            mainViewModel.workmatesLiveData.value!!
                         )
                     }
                     binding.fragmentListViewMessageInformation.visibility = View.GONE
@@ -158,18 +135,6 @@ class ListViewFragment : Fragment() {
                         getString(R.string.fragment_list_view_message_no_restaurant_found)
                 }
                 binding.fragmentListViewSwipeContainer.isRefreshing = false
-            }
-            !this::mRestaurantsDetailList.isInitialized && this::mWorkmatesList.isInitialized -> {
-                binding.fragmentListViewMessageInformation.text =
-                    getString(R.string.fragment_list_view_message_download_restaurant)
-            }
-            this::mRestaurantsDetailList.isInitialized && !this::mWorkmatesList.isInitialized -> {
-                binding.fragmentListViewMessageInformation.text =
-                getString(R.string.fragment_list_view_message_search_workmates)
-            }
-            !(this::mRestaurantsDetailList.isInitialized && !this::mWorkmatesList.isInitialized) -> {
-                binding.fragmentListViewMessageInformation.text =
-                    getString(R.string.fragment_list_view_message_download)
             }
         }
     }
@@ -197,26 +162,26 @@ class ListViewFragment : Fragment() {
         requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
     ) == PackageManager.PERMISSION_GRANTED
 
-    override fun onStop() {
-        super.onStop()
-        if (!::locationCallback.isInitialized && !::mFusedLocationClient.isInitialized) {
-            mFusedLocationClient.removeLocationUpdates(locationCallback)
-        }
-    }
     private fun initObserver() {
-        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
-            mWorkmatesList = workmates
+        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, {
             updateRestaurantList()
         })
-        listViewModel.restaurantsDetailLiveData.observe(
-            viewLifecycleOwner,
-            { restaurants ->
-                mRestaurantsDetailList = restaurants
-                updateRestaurantList()
-            })
-       mainViewModel.placesAutocompleteLiveData.observe(viewLifecycleOwner,
+        mainViewModel.restaurantsDetailLiveData.observe(viewLifecycleOwner, {
+            updateRestaurantList()
+        })
+        mainViewModel.placesAutocompleteLiveData.observe(viewLifecycleOwner,
             { restaurantsPlaceSearch ->
                 updateRestaurantList(restaurantsPlaceSearch)
+            })
+        mainViewModel.lastKnownLocation.observe(viewLifecycleOwner,
+            { lastKnownLocation ->
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                val radiusPreference = sharedPreferences.getInt(SettingsFragment.KEY_PREF_RESTAURANT_RADIUS,1000)
+                mainViewModel.getAllNearRestaurant(radiusPreference)
+                })
+        mainViewModel.nearRestaurantLiveData.observe(viewLifecycleOwner,
+            { nearRestaurant ->
+                mainViewModel.getAllDetailRestaurant()
             })
     }
 }

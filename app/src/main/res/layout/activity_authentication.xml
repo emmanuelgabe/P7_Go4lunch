@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
-            android:textColor="@color/text_white"
+            android:textColor="@color/white"
             android:textSize="@dimen/material_typography_headline2"
             android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/activity_authentication_text_view_subtitle"
-            android:textColor="@color/text_white"
+            android:textColor="@color/white"
             android:textSize="@dimen/activity_authentication_subtitle"
             android:textStyle="italic" />
 
@@ -52,6 +52,7 @@
         android:layout_gravity="center_horizontal"
         android:background="@color/activity_authentication_facebook_button"
         android:paddingStart="@dimen/activity_authentication_padding_left_button"
+        android:paddingEnd="0dp"
         android:paddingTop="@dimen/spacer_3"
         android:paddingBottom="@dimen/spacer_3"
         app:layout_constraintBottom_toTopOf="@+id/activity_authentication_google_button"

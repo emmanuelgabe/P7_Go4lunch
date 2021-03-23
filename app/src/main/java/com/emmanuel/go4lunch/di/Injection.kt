@@ -1,18 +1,20 @@
 package com.emmanuel.go4lunch.di
 
+import android.content.Context
 import com.emmanuel.go4lunch.data.api.FirestoreService
 import com.emmanuel.go4lunch.data.api.RetrofitBuilder
+import com.emmanuel.go4lunch.data.database.RestaurantDetailDatabase
 import com.emmanuel.go4lunch.data.repository.PlaceRepository
 import com.emmanuel.go4lunch.data.repository.RestaurantRepository
 import com.emmanuel.go4lunch.data.repository.WorkmateRepository
-import com.google.android.libraries.places.api.model.Place
 import com.google.firebase.firestore.FirebaseFirestore
 
 object Injection {
 
-    private fun provideRestaurantDataSource(): RestaurantRepository {
+    private fun provideRestaurantDataSource(context: Context): RestaurantRepository {
         val retrofitBuilder = RetrofitBuilder()
-        return RestaurantRepository(retrofitBuilder)
+        val restaurantDetailDatabase: RestaurantDetailDatabase = RestaurantDetailDatabase.getRestaurantDetailDatabase(context)
+        return RestaurantRepository(retrofitBuilder, restaurantDetailDatabase.restaurantDetailDao())
     }
 
      fun provideWorkmateDataSource(): WorkmateRepository {
@@ -26,11 +28,10 @@ object Injection {
         return PlaceRepository(retrofitBuilder)
     }
 
-    fun provideViewModelFactory(): ViewModelFactory {
+    fun provideViewModelFactory(context: Context): ViewModelFactory {
         val dataSourceWorkmate = provideWorkmateDataSource()
-        val dataSourceRestaurant = provideRestaurantDataSource()
+        val dataSourceRestaurant = provideRestaurantDataSource(context)
         val dataSourcePlace = providePlaceDataSource()
-
         return ViewModelFactory(dataSourceRestaurant, dataSourceWorkmate, dataSourcePlace)
     }
 }

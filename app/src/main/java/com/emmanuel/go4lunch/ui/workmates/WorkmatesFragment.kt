@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.data.model.Restaurant
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.FragmentWorkmatesBinding
 import com.emmanuel.go4lunch.di.Injection
@@ -19,10 +18,7 @@ class WorkmatesFragment : Fragment() {
 
     private lateinit var binding: FragmentWorkmatesBinding
     private lateinit var mAdapter: WorkmateAdapter
-    private var factory = Injection.provideViewModelFactory()
     private lateinit var workmateViewModel: WorkmateViewModel
-    private lateinit var mRestaurantsList: List<Restaurant>
-    private lateinit var mWorkmatesList: List<Workmate>
     private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -34,44 +30,45 @@ class WorkmatesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val factory = Injection.provideViewModelFactory(requireContext())
         workmateViewModel = ViewModelProvider(this, factory).get(WorkmateViewModel::class.java)
         binding = FragmentWorkmatesBinding.bind(view)
         binding.workmatesRecyclerView.layoutManager = LinearLayoutManager(activity)
         mAdapter = WorkmateAdapter()
         binding.workmatesRecyclerView.adapter = mAdapter
+        initObserver()
+        updateWorkmateList()
+    }
 
-        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, { workmates ->
-            mWorkmatesList = workmates
+    private fun initObserver() {
+        mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, {
             updateWorkmateList()
         })
-
-        workmateViewModel.restaurantLiveData.observe(viewLifecycleOwner, { restaurants ->
-            mRestaurantsList = restaurants
+        workmateViewModel.restaurantLiveData.observe(viewLifecycleOwner, {
             updateWorkmateList()
         })
-        mainViewModel.searchInput.observe(viewLifecycleOwner, { workmateSearch ->
-           if (workmateSearch.isNotBlank()) {
+        mainViewModel.textSearchInput.observe(viewLifecycleOwner, { workmateSearch ->
+            if (workmateSearch.isNotBlank()) {
                 val workmateSearchList = mutableListOf<Workmate>()
-                for (workmate in mWorkmatesList) {
-                    if (workmate.name!!.contains(workmateSearch,true)) {
+                for (workmate in mainViewModel.workmatesLiveData.value!!) {
+                    if (workmate.name!!.contains(workmateSearch, true)) {
                         workmateSearchList.add(workmate)
                     }
                 }
                 updateWorkmateList(workmateSearchList)
-            }else{
-               updateWorkmateList()
+            } else {
+                updateWorkmateList()
             }
         })
     }
 
     private fun updateWorkmateList(workmateSearchList: List<Workmate>? = null) {
-        if (this::mRestaurantsList.isInitialized && this::mWorkmatesList.isInitialized) {
-            if (workmateSearchList == null /*|| workmateSearchList.isEmpty()*/) {
-                mAdapter.updateWorkmateList(mWorkmatesList, mRestaurantsList)
+        if (workmateViewModel.restaurantLiveData.value != null && mainViewModel.workmatesLiveData.value != null) {
+            if (workmateSearchList == null ){
+                mAdapter.updateWorkmateList(mainViewModel.workmatesLiveData.value, workmateViewModel.restaurantLiveData.value)
             } else {
-                mAdapter.updateWorkmateList(workmateSearchList, mRestaurantsList)
+                mAdapter.updateWorkmateList(workmateSearchList, workmateViewModel.restaurantLiveData.value)
             }
-
         }
     }
 

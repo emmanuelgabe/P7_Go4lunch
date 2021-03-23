@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.WorkmatesItemBinding
+import com.emmanuel.go4lunch.utils.CircleTransform
 import com.squareup.picasso.Picasso
 
 class RestaurantDetailAdapter :
@@ -38,6 +39,7 @@ class RestaurantDetailAdapter :
             )
             Picasso.get()
                 .load(workmate.avatarURL)
+                .transform(CircleTransform())
                 .resize(60, 60)
                 .into(binding.workmatesItemImageView)
         }

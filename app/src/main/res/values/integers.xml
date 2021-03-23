@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="seek_bar_zoom_map_min">13</integer>
+    <integer name="seek_bar_zoom_map_default">15</integer>
+    <integer name="seek_bar_zoom_map_max">17</integer>
+    <integer name="restaurant_radius_min">600</integer>
+    <integer name="restaurant_radius_default">1000</integer>
+    <integer name="restaurant_radius_max">1400</integer>
+</resources>

@@ -38,6 +38,7 @@
     <string name="fragment_list_view_workmate_number" translatable="false">(%1$s)</string>
     <string name="fragment_list_view_message_download_restaurant">Downloading restaurants information</string>
     <string name="fragment_list_view_message_search_workmates">Downloading users information</string>
+    <string name="fragment_list_view_message_localization">localization in progress</string>
     <string name="fragment_workmates_name" translatable="false">%1$s (%2$s)</string>
     <!-- fragment detail restaurant -->
     <string name="restaurant_detail_fragment_message_no_number_found">no phone found</string>
@@ -57,8 +58,21 @@
     <string name="fragment_workmates_not_decide">%1$s hasn\'t decided yet</string>
     <string name="detail_restaurant_joining_message">%1$s is joining!</string>
     <!-- tools bar  -->
-    <string name="search_restaurants_hint">Search restaurants</string>
+    <string name="search_restaurants_hint">Search</string>
     <string name="main_activity_tools_bar_valid_button_description">button for valid search</string>
     <string name="main_activity_tools_bar_clear_button_description">button for close search bar</string>
     <string name="main_activity_tools_bar_open_button_description">button for open search bar</string>
+    <!-- Notification  -->
+    <string name="notification_title">Your lunch today</string>
+    <string name="notification_text">Your restaurant: %1$s.\nAddress: %2$s \nParticipants: %3$s</string>
+    <!-- Settings  -->
+    <string name="settings_preference_category_profile">Profile</string>
+    <string name="settings_preference_category_alerts">Alerts</string>
+    <string name="settings_preference_category_map">Map</string>
+    <string name="settings_preference_summary_delete_account">Delete Account</string>
+    <string name="settings_preference_summary_notification">Lunch notification</string>
+    <string name="settings_preference_dialog_title_notification_hour">Select an hour</string>
+    <string name="settings_preference_summary_map_zoom">Default map zoom</string>
+    <string name="settings_preference_summary_radius">Restaurant search radius in meters</string>
+    <string name="settings_preference_summary_notification_hour">Notification display hour</string>
 </resources>

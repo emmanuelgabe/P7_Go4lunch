@@ -6,8 +6,6 @@ import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.data.repository.PlaceRepository
 import com.emmanuel.go4lunch.data.repository.RestaurantRepository
 import com.emmanuel.go4lunch.data.repository.WorkmateRepository
-import com.emmanuel.go4lunch.ui.listview.ListViewViewModel
-import com.emmanuel.go4lunch.ui.mapview.MapViewViewModel
 import com.emmanuel.go4lunch.ui.restaurantdetail.RestaurantDetailViewModel
 import com.emmanuel.go4lunch.ui.workmates.WorkmateViewModel
 import java.lang.IllegalArgumentException
@@ -19,20 +17,14 @@ class ViewModelFactory(
     private val placeRepository: PlaceRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ListViewViewModel::class.java)) {
-            return ListViewViewModel(restaurantRepository) as T
-        }
         if (modelClass.isAssignableFrom(RestaurantDetailViewModel::class.java)) {
             return RestaurantDetailViewModel(restaurantRepository, workmateRepository) as T
         }
         if (modelClass.isAssignableFrom(WorkmateViewModel::class.java)) {
             return WorkmateViewModel(workmateRepository) as T
         }
-        if (modelClass.isAssignableFrom(MapViewViewModel::class.java)) {
-            return MapViewViewModel(restaurantRepository) as T
-        }
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(workmateRepository, placeRepository) as T
+            return MainViewModel(workmateRepository, placeRepository,restaurantRepository) as T
         }
         throw IllegalArgumentException("no view model class")
     }

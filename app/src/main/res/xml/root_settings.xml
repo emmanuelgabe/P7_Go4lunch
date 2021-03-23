@@ -1,14 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:asp="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="Profile">
+    <PreferenceCategory android:title="@string/settings_preference_category_profile">
         <Preference
             android:key="dialog_preference_delete_account"
             android:selectable="true"
-            android:title="Delete Account" />
+            android:summary="@string/settings_preference_summary_delete_account" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Notification">
+    <PreferenceCategory android:title="@string/settings_preference_category_alerts">
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="notification_preference"
+            android:summary="@string/settings_preference_summary_notification" />
 
+        <ListPreference
+            android:defaultValue="12"
+            android:dependency="notification_preference"
+            android:dialogTitle="@string/settings_preference_dialog_title_notification_hour"
+            android:entries="@array/notification_hour"
+            android:entryValues="@array/notification_hour"
+            android:key="notification_hour_preference"
+            android:summary="@string/settings_preference_summary_notification_hour" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_preference_category_map">
+        <SeekBarPreference
+            android:defaultValue="@integer/seek_bar_zoom_map_default"
+            android:key="map_zoom_preference"
+            android:max="@integer/seek_bar_zoom_map_max"
+            android:summary="@string/settings_preference_summary_map_zoom"
+            asp:min="@integer/seek_bar_zoom_map_min" />
+        <SeekBarPreference
+            android:defaultValue="@integer/restaurant_radius_default"
+            android:key="restaurant_radius_preference"
+            android:max="@integer/restaurant_radius_max"
+            android:summary="@string/settings_preference_summary_radius"
+            asp:min="@integer/restaurant_radius_min" />
     </PreferenceCategory>
 </PreferenceScreen>
