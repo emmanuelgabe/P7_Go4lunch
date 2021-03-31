@@ -44,6 +44,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    testOptions {
+        animationsDisabled = true
+    }
 }
 
 dependencies {
@@ -52,17 +55,13 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'*/
 
     implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.+'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0-beta01'
-    //test
-    testImplementation('junit:junit:4.13.2')
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0-rc01'
     // Navigation component
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.4'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.4'
@@ -77,7 +76,7 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:8.2.0'
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.firebaseui:firebase-ui-firestore:7.1.1'
-    implementation 'com.google.firebase:firebase-firestore:22.1.1'
+    implementation 'com.google.firebase:firebase-firestore:22.1.2'
     // Google maps
     implementation 'com.google.android.libraries.maps:maps:3.1.0-beta'
     implementation 'com.google.android.libraries.places:places:2.4.0'
@@ -93,11 +92,12 @@ dependencies {
     // Preference
     implementation 'com.takisoft.fix:preference-v7:25.3.0.0'
     // Kotlin coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.9'
     // extension : ViewModel + LiveData
     implementation "android.arch.lifecycle:extensions:1.1.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
     // Kotlin workManager
     implementation "androidx.work:work-runtime-ktx:2.5.0"
     // EventBus
@@ -105,5 +105,37 @@ dependencies {
     // Room
     implementation "androidx.room:room-runtime:2.2.6"
     kapt  "androidx.room:room-compiler:2.2.6"
-}
 
+/*  Mockito
+    testImplementation 'org.mockito:mockito-core:3.7.7'
+    androidTestImplementation 'org.mockito:mockito-android:3.7.7'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+
+    // Test
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1"
+*/
+    // Junit
+    testImplementation 'junit:junit:4.13.2'
+    // androidx.test
+    androidTestImplementation 'androidx.test:runner:1.3.0'
+    androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.2'
+ //   androidTestImplementation 'androidx.test.core:1.1.2'
+    // AndroidJUnitRunner and JUnit Rules
+ //   androidTestImplementation 'androidx.test:runner:1.3.0'
+    androidTestImplementation 'androidx.test:rules:1.3.0'
+   //
+
+    // Espresso
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    def okhttp_version="3.12.0"
+    //noinspection GradleDependency
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    implementation("com.squareup.okhttp3:okhttp") {
+        version { strictly "$okhttp_version" }
+    }
+
+
+}

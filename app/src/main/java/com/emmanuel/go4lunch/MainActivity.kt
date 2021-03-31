@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val restaurantPlaceName = mutableListOf<String>()
             for (restaurant in restaurantsPlaceSearch) {
                 if (restaurant.types.contains("restaurant"))
-                    restaurantPlaceName.add(restaurant.structured_formatting.main_text)
+                    restaurantPlaceName.add(restaurant.structuredFormatting.mainText)
             }
 
             binding.searchAutoCompleteTextView.setAdapter(
@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     Toast.makeText(
                         baseContext,
-                        "You have not yet chosen a restaurant.",
+                        getString(R.string.drawer_toast_message_no_launch),
                         Toast.LENGTH_LONG
                     ).show()
                 }

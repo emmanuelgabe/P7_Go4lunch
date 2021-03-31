@@ -157,7 +157,7 @@
             android:id="@+id/fragment_detail_restaurant_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/design_default_color_on_primary"
+            app:backgroundTint="@color/design_default_color_on_primary"
             android:contentDescription="@string/description_select_restaurant"
             android:elevation="8dp"
             app:tint="@null"

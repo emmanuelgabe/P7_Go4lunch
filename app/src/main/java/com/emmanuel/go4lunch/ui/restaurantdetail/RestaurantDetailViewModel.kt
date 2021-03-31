@@ -1,5 +1,6 @@
 package com.emmanuel.go4lunch.ui.restaurantdetail
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

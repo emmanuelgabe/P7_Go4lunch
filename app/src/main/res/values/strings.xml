@@ -75,4 +75,5 @@
     <string name="settings_preference_summary_map_zoom">Default map zoom</string>
     <string name="settings_preference_summary_radius">Restaurant search radius in meters</string>
     <string name="settings_preference_summary_notification_hour">Notification display hour</string>
+    <string name="drawer_toast_message_no_launch">You have not yet chosen a restaurant.</string>
 </resources>
