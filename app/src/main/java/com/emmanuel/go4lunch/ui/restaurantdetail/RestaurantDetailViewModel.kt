@@ -1,11 +1,10 @@
 package com.emmanuel.go4lunch.ui.restaurantdetail
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.emmanuel.go4lunch.data.database.model.RestaurantDetail
-import com.emmanuel.go4lunch.data.model.Restaurant
+import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
+import com.emmanuel.go4lunch.data.model.RestaurantDetail
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.data.repository.RestaurantRepository
 import com.emmanuel.go4lunch.data.repository.WorkmateRepository
@@ -16,7 +15,7 @@ class RestaurantDetailViewModel(
     private val restaurantRepository: RestaurantRepository,
     private val workmateRepository: WorkmateRepository
 ) : ViewModel() {
-    val currentRestaurantsDetailLiveData = MutableLiveData<RestaurantDetail>()
+    val currentRestaurantsDetailLiveData = MutableLiveData<RestaurantDetailEntity>()
 
     private var getDetailRestaurantJob: Job? = null
     private var updateFavoriteRestaurant: Job? = null
@@ -34,7 +33,7 @@ class RestaurantDetailViewModel(
         }
     }
 
-    private fun addRestaurant(restaurant: Restaurant) {
+    private fun addRestaurant(restaurant: RestaurantDetail) {
         viewModelScope.launch {
             workmateRepository.addRestaurant(restaurant)
         }
@@ -86,12 +85,12 @@ class RestaurantDetailViewModel(
                         workmateRepository.deleteRestaurant(oldFavoriteId)
                     // add new restaurant favorite information if not already add by an other user
                     if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.id, workmates, currentWorkmate.uid))
-                        addRestaurant(Restaurant(currentRestaurantsDetailLiveData.value?.id!!, currentRestaurantsDetailLiveData.value?.name))
+                        addRestaurant(RestaurantDetail(currentRestaurantsDetailLiveData.value?.id!!, currentRestaurantsDetailLiveData.value?.name))
                 }
             } else { // if user has no restaurant in favorite
                 // check if favorite information has already add by an other user
                 if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.id, workmates, currentWorkmate.uid))
-                    addRestaurant(Restaurant(currentRestaurantsDetailLiveData.value?.id!!, currentRestaurantsDetailLiveData.value?.name))
+                    addRestaurant(RestaurantDetail(currentRestaurantsDetailLiveData.value?.id!!, currentRestaurantsDetailLiveData.value?.name))
                 currentWorkmate.restaurantFavorite = currentRestaurantsDetailLiveData.value?.id
                 currentWorkmate.favoriteDate = Calendar.getInstance().time
                 workmateRepository.updateWorkmate(currentWorkmate)
@@ -99,7 +98,7 @@ class RestaurantDetailViewModel(
             }
         }
     
-    private fun getWorkmateWithUpdateLike(currentWorkmate: Workmate): Workmate {
+    fun getWorkmateWithUpdateLike(currentWorkmate: Workmate): Workmate {
         val newLikeList = mutableListOf<String>()
         currentWorkmate.restaurantsIdLike?.let {
             newLikeList.addAll(currentWorkmate.restaurantsIdLike!!)
@@ -116,7 +115,7 @@ class RestaurantDetailViewModel(
         return currentWorkmate
     }
 
-    private fun restaurantIsNeverUse(restaurantId: String, workmates: List<Workmate>, currentUserId: String): Boolean {
+     fun restaurantIsNeverUse(restaurantId: String, workmates: List<Workmate>, currentUserId: String): Boolean {
         var isNeverUse = true
         for (workmate in workmates) {
             if (workmate.uid != currentUserId && workmate.restaurantFavorite.equals(restaurantId))

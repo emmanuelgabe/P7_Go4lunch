@@ -12,7 +12,11 @@
         tools:layout="@layout/fragment_workmates">
         <action
             android:id="@+id/action_workmatesFragment_to_restaurantDetail"
-            app:destination="@id/restaurantDetail" />
+            app:destination="@id/restaurantDetail"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/listViewFragment"
@@ -21,7 +25,11 @@
         tools:layout="@layout/fragment_list_view">
         <action
             android:id="@+id/action_listViewFragment_to_restaurantDetail"
-            app:destination="@id/restaurantDetail" />
+            app:destination="@id/restaurantDetail"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/mapViewFragment"
@@ -30,7 +38,11 @@
         tools:layout="@layout/fragment_map_view">
         <action
             android:id="@+id/action_mapViewFragment_to_restaurantDetail"
-            app:destination="@id/restaurantDetail" />
+            app:destination="@id/restaurantDetail"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"/>
 
     </fragment>
     <fragment
@@ -48,8 +60,16 @@
     </fragment>
     <action
         android:id="@+id/action_global_settingsFragment"
-        app:destination="@id/settingsFragment" />
+        app:destination="@id/settingsFragment"
+        app:enterAnim="@android:anim/fade_in"
+        app:exitAnim="@android:anim/fade_out"
+        app:popEnterAnim="@android:anim/fade_in"
+        app:popExitAnim="@android:anim/fade_out"/>
     <action
         android:id="@+id/action_global_restaurantDetail"
-        app:destination="@id/restaurantDetail" />
+        app:destination="@id/restaurantDetail"
+        app:enterAnim="@android:anim/fade_in"
+        app:exitAnim="@android:anim/fade_out"
+        app:popEnterAnim="@android:anim/fade_in"
+        app:popExitAnim="@android:anim/fade_out"/>
 </navigation>

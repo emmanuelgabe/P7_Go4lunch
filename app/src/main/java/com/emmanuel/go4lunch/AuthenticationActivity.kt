@@ -104,10 +104,7 @@ class AuthenticationActivity : AppCompatActivity() {
                         Log.w(TAG, "Google sign in failed", e)
                     }
                 }
-                response == null -> {
-                    showAlertDialog(getString(R.string.authentication_activity_error_unknown))
-                }
-                response.error?.errorCode == NO_NETWORK -> {
+                response?.error?.errorCode == NO_NETWORK -> {
                     showAlertDialog(getString(R.string.error_no_internet))
                 }
             }
@@ -134,8 +131,6 @@ class AuthenticationActivity : AppCompatActivity() {
                         )
                     )
                     updateUI(mAuth.currentUser)
-                } else {
-                    showAlertDialog(getString(R.string.error_authentication_failed))
                 }
             }
     }

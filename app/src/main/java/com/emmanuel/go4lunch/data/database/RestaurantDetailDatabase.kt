@@ -5,9 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-import com.emmanuel.go4lunch.data.database.model.RestaurantDetail
+import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
 
-@Database(entities = [RestaurantDetail::class], version = 1)
+@Database(entities = [RestaurantDetailEntity::class], version = 1)
  abstract class RestaurantDetailDatabase() : RoomDatabase() {
     abstract fun restaurantDetailDao(): RestaurantDetailDao
 

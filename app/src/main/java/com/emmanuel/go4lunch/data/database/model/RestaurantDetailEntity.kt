@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class RestaurantDetail(
+data class RestaurantDetailEntity(
     @PrimaryKey val id: String,
     @ColumnInfo val name: String?,
     @ColumnInfo(name = "business_status") val businessStatus: String?,

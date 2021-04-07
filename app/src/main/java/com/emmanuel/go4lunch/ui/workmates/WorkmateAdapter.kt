@@ -1,13 +1,15 @@
 package com.emmanuel.go4lunch.ui.workmates
 
 import android.graphics.Typeface
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.data.model.Restaurant
+import com.emmanuel.go4lunch.data.model.RestaurantDetail
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.WorkmatesItemBinding
 import com.emmanuel.go4lunch.utils.CircleTransform
@@ -15,26 +17,64 @@ import com.emmanuel.go4lunch.utils.isSameDay
 import com.squareup.picasso.Picasso
 import java.util.*
 
+class WorkmateAdapter(private val interaction: Interaction? = null) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var mRestaurants = mutableListOf<RestaurantDetail>()
 
-class WorkmateAdapter :
-    RecyclerView.Adapter<WorkmateAdapter.ViewHolder>() {
-    private var mRestaurants = mutableListOf<Restaurant>()
-    private var mWorkmates = mutableListOf<Workmate>()
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = WorkmatesItemBinding.inflate(inflater)
-        return ViewHolder(binding)
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Workmate>() {
+
+        override fun areItemsTheSame(oldItem: Workmate, newItem: Workmate): Boolean {
+            return oldItem.uid.equals(newItem.uid)
+        }
+
+        override fun areContentsTheSame(oldItem: Workmate, newItem: Workmate): Boolean {
+           return oldItem.equals(newItem)
+        }
+
+    }
+    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return WorkamteViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.workmates_item,
+                parent,
+                false
+            ),
+            interaction
+        )
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(
-        mWorkmates[position]
-    )
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is WorkamteViewHolder -> {
+                holder.bind(differ.currentList.get(position))
+            }
+        }
+    }
 
-    override fun getItemCount(): Int = mWorkmates.size
+    override fun getItemCount(): Int {
+        return differ.currentList.size
+    }
 
-    inner class ViewHolder(val binding: WorkmatesItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(workmate: Workmate) {
+    fun submitList(list: List<Workmate>,restaurantList: List<RestaurantDetail>) {
+        mRestaurants.clear()
+        mRestaurants.addAll(restaurantList)
+        differ.submitList(list)
+    }
+
+    inner class WorkamteViewHolder
+    constructor(
+        itemView: View,
+        private val interaction: Interaction?
+    ) : RecyclerView.ViewHolder(itemView) {
+        val binding = WorkmatesItemBinding.bind(itemView)
+
+        fun bind(workmate: Workmate) = with(itemView) {
+            itemView.setOnClickListener {
+                interaction?.onItemSelected(workmate)
+            }
+
             var favoriteRestaurantName: String? = null
             for (restaurant in mRestaurants) {
                 if (workmate.restaurantFavorite.equals(restaurant.id) && isSameDay(
@@ -72,39 +112,12 @@ class WorkmateAdapter :
                 .resize(60, 60)
                 .transform(CircleTransform())
                 .into(binding.workmatesItemImageView)
-            if (workmate.restaurantFavorite != null && isSameDay(
-                    workmate.favoriteDate,
-                    Calendar.getInstance().time
-                )
-            ) {
-                binding.containerWorkmatesItem.setOnClickListener {
-                    val action =
-                        WorkmatesFragmentDirections.actionWorkmatesFragmentToRestaurantDetail(
-                            workmate.restaurantFavorite.toString()
-                        )
-                    it.findNavController().navigate(action)
-
-                    Navigation.createNavigateOnClickListener(R.id.action_workmatesFragment_to_restaurantDetail)
-                }
-            }
+            val translateAnim = AnimationUtils.loadAnimation(binding.root.context,R.anim.recyclerview_item_anim)
+            binding.containerWorkmatesItem.animation = translateAnim
         }
     }
 
-    fun updateWorkmateList(
-        workmateList: List<Workmate>?, restaurantsList: List<Restaurant>?
-    ) {
-
-        workmateList?.let {
-            mWorkmates.clear()
-            mWorkmates.addAll(it)
-        }
-        if (restaurantsList?.size!! > 0) {
-            mRestaurants.clear()
-            mRestaurants.addAll(restaurantsList)
-        }
-        mWorkmates.sortBy { it.restaurantFavorite }
-        mWorkmates.sortBy { it.favoriteDate }
-        mWorkmates.reverse()
-        notifyDataSetChanged()
+    interface Interaction {
+        fun onItemSelected(workmate: Workmate)
     }
 }

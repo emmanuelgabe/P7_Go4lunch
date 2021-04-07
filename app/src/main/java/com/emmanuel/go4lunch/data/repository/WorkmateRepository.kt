@@ -1,7 +1,7 @@
 package com.emmanuel.go4lunch.data.repository
 
 import com.emmanuel.go4lunch.data.api.FirestoreService
-import com.emmanuel.go4lunch.data.model.Restaurant
+import com.emmanuel.go4lunch.data.model.RestaurantDetail
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.utils.UpdateCurrentUserEvent
 import com.emmanuel.go4lunch.utils.UpdateWorkmatesEvent
@@ -38,7 +38,7 @@ class WorkmateRepository(private val firestoreService: FirestoreService) {
         firestoreService.updateUser(workmate.uid, workmateDataMap)
     }
 
-    fun addRestaurant(restaurant: Restaurant) {
+    fun addRestaurant(restaurant: RestaurantDetail) {
         firestoreService.createRestaurant(
             restaurant.id,
             mapOf<String, Any?>("name" to restaurant.name)

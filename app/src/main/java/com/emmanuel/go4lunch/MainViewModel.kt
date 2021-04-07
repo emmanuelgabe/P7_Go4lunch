@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.api.response.Prediction
-import com.emmanuel.go4lunch.data.database.model.RestaurantDetail
+import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.data.repository.PlaceRepository
 import com.emmanuel.go4lunch.data.repository.RestaurantRepository
@@ -32,7 +32,7 @@ class MainViewModel(
     val textSearchInput = MutableLiveData<String>()
     val workmatesLiveData = MutableLiveData<List<Workmate>>()
     val currentUserLiveData = MutableLiveData<Workmate>()
-    val restaurantsDetailLiveData = MutableLiveData<List<RestaurantDetail>>()
+    val restaurantsDetailLiveData = MutableLiveData<List<RestaurantDetailEntity>>()
     val nearRestaurantLiveData = MutableLiveData<List<NearByRestaurant>>()
 
     private var getNearRestaurantJob: Job? = null

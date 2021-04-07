@@ -6,15 +6,23 @@ import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
 import androidx.multidex.MultiDexApplication
+import com.emmanuel.go4lunch.di.AppComponent
+import com.emmanuel.go4lunch.di.DaggerAppComponent
 import com.emmanuel.go4lunch.utils.NOTIFICATION_LUNCH_CHANNEL_ID
 import com.google.android.libraries.places.api.Places
 
-class App : MultiDexApplication() {
+open class App : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         initializeAndroidSDKs()
         setUpChannel()
+       initDagger()
     }
+
+    private fun initDagger(): AppComponent {
+        return DaggerAppComponent.create()
+    }
+
 
     private fun initializeAndroidSDKs() {
         Places.initialize(applicationContext, BuildConfig.GOOGLE_MAP_API_KEY)

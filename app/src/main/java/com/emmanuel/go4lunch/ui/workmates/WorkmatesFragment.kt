@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
@@ -14,7 +16,7 @@ import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.FragmentWorkmatesBinding
 import com.emmanuel.go4lunch.di.Injection
 
-class WorkmatesFragment : Fragment() {
+class WorkmatesFragment : Fragment(),WorkmateAdapter.Interaction {
 
     private lateinit var binding: FragmentWorkmatesBinding
     private lateinit var mAdapter: WorkmateAdapter
@@ -34,7 +36,7 @@ class WorkmatesFragment : Fragment() {
         workmateViewModel = ViewModelProvider(this, factory).get(WorkmateViewModel::class.java)
         binding = FragmentWorkmatesBinding.bind(view)
         binding.workmatesRecyclerView.layoutManager = LinearLayoutManager(activity)
-        mAdapter = WorkmateAdapter()
+        mAdapter = WorkmateAdapter(this)
         binding.workmatesRecyclerView.adapter = mAdapter
         initObserver()
         updateWorkmateList()
@@ -65,9 +67,13 @@ class WorkmatesFragment : Fragment() {
     private fun updateWorkmateList(workmateSearchList: List<Workmate>? = null) {
         if (workmateViewModel.restaurantLiveData.value != null && mainViewModel.workmatesLiveData.value != null) {
             if (workmateSearchList == null ){
-                mAdapter.updateWorkmateList(mainViewModel.workmatesLiveData.value, workmateViewModel.restaurantLiveData.value)
+                mAdapter.submitList(mainViewModel.workmatesLiveData.value!!.toList(),
+                    workmateViewModel.restaurantLiveData.value!!
+                )
             } else {
-                mAdapter.updateWorkmateList(workmateSearchList, workmateViewModel.restaurantLiveData.value)
+                mAdapter.submitList(workmateSearchList,
+                    workmateViewModel.restaurantLiveData.value!!
+                )
             }
         }
     }
@@ -75,5 +81,13 @@ class WorkmatesFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         workmateViewModel.getAllRestaurants()
+    }
+
+    override fun onItemSelected(workmate: Workmate) {
+        val action =
+            WorkmatesFragmentDirections.actionWorkmatesFragmentToRestaurantDetail(
+                workmate.restaurantFavorite.toString()
+            )
+        findNavController().navigate(action)
     }
 }

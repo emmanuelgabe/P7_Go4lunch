@@ -7,7 +7,7 @@
 
         <variable
             name="restaurant"
-            type="com.emmanuel.go4lunch.data.database.model.RestaurantDetail" />
+            type="com.emmanuel.go4lunch.data.model.RestaurantDetail" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -2,68 +2,144 @@ package com.emmanuel.go4lunch.ui.listview
 
 import android.graphics.Color
 import android.location.Location
+import android.os.Bundle
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.RecyclerView
+import android.view.animation.AnimationUtils
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.data.database.model.RestaurantDetail
-import com.emmanuel.go4lunch.data.model.Workmate
+import com.emmanuel.go4lunch.data.model.RestaurantDetail
 import com.emmanuel.go4lunch.databinding.RestaurantItemBinding
 import com.emmanuel.go4lunch.utils.MAX_WITH_ICON
 import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
-import com.emmanuel.go4lunch.utils.isSameDay
 import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.math.roundToInt
 
-class ListViewAdapter :
-    RecyclerView.Adapter<ListViewAdapter.ViewHolder>() {
-    private var mRestaurants = mutableListOf<RestaurantDetail>()
-    private var mLastKnownLocation: Location? = null
-    private var mWorkmates = mutableListOf<Workmate>()
+class ListViewAdapter(private val interaction: Interaction? = null) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = RestaurantItemBinding.inflate(inflater)
-        return ViewHolder(binding)
+    var  lastKnownLocation: Location? = null
+
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<RestaurantDetail>() {
+
+        override fun areItemsTheSame(
+            oldItem: RestaurantDetail,
+            newItem: RestaurantDetail
+        ): Boolean {
+            return  oldItem.id.equals(newItem.id)
+        }
+
+        override fun areContentsTheSame(
+            oldItem: RestaurantDetail,
+            newItem: RestaurantDetail
+        ): Boolean {
+         return  oldItem.equals(newItem)
+        }
+
+        override fun getChangePayload(oldItem: RestaurantDetail, newItem: RestaurantDetail): Any {
+            val bundle = Bundle()
+            newItem.workmateCount?.let {
+                if (newItem.workmateCount?.equals(oldItem) == false) {
+                    bundle.putInt("count", newItem.workmateCount!!)
+                }
+            }
+            return bundle
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(mRestaurants[position])
-        holder.setIsRecyclable(false)
+    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.restaurant_item,
+                parent,
+                false
+            ),
+            interaction
+        )
     }
 
-    override fun getItemCount(): Int = mRestaurants.size
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is ViewHolder -> {
+                holder.bind(differ.currentList.get(position))
+            }
+        }
+    }
 
-    inner class ViewHolder(val binding: RestaurantItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder,position: Int,payloads: MutableList<Any>) {
+        when (holder) {
+            is ViewHolder -> {
+                if (payloads.isEmpty())
+                    super.onBindViewHolder(holder, position, payloads)
+                else {
+                    val bundle = payloads.get(0) as Bundle
+                    val count: Int = bundle.get("count") as Int
+                    holder.bindItemCount(count)
+                }
+            }
+        }
+    }
 
-        fun bind(restaurant: RestaurantDetail) {
+    override fun getItemCount(): Int {
+        return differ.currentList.size
+    }
 
-            binding.restaurant = restaurant
-            if (restaurant.rating != null) {
-                val rating = restaurant.rating.toFloat() * 3 / 5
-                binding.restaurantItemRatingBar.rating = rating.roundToInt().toFloat()
-            } else {
-                binding.restaurantItemRatingBar.visibility = View.GONE
+    fun submitRestaurantDetailList(list: List<RestaurantDetail>, lastLocation:Location) {
+        lastKnownLocation = lastLocation
+        differ.submitList(list)
+    }
+
+    inner class ViewHolder
+    constructor(
+        itemView: View,
+        private val interaction: Interaction?
+    ) : RecyclerView.ViewHolder(itemView) {
+
+        val binding = RestaurantItemBinding.bind(itemView)
+
+        fun bindItemCount(workmateCount: Int?){
+            binding.restaurantItemWorkmatesNumberTextView.text = binding.root.context.getString(
+                R.string.fragment_list_view_workmate_number,
+                workmateCount.toString()
+            )
+            val translateAnim = AnimationUtils.loadAnimation(binding.root.context,R.anim.recyclerview_item_anim)
+            binding.restaurantItemWorkmatesNumberTextView.animation = translateAnim
+        }
+
+        fun bind(restaurantDetail: RestaurantDetail) = with(itemView) {
+            itemView.setOnClickListener {
+                interaction?.onItemSelected(restaurantDetail)
             }
 
-            if (restaurant.businessStatus == "CLOSED_TEMPORARILY" || restaurant.businessStatus == "CLOSED_PERMANENTLY") {
+            binding.restaurant = restaurantDetail
+           if (restaurantDetail.rating != null) {
+               val rating = restaurantDetail.rating.toFloat() * 3 / 5
+               binding.restaurantItemRatingBar.rating = rating.roundToInt().toFloat()
+           } else {
+               binding.restaurantItemRatingBar.rating = 0F
+           }
+
+            if (restaurantDetail.businessStatus == "CLOSED_TEMPORARILY" || restaurantDetail.businessStatus == "CLOSED_PERMANENTLY") {
                 binding.restaurantItemTimetableTextView.text =
                     binding.root.context.getString(R.string.fragment_list_view_close_statut_restaurant)
                 binding.restaurantItemTimetableTextView.setTextColor(Color.RED)
             } else {
                 binding.restaurantItemTimetableTextView.text =
-                    getOpeningHourDayFromWeekList(restaurant)
+                    getOpeningHourDayFromWeekList(restaurantDetail, binding)
             }
-            mLastKnownLocation?.let {
+
+            lastKnownLocation?.let {
                 val distance = FloatArray(1)
                 Location.distanceBetween(
-                    restaurant.lat,
-                    restaurant.lng,
-                    mLastKnownLocation!!.latitude, mLastKnownLocation!!.longitude, distance
+                    restaurantDetail.lat!!,
+                    restaurantDetail.lng!!,
+                    lastKnownLocation!!.latitude, lastKnownLocation!!.longitude, distance
                 )
                 binding.restaurantItemDistanceTextView.text =
                     binding.root.context.getString(
@@ -71,11 +147,11 @@ class ListViewAdapter :
                         distance[0].roundToInt().toString()
                     )
             }
-            if (restaurant.photoReference != null) {
+            if (restaurantDetail.photoReference != null) {
                 Picasso.get()
                     .load(
                         getPhotoUrlFromReference(
-                            restaurant.photoReference,
+                            restaurantDetail.photoReference,
                             MAX_WITH_ICON
                         )
                     )
@@ -84,27 +160,19 @@ class ListViewAdapter :
             } else {
                 binding.restaurantItemImage.setImageResource(R.drawable.ic_no_photography_24)
             }
-            binding.restaurantItemContainer.setOnClickListener {
-                val action =
-                    ListViewFragmentDirections.actionListViewFragmentToRestaurantDetail(restaurant.id)
-                it.findNavController().navigate(action)
-            }
-            var workmateCount = 0
-            for (workmate in mWorkmates) {
-                if (workmate.restaurantFavorite.equals(restaurant.id) && isSameDay(
-                        workmate.favoriteDate,
-                        Calendar.getInstance().time
-                    )
-                )
-                    workmateCount++
-            }
             binding.restaurantItemWorkmatesNumberTextView.text = binding.root.context.getString(
                 R.string.fragment_list_view_workmate_number,
-                workmateCount.toString()
+                restaurantDetail.workmateCount.toString()
             )
+            val translateAnim = AnimationUtils.loadAnimation(binding.root.context,R.anim.recyclerview_item_anim)
+            binding.restaurantItemContainer.animation = translateAnim
+
         }
 
-        private fun getOpeningHourDayFromWeekList(restaurant: RestaurantDetail): String {
+        private fun getOpeningHourDayFromWeekList(
+            restaurant: RestaurantDetail,
+            binding: RestaurantItemBinding
+        ): String {
             val openingHours: String? = when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
                 1 -> restaurant.weekdayText1
                 2 -> restaurant.weekdayText2
@@ -123,16 +191,7 @@ class ListViewAdapter :
         }
     }
 
-    fun updateRestaurantsList(
-        restaurantsDetail: List<RestaurantDetail>,
-        lastKnownLocation: Location?,
-        workmatesList: List<Workmate>
-    ) {
-        mLastKnownLocation = lastKnownLocation
-        mRestaurants.clear()
-        mRestaurants.addAll(restaurantsDetail)
-        mWorkmates.clear()
-        mWorkmates.addAll(workmatesList)
-        notifyDataSetChanged()
+    interface Interaction {
+        fun onItemSelected(item: RestaurantDetail)
     }
 }

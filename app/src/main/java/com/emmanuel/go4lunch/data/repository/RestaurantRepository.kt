@@ -5,7 +5,7 @@ import com.emmanuel.go4lunch.BuildConfig
 import com.emmanuel.go4lunch.data.api.RetrofitBuilder
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.database.RestaurantDetailDao
-import com.emmanuel.go4lunch.data.database.model.RestaurantDetail
+import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
 
 class RestaurantRepository(private val retrofitBuilder: RetrofitBuilder, private val restaurantDetailDao: RestaurantDetailDao) {
 
@@ -40,7 +40,7 @@ class RestaurantRepository(private val retrofitBuilder: RetrofitBuilder, private
      * Fetch restaurant detail from local room database, if it is not present download the restaurant details from google api to save it in the database.
      * If the restaurant was saved more than two days ago. its data will be updated in the database
      */
-    suspend fun getDetailRestaurant(id: String): RestaurantDetail {
+    suspend fun getDetailRestaurant(id: String): RestaurantDetailEntity {
         if (!restaurantDetailDao.restaurantExists(id)){
             val newRestaurant = getDetailRestaurantFromGoogleApi(id)!!
             restaurantDetailDao.insertRestaurantDetail(instanceRestaurantDetailFromNearByRestaurant(newRestaurant))
@@ -53,8 +53,8 @@ class RestaurantRepository(private val retrofitBuilder: RetrofitBuilder, private
         return restaurantDetailDao.getRestaurantDetailsById(id)
     }
 
-    suspend fun getAllDetailRestaurant(nearRestaurants: List<NearByRestaurant>?): List<RestaurantDetail> {
-        val restaurantsDetailList = mutableListOf<RestaurantDetail>()
+    suspend fun getAllDetailRestaurant(nearRestaurants: List<NearByRestaurant>?): List<RestaurantDetailEntity> {
+        val restaurantsDetailList = mutableListOf<RestaurantDetailEntity>()
         nearRestaurants?.let {
             for (restaurant in nearRestaurants) {
                 restaurantsDetailList.add(getDetailRestaurant(restaurant.placeId))
@@ -63,8 +63,8 @@ class RestaurantRepository(private val retrofitBuilder: RetrofitBuilder, private
         return restaurantsDetailList
     }
 
-    private fun instanceRestaurantDetailFromNearByRestaurant(restaurant: NearByRestaurant): RestaurantDetail {
-        return RestaurantDetail(
+    private fun instanceRestaurantDetailFromNearByRestaurant(restaurant: NearByRestaurant): RestaurantDetailEntity {
+        return RestaurantDetailEntity(
             id = restaurant.placeId,
             name = restaurant.name,
             businessStatus = restaurant.businessStatus,

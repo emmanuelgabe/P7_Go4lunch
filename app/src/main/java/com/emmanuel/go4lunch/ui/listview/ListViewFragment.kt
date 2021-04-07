@@ -14,20 +14,26 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.api.response.Prediction
-import com.emmanuel.go4lunch.data.database.model.RestaurantDetail
+import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
+import com.emmanuel.go4lunch.data.model.RestaurantDetail
+import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.FragmentListViewBinding
 import com.emmanuel.go4lunch.ui.settings.SettingsFragment
 import com.emmanuel.go4lunch.utils.FetchLocationEvent
 import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_FINE_LOCATION
+import com.emmanuel.go4lunch.utils.isSameDay
 import org.greenrobot.eventbus.EventBus
+import java.util.*
 
-class ListViewFragment : Fragment() {
+class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
     private lateinit var binding: FragmentListViewBinding
+   // private lateinit var mAdapter: ListViewAdapter
     private lateinit var mAdapter: ListViewAdapter
     private val mainViewModel: MainViewModel by activityViewModels()
 
@@ -42,7 +48,7 @@ class ListViewFragment : Fragment() {
         }
         binding = FragmentListViewBinding.bind(rootView)
         binding.listViewRecyclerView.layoutManager = LinearLayoutManager(activity)
-        mAdapter = ListViewAdapter()
+        mAdapter = ListViewAdapter(this)
         binding.listViewRecyclerView.adapter = mAdapter
         initObserver()
         updateRestaurantList()
@@ -104,27 +110,35 @@ class ListViewFragment : Fragment() {
                 if ( mainViewModel.restaurantsDetailLiveData.value!!.isNotEmpty()) {
                     // Display all near restaurants if no research has been done or search field is empty
                     if (restaurantsPlacesSearch == null || restaurantsPlacesSearch.isEmpty()) {
-                        mAdapter.updateRestaurantsList(
-                            mainViewModel.restaurantsDetailLiveData.value!!,
-                            mainViewModel.lastKnownLocation.value,
-                            mainViewModel.workmatesLiveData.value!!
+                       val restaurantDetail = mutableListOf<RestaurantDetailEntity>()
+                        restaurantDetail.addAll(mainViewModel.restaurantsDetailLiveData.value!!)
+
+                        val restaurantDetailWithCount = getRestaurantDetailWithWorkmateCount(
+                            mainViewModel.workmatesLiveData.value!!,
+                            restaurantDetail.toList()
                         )
+                        mAdapter.submitRestaurantDetailList(
+                            restaurantDetailWithCount, mainViewModel.lastKnownLocation.value!!
+                        )
+                        binding.listViewRecyclerView.smoothScrollToPosition(0)
                     } else {  // Display near restaurants corresponding to the search
                         val restaurantPlaceIdSearch = mutableListOf<String>()
                         for (restaurant in restaurantsPlacesSearch) {
                             if (restaurant.types.contains("restaurant"))
                                 restaurantPlaceIdSearch.add(restaurant.place_id)
                         }
-                        val restaurantDetailSearchList = mutableListOf<RestaurantDetail>()
+                        val restaurantDetailSearchList = mutableListOf<RestaurantDetailEntity>()
                         for (restaurantDetail in mainViewModel.restaurantsDetailLiveData.value!!) {
                             if (restaurantPlaceIdSearch.contains(restaurantDetail.id))
                                 restaurantDetailSearchList.add(restaurantDetail)
                         }
-                        mAdapter.updateRestaurantsList(
-                            restaurantDetailSearchList,
-                            mainViewModel.lastKnownLocation.value,
-                            mainViewModel.workmatesLiveData.value!!
+                        mAdapter.submitRestaurantDetailList(
+                            getRestaurantDetailWithWorkmateCount(
+                                mainViewModel.workmatesLiveData.value!!,
+                                restaurantDetailSearchList.toList()
+                            ), mainViewModel.lastKnownLocation.value!!
                         )
+                        binding.listViewRecyclerView.smoothScrollToPosition(0)
                     }
                     binding.fragmentListViewMessageInformation.visibility = View.GONE
                     binding.fragmentListViewProgressBar.visibility = View.GONE
@@ -183,5 +197,55 @@ class ListViewFragment : Fragment() {
             { nearRestaurant ->
                 mainViewModel.getAllDetailRestaurant()
             })
+    }
+
+    fun getRestaurantDetailWithWorkmateCount(
+        workmates: List<Workmate>, restaurants: List<RestaurantDetailEntity>
+    ): MutableList<RestaurantDetail> {
+        val updateRestaurantDetailList = mutableListOf<RestaurantDetail>()
+        for (restaurant in restaurants) {
+            var count = 0
+            for (workmate in workmates) {
+                if (workmate.restaurantFavorite.equals(restaurant.id) && isSameDay(
+                        workmate.favoriteDate,
+                        Calendar.getInstance().time
+                    )
+                )
+                    count++
+            }
+            /**
+             *  [RestaurantDetail]
+             */
+            val restaurantDetail = RestaurantDetail(
+                restaurant.id,
+                restaurant.name,
+                restaurant.businessStatus,
+                restaurant.rating,
+                restaurant.ratingNumber,
+                restaurant.address,
+                restaurant.photoReference,
+                restaurant.lat,
+                restaurant.lng,
+                restaurant.openNow,
+                restaurant.creationTimestamp,
+                restaurant.weekdayText1,
+                restaurant.weekdayText2,
+                restaurant.weekdayText3,
+                restaurant.weekdayText4,
+                restaurant.weekdayText5,
+                restaurant.weekdayText6,
+                restaurant.weekdayText7,
+                workmateCount = null
+            )
+            restaurantDetail.workmateCount = count
+            // restaurant.workmateCount = workmateCount
+            updateRestaurantDetailList.add(restaurantDetail)
+        }
+        return updateRestaurantDetailList
+    }
+
+    override fun onItemSelected(item: RestaurantDetail) {
+        val action = ListViewFragmentDirections.actionListViewFragmentToRestaurantDetail(item.id)
+        findNavController().navigate(action)
     }
 }

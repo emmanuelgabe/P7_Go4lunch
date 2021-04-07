@@ -51,11 +51,8 @@ android {
 
 dependencies {
 
-/*    implementation "androidx.multidex:multidex:2.0.1"
-    implementation 'com.android.support:multidex:1.0.3'*/
-
     implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.+'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -97,7 +94,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.9'
     // extension : ViewModel + LiveData
     implementation "android.arch.lifecycle:extensions:1.1.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
     // Kotlin workManager
     implementation "androidx.work:work-runtime-ktx:2.5.0"
     // EventBus
@@ -105,30 +102,25 @@ dependencies {
     // Room
     implementation "androidx.room:room-runtime:2.2.6"
     kapt  "androidx.room:room-compiler:2.2.6"
-
-/*  Mockito
-    testImplementation 'org.mockito:mockito-core:3.7.7'
-    androidTestImplementation 'org.mockito:mockito-android:3.7.7'
-    testImplementation 'org.mockito:mockito-inline:2.13.0'
-
-    // Test
-    testImplementation "androidx.arch.core:core-testing:2.1.0"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1"
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.1"
-*/
     // Junit
     testImplementation 'junit:junit:4.13.2'
+    //MockAPI
+    testImplementation "io.mockk:mockk:1.9.3"
+    testImplementation("io.mockk:mockk:1.9.3")
+
     // androidx.test
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.2'
- //   androidTestImplementation 'androidx.test.core:1.1.2'
-    // AndroidJUnitRunner and JUnit Rules
- //   androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test:rules:1.3.0'
-   //
 
     // Espresso
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    // Dagger
+    def dagger_version = "2.29.1"
+    implementation "com.google.dagger:dagger:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
 
     def okhttp_version="3.12.0"
     //noinspection GradleDependency

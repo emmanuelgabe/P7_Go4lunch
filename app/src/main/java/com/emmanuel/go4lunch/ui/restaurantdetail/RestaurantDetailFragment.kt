@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.*
 import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.data.database.model.RestaurantDetail
+import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.FragmentRestaurantDetailBinding
 import com.emmanuel.go4lunch.di.Injection
@@ -83,7 +83,7 @@ import kotlin.math.roundToInt
             })
     }
 
-    private fun initUi(currentRestaurant: RestaurantDetail) {
+    private fun initUi(currentRestaurant: RestaurantDetailEntity) {
         binding.restaurant = currentRestaurant
         if (currentRestaurant.rating != null) {
             val rating = currentRestaurant.rating.toFloat() * 3 / 5
@@ -247,7 +247,7 @@ import kotlin.math.roundToInt
             if (workmate.restaurantFavorite.equals(restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.id) && isSameDay(workmate.favoriteDate,Calendar.getInstance().time))
                 workmatesIsJoining.add(workmate)
         }
-        mAdapter.updateWorkmateList(workmatesIsJoining.toList())
+        mAdapter.submitList(workmatesIsJoining.toList())
     }
 
     private fun setUpAlarmManager() {
