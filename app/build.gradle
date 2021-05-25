@@ -6,6 +6,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'androidx.navigation.safeargs.kotlin'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 30
@@ -18,11 +19,11 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.emmanuel.go4lunch.Go4LaunchTestRunner"
         Properties properties = new Properties()
         properties.load(rootProject.file("local.properties").newDataInputStream())
         buildConfigField "String", "GOOGLE_MAP_API_KEY", properties.getProperty("GOOGLE_KEY", "")
-     }
+    }
 
     dataBinding {
         enabled = true
@@ -47,33 +48,38 @@ android {
     testOptions {
         animationsDisabled = true
     }
+    packagingOptions {
+        exclude 'META-INF/AL2.0'
+        exclude "**/attach_hotspot_windows.dll"
+        exclude "META-INF/licenses/**"
+        exclude 'META-INF/LGPL2.1'
+    }
 }
 
 dependencies {
-
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0-rc01'
+    implementation 'androidx.appcompat:appcompat:1.4.0-alpha01'
     // Navigation component
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.4'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.4'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
     // Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:26.5.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-database:19.7.0'
-    implementation 'com.google.firebase:firebase-auth:20.0.3'
+    implementation 'com.google.firebase:firebase-database:20.0.0'
+    implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
     implementation 'com.facebook.android:facebook-android-sdk:8.2.0'
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.firebaseui:firebase-ui-firestore:7.1.1'
-    implementation 'com.google.firebase:firebase-firestore:22.1.2'
+    implementation 'com.google.firebase:firebase-firestore:23.0.0'
     // Google maps
     implementation 'com.google.android.libraries.maps:maps:3.1.0-beta'
     implementation 'com.google.android.libraries.places:places:2.4.0'
@@ -90,24 +96,26 @@ dependencies {
     implementation 'com.takisoft.fix:preference-v7:25.3.0.0'
     // Kotlin coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.9'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.3'
     // extension : ViewModel + LiveData
     implementation "android.arch.lifecycle:extensions:1.1.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
     // Kotlin workManager
-    implementation "androidx.work:work-runtime-ktx:2.5.0"
+    implementation "androidx.work:work-runtime-ktx:2.6.0-alpha02"
     // EventBus
     implementation 'org.greenrobot:eventbus:3.0.0'
     // Room
-    implementation "androidx.room:room-runtime:2.2.6"
-    kapt  "androidx.room:room-compiler:2.2.6"
+    implementation "androidx.room:room-runtime:2.4.0-alpha02"
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
+    kapt "androidx.room:room-compiler:2.4.0-alpha02"
     // Junit
     testImplementation 'junit:junit:4.13.2'
-    //MockAPI
-    testImplementation "io.mockk:mockk:1.9.3"
-    testImplementation("io.mockk:mockk:1.9.3")
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
 
+/*    //MockK
+    testImplementation 'io.mockk:mockk:1.9.3'
+    androidTestImplementation 'io.mockk:mockk-android:1.9.3'*/
     // androidx.test
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.2'
@@ -116,18 +124,33 @@ dependencies {
     // Espresso
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    // Dagger
-    def dagger_version = "2.29.1"
-    implementation "com.google.dagger:dagger:$dagger_version"
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
+    // coroutine test
+    androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
+    testImplementation  'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
 
-    def okhttp_version="3.12.0"
+    // Dagger 2
+    implementation "com.google.dagger:dagger:2.29.1"
+    kapt "com.google.dagger:dagger-compiler:2.29.1"
+    kaptAndroidTest "com.google.dagger:dagger-compiler:2.29.1"
+    kaptTest 'com.google.dagger:dagger-compiler:2.29.1'
+    androidTestImplementation "com.google.dagger:dagger:2.29.1"
+    kaptAndroidTest "com.google.dagger:dagger-compiler:2.29.1"
+
+    testImplementation "org.mockito:mockito-core:3.9.0"
+    androidTestImplementation "org.mockito:mockito-android:3.9.0"
+
+    def okhttp_version = "3.12.0"
     //noinspection GradleDependency
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
     implementation("com.squareup.okhttp3:okhttp") {
         version { strictly "$okhttp_version" }
     }
-
-
+    androidTestImplementation 'com.jakewharton.espresso:okhttp3-idling-resource:1.0.0'
+    implementation "androidx.core:core-ktx:1.5.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.10"
+}
+repositories {
+    mavenCentral()
 }

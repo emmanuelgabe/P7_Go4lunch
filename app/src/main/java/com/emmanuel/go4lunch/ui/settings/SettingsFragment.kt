@@ -8,9 +8,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.emmanuel.go4lunch.App
 import com.emmanuel.go4lunch.AuthenticationActivity
 import com.emmanuel.go4lunch.R
-import com.emmanuel.go4lunch.di.Injection
+import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
@@ -18,11 +19,17 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 class SettingsFragment : PreferenceFragmentCompat() {
+    @Inject lateinit var workmateRepository: WorkmateRepository
     private lateinit var mAccountDialogPreference: Preference
     private lateinit var mAuth: FirebaseAuth
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        App.app().appComponent.inject(this)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,7 +52,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     val user = mAuth.currentUser
                     CoroutineScope(IO).launch {
                         launch {
-                            val workmateRepository = Injection.provideWorkmateDataSource()
                             workmateRepository.deleteWorkmate(user!!.uid)
                         }.join()
                         launch {

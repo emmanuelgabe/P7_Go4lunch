@@ -33,7 +33,7 @@ class MainViewModel(
     val workmatesLiveData = MutableLiveData<List<Workmate>>()
     val currentUserLiveData = MutableLiveData<Workmate>()
     val restaurantsDetailLiveData = MutableLiveData<List<RestaurantDetailEntity>>()
-    val nearRestaurantLiveData = MutableLiveData<List<NearByRestaurant>>()
+    val nearRestaurantsLiveData = MutableLiveData<List<NearByRestaurant>>()
 
     private var getNearRestaurantJob: Job? = null
     private var placeJob: Job? = null
@@ -100,7 +100,7 @@ class MainViewModel(
         if (lastKnownLocation.value != null) {
             getRestaurantJob = viewModelScope.launch(Dispatchers.IO) {
                 val restaurantsDetail =
-                    restaurantRepository.getAllDetailRestaurant(nearRestaurantLiveData.value)
+                    restaurantRepository.getAllDetailRestaurant(nearRestaurantsLiveData.value)
                 restaurantsDetailLiveData.postValue(restaurantsDetail)
             }
         }
@@ -114,9 +114,9 @@ class MainViewModel(
             }
         }
         getNearRestaurantJob = viewModelScope.launch(Dispatchers.IO) {
-            val restaurantsDetail =
+            val nearRestaurants =
                 restaurantRepository.getAllNearRestaurant(lastKnownLocation.value, radius)
-            nearRestaurantLiveData.postValue(restaurantsDetail)
+            nearRestaurantsLiveData.postValue(nearRestaurants)
         }
     }
 

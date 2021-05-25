@@ -7,22 +7,27 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.emmanuel.go4lunch.App
 import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.FragmentWorkmatesBinding
-import com.emmanuel.go4lunch.di.Injection
+import com.emmanuel.go4lunch.di.ViewModelFactory
+import javax.inject.Inject
 
 class WorkmatesFragment : Fragment(),WorkmateAdapter.Interaction {
-
+    @Inject lateinit var factory: ViewModelFactory
     private lateinit var binding: FragmentWorkmatesBinding
     private lateinit var mAdapter: WorkmateAdapter
     private lateinit var workmateViewModel: WorkmateViewModel
     private val mainViewModel: MainViewModel by activityViewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        App.app().appComponent.inject(this)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,7 +37,6 @@ class WorkmatesFragment : Fragment(),WorkmateAdapter.Interaction {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val factory = Injection.provideViewModelFactory(requireContext())
         workmateViewModel = ViewModelProvider(this, factory).get(WorkmateViewModel::class.java)
         binding = FragmentWorkmatesBinding.bind(view)
         binding.workmatesRecyclerView.layoutManager = LinearLayoutManager(activity)

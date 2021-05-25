@@ -33,7 +33,6 @@ import java.util.*
 
 class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
     private lateinit var binding: FragmentListViewBinding
-   // private lateinit var mAdapter: ListViewAdapter
     private lateinit var mAdapter: ListViewAdapter
     private val mainViewModel: MainViewModel by activityViewModels()
 
@@ -193,7 +192,7 @@ class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
                 val radiusPreference = sharedPreferences.getInt(SettingsFragment.KEY_PREF_RESTAURANT_RADIUS,1000)
                 mainViewModel.getAllNearRestaurant(radiusPreference)
                 })
-        mainViewModel.nearRestaurantLiveData.observe(viewLifecycleOwner,
+        mainViewModel.nearRestaurantsLiveData.observe(viewLifecycleOwner,
             { nearRestaurant ->
                 mainViewModel.getAllDetailRestaurant()
             })
@@ -213,9 +212,7 @@ class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
                 )
                     count++
             }
-            /**
-             *  [RestaurantDetail]
-             */
+            // It's necessary to use [RestaurantDetail] instead of directly [RestaurantDetailEntity] for the proper functioning of DiffUtil
             val restaurantDetail = RestaurantDetail(
                 restaurant.id,
                 restaurant.name,

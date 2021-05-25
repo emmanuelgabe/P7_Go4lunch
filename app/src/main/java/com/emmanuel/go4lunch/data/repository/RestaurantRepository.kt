@@ -2,24 +2,27 @@ package com.emmanuel.go4lunch.data.repository
 
 import android.location.Location
 import com.emmanuel.go4lunch.BuildConfig
-import com.emmanuel.go4lunch.data.api.RetrofitBuilder
+import com.emmanuel.go4lunch.data.api.GoogleMapsService
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.database.RestaurantDetailDao
 import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
 
-class RestaurantRepository(private val retrofitBuilder: RetrofitBuilder, private val restaurantDetailDao: RestaurantDetailDao) {
+class RestaurantRepository(
+    private val googleMapService: GoogleMapsService,
+    private val restaurantDetailDao: RestaurantDetailDao
+) {
 
     suspend fun getAllNearRestaurant(
         lastKnownLocation: Location?,
-        radius: Int,
+        radius: Int
     ): List<NearByRestaurant>? {
         val response =
-            retrofitBuilder.googleMapsService.getNearRestaurant(
+            googleMapService.getNearRestaurant(
                 "${lastKnownLocation?.latitude},${lastKnownLocation?.longitude}", radius,
                 "restaurant",
                 BuildConfig.GOOGLE_MAP_API_KEY
             )
-        return response.body()?.results
+        return response.results
     }
 
     private suspend fun getDetailRestaurantFromGoogleApi(restaurantsId: String): NearByRestaurant? {
@@ -28,12 +31,12 @@ class RestaurantRepository(private val retrofitBuilder: RetrofitBuilder, private
             "vicinity", "formatted_phone_number", "price_level", "geometry",
             "photo", "opening_hours", "formatted_phone_number", "website"
         )
-        val response = retrofitBuilder.googleMapsService.getDetails(
+        val response = googleMapService.getDetails(
             restaurantsId,
             fields.joinToString(separator = ","),
             BuildConfig.GOOGLE_MAP_API_KEY
         )
-        return response.body()?.result
+        return response.result
     }
 
     /**
@@ -41,13 +44,17 @@ class RestaurantRepository(private val retrofitBuilder: RetrofitBuilder, private
      * If the restaurant was saved more than two days ago. its data will be updated in the database
      */
     suspend fun getDetailRestaurant(id: String): RestaurantDetailEntity {
-        if (!restaurantDetailDao.restaurantExists(id)){
+        if (!restaurantDetailDao.restaurantExists(id)) {
             val newRestaurant = getDetailRestaurantFromGoogleApi(id)!!
-            restaurantDetailDao.insertRestaurantDetail(instanceRestaurantDetailFromNearByRestaurant(newRestaurant))
-        }else{
-            if ((System.currentTimeMillis() - restaurantDetailDao.getRestaurantDetailsTimestamp(id)) >  TIME_BEFORE_UPDATE){
+            restaurantDetailDao.insertRestaurantDetail(
+                instanceRestaurantDetailFromNearByRestaurant(newRestaurant)
+            )
+        } else {
+            if ((System.currentTimeMillis() - restaurantDetailDao.getRestaurantDetailsTimestamp(id)) > TIME_BEFORE_UPDATE) {
                 val updatedRestaurant = getDetailRestaurantFromGoogleApi(id)!!
-                restaurantDetailDao.updateRestaurantDetail(instanceRestaurantDetailFromNearByRestaurant(updatedRestaurant))
+                restaurantDetailDao.updateRestaurantDetail(
+                    instanceRestaurantDetailFromNearByRestaurant(updatedRestaurant)
+                )
             }
         }
         return restaurantDetailDao.getRestaurantDetailsById(id)
@@ -88,7 +95,8 @@ class RestaurantRepository(private val retrofitBuilder: RetrofitBuilder, private
             weekdayText7 = restaurant.openingHours?.weekdayText?.get(6),
         )
     }
-    companion object{
+
+    companion object {
         const val TIME_BEFORE_UPDATE = 172800000 // 2 days in ms
     }
 }

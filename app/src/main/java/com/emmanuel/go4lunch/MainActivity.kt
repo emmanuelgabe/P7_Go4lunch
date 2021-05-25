@@ -1,6 +1,7 @@
 package com.emmanuel.go4lunch
 
 import android.content.Intent
+import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.text.Editable
@@ -25,7 +26,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.emmanuel.go4lunch.databinding.ActivityMainBinding
 import com.emmanuel.go4lunch.databinding.ActivityMainDrawerHeaderBinding
-import com.emmanuel.go4lunch.di.Injection
+import com.emmanuel.go4lunch.di.ViewModelFactory
 import com.emmanuel.go4lunch.ui.settings.SettingsFragment
 import com.emmanuel.go4lunch.utils.CircleTransform
 import com.emmanuel.go4lunch.utils.FetchLocationEvent
@@ -39,9 +40,10 @@ import com.squareup.picasso.Picasso
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
+    @Inject lateinit var factory: ViewModelFactory
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -53,7 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val factory = Injection.provideViewModelFactory(applicationContext)
+        App.app().appComponent.inject(this)
         mainViewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
         binding = ActivityMainBinding.inflate(layoutInflater)
         headerBinding =
@@ -243,7 +245,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             try {
                 locationRequest = LocationRequest.create()
                 locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                locationRequest.interval = 1000
+                locationRequest.interval = 10
                 locationCallback = object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult?) {
                         locationResult ?: return

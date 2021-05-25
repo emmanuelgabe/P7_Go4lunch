@@ -8,6 +8,7 @@ import com.emmanuel.go4lunch.utils.UpdateWorkmatesEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import org.greenrobot.eventbus.EventBus
+import javax.inject.Inject
 
 class WorkmateRepository(private val firestoreService: FirestoreService) {
 

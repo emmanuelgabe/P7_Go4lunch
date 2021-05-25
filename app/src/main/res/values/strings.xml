@@ -29,7 +29,8 @@
     <string name="description_gps_location_button">gps location button</string>
     <string name="description_select_restaurant">select restaurant</string>
     <!-- fragment list view -->
-    <string name="fragment_list_view_close_statut_restaurant">close</string>
+    <string name="fragment_list_view_close_permanently_restaurant">Permanently close</string>
+    <string name="fragment_list_view_close_temporarily_restaurant">Temporarily close</string>
     <string name="fragment_list_view_message_download">Downloading restaurants and users information</string>
     <string name="fragment_list_view_message_no_permission">Permission to access your location is required to find restaurant swipe down to try again</string>
     <string name="fragment_list_view_message_search_position">Search for current position</string>
@@ -76,4 +77,5 @@
     <string name="settings_preference_summary_radius">Restaurant search radius in meters</string>
     <string name="settings_preference_summary_notification_hour">Notification display hour</string>
     <string name="drawer_toast_message_no_launch">You have not yet chosen a restaurant.</string>
+    <string name="fragment_list_view_close_today_restaurant">today</string>
 </resources>

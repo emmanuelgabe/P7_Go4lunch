@@ -1,28 +1,36 @@
 package com.emmanuel.go4lunch
 
-
+import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
-import androidx.multidex.MultiDexApplication
 import com.emmanuel.go4lunch.di.AppComponent
 import com.emmanuel.go4lunch.di.DaggerAppComponent
+import com.emmanuel.go4lunch.di.modules.ContextModule
+import com.emmanuel.go4lunch.di.modules.DaoModule
 import com.emmanuel.go4lunch.utils.NOTIFICATION_LUNCH_CHANNEL_ID
 import com.google.android.libraries.places.api.Places
 
-open class App : MultiDexApplication() {
+open class App : Application() {
+    lateinit var appComponent: AppComponent
+
     override fun onCreate() {
         super.onCreate()
+        application = this
         initializeAndroidSDKs()
         setUpChannel()
-       initDagger()
+        appComponent = initDagger()
     }
 
-    private fun initDagger(): AppComponent {
-        return DaggerAppComponent.create()
+    protected open fun initDagger(): AppComponent {
+        return DaggerAppComponent.builder()
+            // .contextModule(ContextModule(applicationContext))
+            .daoModule(DaoModule(applicationContext))
+            .build()
     }
 
+    fun appComponent() = appComponent
 
     private fun initializeAndroidSDKs() {
         Places.initialize(applicationContext, BuildConfig.GOOGLE_MAP_API_KEY)
@@ -35,7 +43,7 @@ open class App : MultiDexApplication() {
                 "Lunch channel",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "description de la chaine"
+                description = "lunch channel"
                 enableLights(true)
                 lightColor = Color.GREEN
                 enableVibration(true)
@@ -46,5 +54,9 @@ open class App : MultiDexApplication() {
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
+    }
+    companion object {
+        lateinit var application:App
+        fun app() = application
     }
 }

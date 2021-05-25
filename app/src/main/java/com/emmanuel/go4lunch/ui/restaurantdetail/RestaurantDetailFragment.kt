@@ -1,4 +1,4 @@
-  package com.emmanuel.go4lunch.ui.restaurantdetail
+package com.emmanuel.go4lunch.ui.restaurantdetail
 
 import android.Manifest
 import android.app.AlertDialog
@@ -20,12 +20,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.*
+import com.emmanuel.go4lunch.App
 import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
 import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.FragmentRestaurantDetailBinding
-import com.emmanuel.go4lunch.di.Injection
+import com.emmanuel.go4lunch.di.ViewModelFactory
 import com.emmanuel.go4lunch.notification.NotificationWorker
 import com.emmanuel.go4lunch.ui.settings.SettingsFragment
 import com.emmanuel.go4lunch.utils.*
@@ -33,17 +34,24 @@ import com.squareup.picasso.Picasso
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
-  class RestaurantDetailFragment : Fragment() {
+class RestaurantDetailFragment : Fragment() {
+    @Inject lateinit var factory: ViewModelFactory
     private lateinit var binding: FragmentRestaurantDetailBinding
     private lateinit var mAdapter: RestaurantDetailAdapter
     private lateinit var restaurantDetailViewModel: RestaurantDetailViewModel
     private val mainViewModel: MainViewModel by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        App.app().appComponent.inject(this)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        val factory = Injection.provideViewModelFactory(requireContext())
         restaurantDetailViewModel =
             ViewModelProvider(this, factory).get(RestaurantDetailViewModel::class.java)
         val view = inflater.inflate(R.layout.fragment_restaurant_detail, container, false)
@@ -144,7 +152,8 @@ import kotlin.math.roundToInt
             restaurantDetailViewModel.updateLikeRestaurant(mainViewModel.currentUserLiveData.value!!)
         }
         binding.fragmentDetailRestaurantFab.setOnClickListener {
-            restaurantDetailViewModel.updateFavoriteRestaurant(mainViewModel.currentUserLiveData.value!!,
+            restaurantDetailViewModel.updateFavoriteRestaurant(
+                mainViewModel.currentUserLiveData.value!!,
                 mainViewModel.workmatesLiveData.value!!
             )
         }
@@ -154,7 +163,9 @@ import kotlin.math.roundToInt
         if (restaurantDetailViewModel.currentRestaurantsDetailLiveData.value != null && mainViewModel.workmatesLiveData.value != null) {
             // update like button
             if (!mainViewModel.currentUserLiveData.value?.restaurantsIdLike.isNullOrEmpty() && mainViewModel.currentUserLiveData.value!!.restaurantsIdLike!!.contains(
-                    restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.id))
+                    restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.id
+                )
+            )
                 binding.fragmentDetailButtonLike.setCompoundDrawablesWithIntrinsicBounds(
                     null, ContextCompat.getDrawable(
                         requireActivity(),
@@ -178,9 +189,12 @@ import kotlin.math.roundToInt
             ) {
                 binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_check_favorite_restaurant)
                 val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-                val notificationPreference = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIFICATION_PREFERENCE,false)
+                val notificationPreference = sharedPreferences.getBoolean(
+                    SettingsFragment.KEY_PREF_NOTIFICATION_PREFERENCE,
+                    false
+                )
                 if (notificationPreference)
-                setUpAlarmManager()
+                    setUpAlarmManager()
             } else {
                 binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_uncheck_favorite_restaurant)
                 cancelAlarmManger()
@@ -244,7 +258,11 @@ import kotlin.math.roundToInt
         }
         val workmatesIsJoining = mutableListOf<Workmate>()
         for (workmate in workmates) {
-            if (workmate.restaurantFavorite.equals(restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.id) && isSameDay(workmate.favoriteDate,Calendar.getInstance().time))
+            if (workmate.restaurantFavorite.equals(restaurantDetailViewModel.currentRestaurantsDetailLiveData.value!!.id) && isSameDay(
+                    workmate.favoriteDate,
+                    Calendar.getInstance().time
+                )
+            )
                 workmatesIsJoining.add(workmate)
         }
         mAdapter.submitList(workmatesIsJoining.toList())
@@ -252,7 +270,10 @@ import kotlin.math.roundToInt
 
     private fun setUpAlarmManager() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val notificationHour = sharedPreferences.getString(SettingsFragment.KEY_PREF_NOTIFICATION_HOUR_PREFERENCE,"12")!!
+        val notificationHour = sharedPreferences.getString(
+            SettingsFragment.KEY_PREF_NOTIFICATION_HOUR_PREFERENCE,
+            "12"
+        )!!
             .toInt()
 
         val alarmTime = Calendar.getInstance()
@@ -284,11 +305,16 @@ import kotlin.math.roundToInt
             .setInputData(workerData)
             .setConstraints(workerConstraints)
             .setInitialDelay(20, TimeUnit.SECONDS) // 20s for check
-          //  .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
-            .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+            //.setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
             .build()
 
-        WorkManager.getInstance(requireContext()).enqueueUniqueWork(NOTIFICATION_WORKER_NAME,ExistingWorkPolicy.REPLACE,workRequest)
+        WorkManager.getInstance(requireContext())
+            .enqueueUniqueWork(NOTIFICATION_WORKER_NAME, ExistingWorkPolicy.REPLACE, workRequest)
     }
 
     private fun cancelAlarmManger() {
@@ -299,9 +325,8 @@ import kotlin.math.roundToInt
         super.onDestroy()
         EventBus.getDefault().post(ResetSearchView())
     }
+
     companion object {
         private const val NOTIFICATION_WORKER_NAME = "notificationWorker"
     }
 }
-
-

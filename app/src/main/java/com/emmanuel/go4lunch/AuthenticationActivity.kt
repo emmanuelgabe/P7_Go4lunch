@@ -7,8 +7,8 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.emmanuel.go4lunch.data.model.Workmate
+import com.emmanuel.go4lunch.data.repository.WorkmateRepository
 import com.emmanuel.go4lunch.databinding.ActivityAuthenticationBinding
-import com.emmanuel.go4lunch.di.Injection
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -28,9 +28,10 @@ import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class AuthenticationActivity : AppCompatActivity() {
-
+    @Inject lateinit var workmateRepository: WorkmateRepository
     private lateinit var binding: ActivityAuthenticationBinding
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private lateinit var mAuth: FirebaseAuth
@@ -38,6 +39,8 @@ class AuthenticationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        App.app().appComponent.inject(this)
+
         binding = ActivityAuthenticationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         mAuth = FirebaseAuth.getInstance()
@@ -178,7 +181,6 @@ class AuthenticationActivity : AppCompatActivity() {
             workmate.email = "${mAuth.currentUser?.displayName}@Facebook.com".replace("\\s+", "")
         }
         CoroutineScope(IO).launch {
-            val workmateRepository = Injection.provideWorkmateDataSource()
             workmateRepository.createWorkmate(workmate)
         }
     }

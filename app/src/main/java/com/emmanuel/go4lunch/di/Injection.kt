@@ -11,10 +11,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 object Injection {
 
-    private fun provideRestaurantDataSource(context: Context): RestaurantRepository {
+/*    private fun provideRestaurantDataSource(context: Context): RestaurantRepository? {
         val retrofitBuilder = RetrofitBuilder()
         val restaurantDetailDatabase: RestaurantDetailDatabase = RestaurantDetailDatabase.getRestaurantDetailDatabase(context)
-        return RestaurantRepository(retrofitBuilder, restaurantDetailDatabase.restaurantDetailDao())
+        return null
     }
 
      fun provideWorkmateDataSource(): WorkmateRepository {
@@ -28,10 +28,10 @@ object Injection {
         return PlaceRepository(retrofitBuilder)
     }
 
-    fun provideViewModelFactory(context: Context): ViewModelFactory {
+    fun provideViewModelFactory(context: Context): ViewModelFactory? {
         val dataSourceWorkmate = provideWorkmateDataSource()
         val dataSourceRestaurant = provideRestaurantDataSource(context)
         val dataSourcePlace = providePlaceDataSource()
-        return ViewModelFactory(dataSourceRestaurant, dataSourceWorkmate, dataSourcePlace)
-    }
+        return null
+    }*/
 }

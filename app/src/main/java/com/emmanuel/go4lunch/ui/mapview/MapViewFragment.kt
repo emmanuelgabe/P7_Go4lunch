@@ -60,7 +60,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         mainViewModel.workmatesLiveData.observe(viewLifecycleOwner, {
             addMarker()
         })
-        mainViewModel.nearRestaurantLiveData.observe(viewLifecycleOwner, {
+        mainViewModel.nearRestaurantsLiveData.observe(viewLifecycleOwner, {
             addMarker()
         })
         mainViewModel.placesAutocompleteLiveData.observe(viewLifecycleOwner,
@@ -193,12 +193,12 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addMarker(placesSearchId: List<String>? = null) {
-        if (mainViewModel.nearRestaurantLiveData.value != null
+        if (mainViewModel.nearRestaurantsLiveData.value != null
             && mainViewModel.workmatesLiveData.value != null
             && ::mMap.isInitialized
         ) {
             mMap.clear()
-            for (restaurant in mainViewModel.nearRestaurantLiveData.value!!) {
+            for (restaurant in mainViewModel.nearRestaurantsLiveData.value!!) {
                 if (placesSearchId == null || placesSearchId.contains(restaurant.placeId)) {
                     var icon: BitmapDescriptor =
                         BitmapDescriptorFactory.fromResource(R.drawable.ic_map_restaurant)
