@@ -1,0 +1,227 @@
+{
+  "html_attributions" : [],
+  "result" : {
+    "business_status" : "OPERATIONAL",
+    "formatted_phone_number" : "01 42 78 51 45",
+    "geometry" : {
+      "location" : {
+        "lat" : 48.8553396,
+        "lng" : 2.3643541
+      },
+      "viewport" : {
+        "northeast" : {
+          "lat" : 48.8566742802915,
+          "lng" : 2.365785680291502
+        },
+        "southwest" : {
+          "lat" : 48.8539763197085,
+          "lng" : 2.363087719708498
+        }
+      }
+    },
+    "name" : "L'Ambroisie",
+    "opening_hours" : {
+      "open_now" : false,
+      "periods" : [
+        {
+          "close" : {
+            "day" : 2,
+            "time" : "1345"
+          },
+          "open" : {
+            "day" : 2,
+            "time" : "1200"
+          }
+        },
+        {
+          "close" : {
+            "day" : 2,
+            "time" : "2145"
+          },
+          "open" : {
+            "day" : 2,
+            "time" : "2000"
+          }
+        },
+        {
+          "close" : {
+            "day" : 3,
+            "time" : "1345"
+          },
+          "open" : {
+            "day" : 3,
+            "time" : "1200"
+          }
+        },
+        {
+          "close" : {
+            "day" : 3,
+            "time" : "2145"
+          },
+          "open" : {
+            "day" : 3,
+            "time" : "2000"
+          }
+        },
+        {
+          "close" : {
+            "day" : 4,
+            "time" : "1345"
+          },
+          "open" : {
+            "day" : 4,
+            "time" : "1200"
+          }
+        },
+        {
+          "close" : {
+            "day" : 4,
+            "time" : "2145"
+          },
+          "open" : {
+            "day" : 4,
+            "time" : "2000"
+          }
+        },
+        {
+          "close" : {
+            "day" : 5,
+            "time" : "1345"
+          },
+          "open" : {
+            "day" : 5,
+            "time" : "1200"
+          }
+        },
+        {
+          "close" : {
+            "day" : 5,
+            "time" : "2145"
+          },
+          "open" : {
+            "day" : 5,
+            "time" : "2000"
+          }
+        },
+        {
+          "close" : {
+            "day" : 6,
+            "time" : "1345"
+          },
+          "open" : {
+            "day" : 6,
+            "time" : "1200"
+          }
+        },
+        {
+          "close" : {
+            "day" : 6,
+            "time" : "2145"
+          },
+          "open" : {
+            "day" : 6,
+            "time" : "2000"
+          }
+        }
+      ],
+      "weekday_text" : [
+        "lundi: Fermé",
+        "mardi: 12:00 – 13:45, 20:00 – 21:45",
+        "mercredi: 12:00 – 13:45, 20:00 – 21:45",
+        "jeudi: 12:00 – 13:45, 20:00 – 21:45",
+        "vendredi: 12:00 – 13:45, 20:00 – 21:45",
+        "samedi: 12:00 – 13:45, 20:00 – 21:45",
+        "dimanche: Fermé"
+      ]
+    },
+    "photos" : [
+      {
+        "height" : 1182,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/107984022477306384011\"\u003eL&#39;Ambroisie\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwJ_OOd-uV-CCLku2R2jByJksK_5iLWF7yWz_2zClT35Ci0m1VRwg3-AylAS2VFUUWP_HcPn3qZXpnuLuBnrTaLYsU2xXKMsHocFRQ-sylcCeekoOWUmFm6xL85RPDPf4PErn1IV5PYIWjAXdMU03JxXIsBKhn_NndZnJE3KIEDsUHGZ",
+        "width" : 1000
+      },
+      {
+        "height" : 3648,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/116464393293090048549\"\u003eLim dong-gyu\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwLPAYYp_97VHYOu2jxzvUlFH8G_DBWfRVtfQG-EHFYUKor813-2Od7Gvd90GQ5PdUAgkUrsPG4qna0d_Ckp0gcHeyG4LVcUckThOz5iZXR2GUYtMEifl5GCDccycCjNyOhrIYi5ElZGFPlY1apHu7TDwWhMtIWlqemo6XVW1ozanPfl",
+        "width" : 5472
+      },
+      {
+        "height" : 3893,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/115558784276108612624\"\u003eDO BI\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwL_C2zPb0Mn-yQogehZsSAYkYTzEEQAIgP-UfbwpeTk0ssfExwel_VdRhNgzs4zsnnW1PIMve9qyTFw19L2BcCYnWpUd2rNwVQDYwdN3oGvm9VT8-PpQydh4TYX-Zlz7o1zIk1_ghTCOvoRU82L7xX4pziavJIqVc-gEkJjWJicyny9",
+        "width" : 3024
+      },
+      {
+        "height" : 3884,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/115558784276108612624\"\u003eDO BI\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwLJMy1OL1IC_dgpy1P5TCKzZ_jBJT1VptVC2sGR_9CnO_tmV86htdbI-xsUq1KGkQEL3SYlJrRoQDbBXguQUODAXXqt2KicoETO-XKWj0s41qWsqdWHknQrjSGR5YuRtwm9JEaN79c72aCa2gXdaD2yWPXDzVWp4qr0f2N74F4m19eB",
+        "width" : 3024
+      },
+      {
+        "height" : 720,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/104738041334776737363\"\u003e葉先生\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwImVXD7NzgDl0SpVrfHrPOOcD5oCSCU4EW6SL4EwlI0muDpV1Ya1ee5eRdgVgwzPtYTTuG26qSsk4OJ_n471XTfFsA8_Kdxu0d3iAPin5B_7-SWeRJB3oWKc8pw9szwmx80jFs__84gTINgfXuqKUBMljjy4O0ILJfYyIoN08hnXeDm",
+        "width" : 960
+      },
+      {
+        "height" : 720,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/104738041334776737363\"\u003e葉先生\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwKNTEAQ5eYF1-xlxv5osMqTBk7QOocYzU9wC2l1E5Hs06a2jpyH1R656vaaxHNKkC-gAnbuZyg1ypAElV2EVXQwDlDsRYngMWCzdf9LRHHuCVuP13OiAcAO8xRh-eM9Y2H8p0dZMW3CEMuMTUClJgun5SUG3YFd3W4tp1ohuKd0R5hq",
+        "width" : 960
+      },
+      {
+        "height" : 4032,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/106104626911064752053\"\u003eJi Hoon Kim\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwL6JYavTC3qCwRvi7jLBDwIHHf67iX0mBVafbdoYOCMq0ulj4oddUJk947a0rYSN-5pz_53E_S9KLeLooEN8Wu4LVcBKEJZK0Z_biUapGsjG6axsPMTcLkC418c4zQwHi9zreoucw-GtLmQHnOicCywsmbRexs3FEvMOljrx_15Qehf",
+        "width" : 3024
+      },
+      {
+        "height" : 4032,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/106104626911064752053\"\u003eJi Hoon Kim\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwLWNqOH_YfGCyahz-WW_Q4KRsl4gOCqUnuyBVWwv0g0ALNM0yHwZtDcbdlYNDLSj7NQOwFE7PRV2rdxjHTOPXWaa3UQRz84cY0kwWxgvtOwD9_jS2W1VH6Q66BBPXhA7aRu1IZ29pPDpFYBMwiJ-x-CVNYhisNEQh4e1cVJ-yW7Q-t3",
+        "width" : 3024
+      },
+      {
+        "height" : 4032,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/106104626911064752053\"\u003eJi Hoon Kim\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwJsvvK9x-6cXx-xoW-FanKSs0fGNYc_YamEWHN4Bp4moXPRMjmRdv2e8T8m22dXiYNbnK709gU6RNbsberlZ8Ev2eS7CA6WalRYjz9xusSTiq7o17aKFLC4gt8TL48h09lNXD2g0mCy0acKKRhxaS8Q3mr4lNmBP_icg0YMx4a80Kta",
+        "width" : 3024
+      },
+      {
+        "height" : 720,
+        "html_attributions" : [
+          "\u003ca href=\"https://maps.google.com/maps/contrib/104738041334776737363\"\u003e葉先生\u003c/a\u003e"
+        ],
+        "photo_reference" : "ATtYBwIYY5tF0i5MMpo3WdZ9TFGXjUO1D0n2eKVF49oLxQrW3PnCspMolnrlzfWTARI9wZoMfNSkPtW10M6i_LBjvUp1GA54Rtp7XxErBxhqavvvSO6gVltb2NVtExUDI-ewNwVPxWxyU1d5akswolUgWGirRQBtRs3NiNPggfA6ktRyIWNv",
+        "width" : 960
+      }
+    ],
+    "place_id" : "ChIJK-TZ1v9x5kcRvQoSvNJ21Vo",
+    "price_level" : 4,
+    "rating" : 4.6,
+    "user_ratings_total" : 297,
+    "vicinity" : "9 Place des Vosges, Paris",
+    "website" : "http://www.ambroisie-paris.com/"
+  },
+  "status" : "OK"
+}

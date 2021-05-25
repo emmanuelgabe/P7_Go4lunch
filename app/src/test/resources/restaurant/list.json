@@ -1,0 +1,693 @@
+{
+  "html_attributions" : [],
+  "results" : [
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.52897610000001,
+          "lng" : 2.0124021
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.53036623029151,
+            "lng" : 2.013803980291502
+          },
+          "southwest" : {
+            "lat" : 48.52766826970851,
+            "lng" : 2.011106019708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Brasserie Blanche de Castille",
+      "opening_hours" : {
+        "open_now" : true
+      },
+      "photos" : [
+        {
+          "height" : 850,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/103147872870813130673\"\u003eBrasserie Blanche de Castille\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwLxRsdWnzHxRMn-8cNAown9ajRFYkjW6oBtWUrHr4GwO9IdPIc9OBJOB8NFxRhZNhJZfXHpgZhkMU5RFo5_eoJhWlENA-rIL1S2JaX076NAGyPU6PJWqRiX73mp13Gr__HYcq66p5DU_UnbBvbmOOr3HJ7RX77JDh8OM7m-QqV4TMrN",
+          "width" : 1280
+        }
+      ],
+      "place_id" : "ChIJJZLsOhYz5EcRCZpSaRqphh4",
+      "plus_code" : {
+        "compound_code" : "G2H6+HX Dourdan, France",
+        "global_code" : "8FW4G2H6+HX"
+      },
+      "rating" : 4,
+      "reference" : "ChIJJZLsOhYz5EcRCZpSaRqphh4",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 445,
+      "vicinity" : "Place du Marché aux Herbes, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.52916339999999,
+          "lng" : 2.0121987
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.53052948029149,
+            "lng" : 2.013566280291502
+          },
+          "southwest" : {
+            "lat" : 48.52783151970849,
+            "lng" : 2.010868319708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Pizzeria du Chateau",
+      "opening_hours" : {
+        "open_now" : false
+      },
+      "photos" : [
+        {
+          "height" : 1649,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/100581131320432314660\"\u003ePizzeria du Chateau\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwJQwHmHk5rourLsDhJgdW0j-fj92ARgP67-mKrCwcs4KrSDMaMPfYJltj6akL7O6RCYxS70fTgbQBNNRKbnoeSDtRycMs5X1u4mv8nPMyANOKVSmV_QAlma6rPLvJogg6UiHwjV0jksKSIPwmzagY42j36KpLNiS2zeKZdwxb2ip2u7",
+          "width" : 2712
+        }
+      ],
+      "place_id" : "ChIJ_Wel020y5EcRWwfL7DgAtBM",
+      "plus_code" : {
+        "compound_code" : "G2H6+MV Dourdan, France",
+        "global_code" : "8FW4G2H6+MV"
+      },
+      "price_level" : 2,
+      "rating" : 4.5,
+      "reference" : "ChIJ_Wel020y5EcRWwfL7DgAtBM",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 295,
+      "vicinity" : "2 Rue Demetz, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.5294166,
+          "lng" : 2.0169411
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5307192302915,
+            "lng" : 2.018134480291502
+          },
+          "southwest" : {
+            "lat" : 48.5280212697085,
+            "lng" : 2.015436519708499
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Les saveurs d'Himalaya",
+      "opening_hours" : {
+        "open_now" : false
+      },
+      "photos" : [
+        {
+          "height" : 600,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/103177455357473259244\"\u003eLes saveurs d&#39;Himalaya\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwIBsYGjlKFHOasYJikV0zrfwhsdLI4Jh6aEA-ZlyjUUAtYWwFNh67RMGeSlnZaSG3-zgaKDf1CYN9Ic2eDZSvjqtOT0qBni8uZT8BuQDt4nUADlmKDJc1GGACwXYytDaB8IAi1YRmfVu_8MY8XElvZBUh3bfqIw2ftMc6B8PWe5R9QZ",
+          "width" : 800
+        }
+      ],
+      "place_id" : "ChIJi5YB69oz5EcRfzPGoCOBhU0",
+      "plus_code" : {
+        "compound_code" : "G2H8+QQ Dourdan, France",
+        "global_code" : "8FW4G2H8+QQ"
+      },
+      "rating" : 4.8,
+      "reference" : "ChIJi5YB69oz5EcRfzPGoCOBhU0",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 101,
+      "vicinity" : "3 Allée Emile Rigal, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.5268495,
+          "lng" : 2.0127308
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5282267302915,
+            "lng" : 2.014121980291502
+          },
+          "southwest" : {
+            "lat" : 48.5255287697085,
+            "lng" : 2.011424019708499
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "name" : "Pizz Express / Casa Di Trevis",
+      "opening_hours" : {
+        "open_now" : true
+      },
+      "photos" : [
+        {
+          "height" : 3456,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/118018373662934619587\"\u003ePizz Express / Casa Di Trevis\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwLr-XbNCUvGGJSuqOzI9Oi2hArfGXBp2PL4zt2K_zmRbWa0RLKzavY1hTysAkB_-rwe1y7FH78DaSo_R3Zz82aj-5GchXg2IGAlJgHfVtiUKmD1cqKB7hUKi7W03j51eNMBCgcqnqZTmAj_1DRg-BFEveVcjr5lL5ptVt5COl2Zk3Nb",
+          "width" : 4608
+        }
+      ],
+      "place_id" : "ChIJv2YvpG4y5EcRl7OkEIQkLQQ",
+      "plus_code" : {
+        "compound_code" : "G2G7+P3 Dourdan, France",
+        "global_code" : "8FW4G2G7+P3"
+      },
+      "rating" : 3.5,
+      "reference" : "ChIJv2YvpG4y5EcRl7OkEIQkLQQ",
+      "scope" : "GOOGLE",
+      "types" : [
+        "meal_delivery",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total" : 61,
+      "vicinity" : "10 Place du Chariot, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.526745,
+          "lng" : 2.0125381
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5280939802915,
+            "lng" : 2.013887080291502
+          },
+          "southwest" : {
+            "lat" : 48.5253960197085,
+            "lng" : 2.011189119708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "CASA DI TREVIS",
+      "opening_hours" : {
+        "open_now" : false
+      },
+      "photos" : [
+        {
+          "height" : 3000,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/110666994988115989018\"\u003epierre RENAUD\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwIyt04XD5DZBSs54YEgUB9SppZcXdL0f11CyGBCR8SM1yl-9mgzt1lwVr698P_vWYgawg4Nn_yjQ0hhjJQ1tKfsgX6tfE7XZ8z94bckf2CmVUGm21aDfkfWJb66vFK0GkQSuL5g1Dp9E3G2aSbXZ05UCXyi9fuKrRLJ9TEYJHn11Tb5",
+          "width" : 4000
+        }
+      ],
+      "place_id" : "ChIJL8tcA2wy5EcRlkuwQXgSYG8",
+      "plus_code" : {
+        "compound_code" : "G2G7+M2 Dourdan, France",
+        "global_code" : "8FW4G2G7+M2"
+      },
+      "rating" : 4.1,
+      "reference" : "ChIJL8tcA2wy5EcRlkuwQXgSYG8",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 101,
+      "vicinity" : "10 /14 Place du Chariot, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.5291131,
+          "lng" : 2.0121551
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.53047093029149,
+            "lng" : 2.013477780291502
+          },
+          "southwest" : {
+            "lat" : 48.52777296970849,
+            "lng" : 2.010779819708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Pizza Grill House",
+      "place_id" : "ChIJKaGtz20y5EcRB00uwDRo7Ws",
+      "plus_code" : {
+        "compound_code" : "G2H6+JV Dourdan, France",
+        "global_code" : "8FW4G2H6+JV"
+      },
+      "reference" : "ChIJKaGtz20y5EcRB00uwDRo7Ws",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "vicinity" : "2 Rue Demetz, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.52950999999999,
+          "lng" : 2.0123107
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5308371802915,
+            "lng" : 2.013640880291502
+          },
+          "southwest" : {
+            "lat" : 48.5281392197085,
+            "lng" : 2.010942919708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "La Scena Di Trevis",
+      "opening_hours" : {
+        "open_now" : false
+      },
+      "photos" : [
+        {
+          "height" : 4000,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/117524794799866794194\"\u003eTREVISAN Sylvain\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwJMimxZr6CPJB0ZaaJh1c6X-1nntAAej4kx_QT7ilrWca-Kxed5sJooOG9zSdQBzXZnzNiCvxnZelqD9k7ArGKGyW6HJ8RT8XeFmgD41ZmvBjxN-9gpUmyIuDyKZLT4Kh0UW5EQ3eCOI0g4LVNqyxBZFxG9JNttucenbfPuWAdSAgjY",
+          "width" : 6000
+        }
+      ],
+      "place_id" : "ChIJe3zcxG0y5EcRECnocRmYvAQ",
+      "plus_code" : {
+        "compound_code" : "G2H6+RW Dourdan, France",
+        "global_code" : "8FW4G2H6+RW"
+      },
+      "rating" : 4.7,
+      "reference" : "ChIJe3zcxG0y5EcRECnocRmYvAQ",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 32,
+      "vicinity" : "10 Rue de Chartres, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.5296881,
+          "lng" : 2.0122497
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5309969302915,
+            "lng" : 2.013519230291501
+          },
+          "southwest" : {
+            "lat" : 48.5282989697085,
+            "lng" : 2.010821269708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Dallemagne Gil",
+      "place_id" : "ChIJHaIOxG0y5EcRYAJMPUPIiuQ",
+      "plus_code" : {
+        "compound_code" : "G2H6+VV Dourdan, France",
+        "global_code" : "8FW4G2H6+VV"
+      },
+      "rating" : 4.3,
+      "reference" : "ChIJHaIOxG0y5EcRYAJMPUPIiuQ",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "bar", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 12,
+      "vicinity" : "16 Rue de Chartres, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.5295818,
+          "lng" : 2.0120041
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5309489802915,
+            "lng" : 2.013388980291502
+          },
+          "southwest" : {
+            "lat" : 48.5282510197085,
+            "lng" : 2.010691019708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Le Relais Gourmand",
+      "place_id" : "ChIJg5kJuW0y5EcRfxCY8AxVXJM",
+      "plus_code" : {
+        "compound_code" : "G2H6+RR Dourdan, France",
+        "global_code" : "8FW4G2H6+RR"
+      },
+      "reference" : "ChIJg5kJuW0y5EcRfxCY8AxVXJM",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "vicinity" : "10 Place du Général de Gaulle, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.5281479,
+          "lng" : 2.0109634
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5295269302915,
+            "lng" : 2.012335730291502
+          },
+          "southwest" : {
+            "lat" : 48.5268289697085,
+            "lng" : 2.009637769708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "STAN",
+      "place_id" : "ChIJj93dL-Uz5EcRMS-EwtjpH-8",
+      "plus_code" : {
+        "compound_code" : "G2H6+79 Dourdan, France",
+        "global_code" : "8FW4G2H6+79"
+      },
+      "reference" : "ChIJj93dL-Uz5EcRMS-EwtjpH-8",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "vicinity" : "Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.5299112,
+          "lng" : 2.012048099999999
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5313020802915,
+            "lng" : 2.013331780291502
+          },
+          "southwest" : {
+            "lat" : 48.5286041197085,
+            "lng" : 2.010633819708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Le mojitoast",
+      "opening_hours" : {
+        "open_now" : false
+      },
+      "photos" : [
+        {
+          "height" : 2988,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/113589629110363914475\"\u003eBeatrice Chezlemas\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwLVrvEpklqCZexzQMAXy8SnWhQrYMmEO92R2FKEX2GVZeDheCrS282Opf7eCu9euPnVtGOyU2ymbIpqYFRCVV9xErjIaUiYtIGC6NsshxblUKueDjPASiCDf9ToiYGVt8iZXjRPak2bYmnVgX6gV8TWoeVegSxA5_S_I7tb5PAfsWXh",
+          "width" : 5312
+        }
+      ],
+      "place_id" : "ChIJp5kiwG0y5EcR5NBvR_0h2SY",
+      "plus_code" : {
+        "compound_code" : "G2H6+XR Dourdan, France",
+        "global_code" : "8FW4G2H6+XR"
+      },
+      "price_level" : 2,
+      "rating" : 4.5,
+      "reference" : "ChIJp5kiwG0y5EcR5NBvR_0h2SY",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 220,
+      "vicinity" : "2 Rue Saint-Germain, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.5294813,
+          "lng" : 2.0104846
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5308133302915,
+            "lng" : 2.011807480291502
+          },
+          "southwest" : {
+            "lat" : 48.5281153697085,
+            "lng" : 2.009109519708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+      "name" : "Pizza Pronto 7 sur 7",
+      "opening_hours" : {
+        "open_now" : true
+      },
+      "photos" : [
+        {
+          "height" : 3456,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/110644469559369663243\"\u003eAdrián Ruiz Juárez\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwK7cNKOUlUOWRMxXpmBuJ2M0H26-hGFsY_ssuMpFLO3Cd6uKPIBBLtyGPPumX60dSORM48HzfdehirZcKdbysVJV50aLnuhbvAPXhf1z-xMglJ-Q3pic0Xns14G-cxWLn2UMi-89LxtCsuCRM7maQcf09vSUv-_z6X2rzAp0JtAaZMW",
+          "width" : 4608
+        }
+      ],
+      "place_id" : "ChIJ4fA1pm0y5EcRtWGTOCz753o",
+      "plus_code" : {
+        "compound_code" : "G2H6+Q5 Dourdan, France",
+        "global_code" : "8FW4G2H6+Q5"
+      },
+      "rating" : 3.9,
+      "reference" : "ChIJ4fA1pm0y5EcRtWGTOCz753o",
+      "scope" : "GOOGLE",
+      "types" : [
+        "meal_delivery",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "user_ratings_total" : 69,
+      "vicinity" : "8 Rue Haute Foulerie, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.5295764,
+          "lng" : 2.0102476
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5308756302915,
+            "lng" : 2.011580880291502
+          },
+          "southwest" : {
+            "lat" : 48.5281776697085,
+            "lng" : 2.008882919708499
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Les Galandières",
+      "opening_hours" : {
+        "open_now" : false
+      },
+      "photos" : [
+        {
+          "height" : 2322,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/115986274432997838564\"\u003eLes Galandières\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwLmENA_nPA9dWCEuYJiXEmYtvdl_3Ki4tP3DcpHsQLKkGdZswZIVkt0z9_TnAGU0r3bsyfId4Jh-APPwzMozOynlXylj_I6NONtbl0DhosBK0CoEekl5FgwNSwW7AyAuM7k7ATEyQiw_cTHJVwIILhYS5Mb_0o35EAIG1lh1t9S2JFK",
+          "width" : 4128
+        }
+      ],
+      "place_id" : "ChIJ4V1OCG0y5EcRaPTsH_QpR3w",
+      "plus_code" : {
+        "compound_code" : "G2H6+R3 Dourdan, France",
+        "global_code" : "8FW4G2H6+R3"
+      },
+      "price_level" : 2,
+      "rating" : 4.5,
+      "reference" : "ChIJ4V1OCG0y5EcRaPTsH_QpR3w",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 230,
+      "vicinity" : "12 Rue Haute Foulerie, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.530463,
+          "lng" : 2.0113229
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.53178518029149,
+            "lng" : 2.012627780291502
+          },
+          "southwest" : {
+            "lat" : 48.52908721970849,
+            "lng" : 2.009929819708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Asaki Sushi",
+      "opening_hours" : {
+        "open_now" : true
+      },
+      "photos" : [
+        {
+          "height" : 2048,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/113506711415365107867\"\u003eAsaki Sushi\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwIIKEx0Drau8HkhWZBtqQafxn2O45nbmUh5KF-wl8uXfZsejStiXOf18DgqGd87wWMDngYyeSOtjUkHXukkF5tmV6kKVukCVBhmDAEs8Z3HhgQJnqKCAU0_qCAJaJWeLtNFnhrPwcy0BY6YGqssmXT02D1eKSMMExMru339PlNqv1US",
+          "width" : 2048
+        }
+      ],
+      "place_id" : "ChIJZbNFkG0y5EcRAJk3tsDNhU8",
+      "plus_code" : {
+        "compound_code" : "G2J6+5G Dourdan, France",
+        "global_code" : "8FW4G2J6+5G"
+      },
+      "price_level" : 2,
+      "rating" : 4.5,
+      "reference" : "ChIJZbNFkG0y5EcRAJk3tsDNhU8",
+      "scope" : "GOOGLE",
+      "types" : [ "restaurant", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 248,
+      "vicinity" : "48 Rue de Chartres, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.52777329999999,
+          "lng" : 2.0222167
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.52922778029151,
+            "lng" : 2.023538180291502
+          },
+          "southwest" : {
+            "lat" : 48.52652981970851,
+            "lng" : 2.020840219708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/restaurant-71.png",
+      "name" : "Chez Elles",
+      "opening_hours" : {
+        "open_now" : true
+      },
+      "photos" : [
+        {
+          "height" : 1852,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/112309753798852379989\"\u003eAbc DEF\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwIhhV26l2ZXKwcQdL5gAI_O9K30lWKoS4gVL95QlIw-pFlSY5_MY-uslnCT0SDVYTnj7Pp2d3fEWvguPKjyoH_xfuSPDR_HgSrK67-xQuUJRAdQ0cMDWYEZeZRYYhl0FoTs1rKNBtuSn63wQv54lMRloBskBVPtilMQJGPUEIJ9yaIG",
+          "width" : 3526
+        }
+      ],
+      "place_id" : "ChIJ0bRQUmQy5EcRlTUIx69IlgE",
+      "plus_code" : {
+        "compound_code" : "G2HC+4V Dourdan, France",
+        "global_code" : "8FW4G2HC+4V"
+      },
+      "rating" : 4.3,
+      "reference" : "ChIJ0bRQUmQy5EcRlTUIx69IlgE",
+      "scope" : "GOOGLE",
+      "types" : [ "bar", "restaurant", "food", "point_of_interest", "establishment" ],
+      "user_ratings_total" : 27,
+      "vicinity" : "48 Rue Raymond Laubier, Dourdan"
+    },
+    {
+      "business_status" : "OPERATIONAL",
+      "geometry" : {
+        "location" : {
+          "lat" : 48.52938640000001,
+          "lng" : 2.0099323
+        },
+        "viewport" : {
+          "northeast" : {
+            "lat" : 48.5307965302915,
+            "lng" : 2.011296080291502
+          },
+          "southwest" : {
+            "lat" : 48.5280985697085,
+            "lng" : 2.008598119708498
+          }
+        }
+      },
+      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/bar-71.png",
+      "name" : "Beer'S Not Dead",
+      "opening_hours" : {
+        "open_now" : false
+      },
+      "photos" : [
+        {
+          "height" : 2272,
+          "html_attributions" : [
+            "\u003ca href=\"https://maps.google.com/maps/contrib/111640367792714760953\"\u003eBeer&#39;S Not Dead\u003c/a\u003e"
+          ],
+          "photo_reference" : "ATtYBwI5dclmcKiQOduzbn99NmN8oaE86KdkGbIG4s5ePDyfAtBlZRohzJs3xCVlOF695VKtINqoik9Wr1SwI7O7ft4mIDmFDmxIKWmMLJ8LR5Neo3oVkBncL8_NCrIeB0HgDRzfII0tTUH5X6zR0dAP6dtFX9rIFQlMgka2ZbFWjJOVHFm6",
+          "width" : 4608
+        }
+      ],
+      "place_id" : "ChIJfUqxswUz5EcRf0nKwGrUKQw",
+      "plus_code" : {
+        "compound_code" : "G2H5+QX Dourdan, France",
+        "global_code" : "8FW4G2H5+QX"
+      },
+      "price_level" : 2,
+      "rating" : 4.8,
+      "reference" : "ChIJfUqxswUz5EcRf0nKwGrUKQw",
+      "scope" : "GOOGLE",
+      "types" : [
+        "bar",
+        "liquor_store",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "store",
+        "establishment"
+      ],
+      "user_ratings_total" : 85,
+      "vicinity" : "17 Rue Haute Foulerie, Dourdan"
+    }
+  ],
+  "status" : "OK"
+}
