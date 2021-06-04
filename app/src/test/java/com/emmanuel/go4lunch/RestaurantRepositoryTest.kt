@@ -20,17 +20,19 @@ import org.mockito.Mockito.*
 
 
 @ExperimentalCoroutinesApi
-class ApiServiceTest {
+class RestaurantRepositoryTest {
 
     private lateinit var googleMapsService: GoogleMapsService
     private lateinit var restaurantDetailDao: RestaurantDetailDao
     private lateinit var fakeLocation: Location
+    private lateinit var restaurantRepository: RestaurantRepository
 
     @Before
     fun setUp() {
-        googleMapsService = Mockito.mock(GoogleMapsService::class.java)
-        restaurantDetailDao = Mockito.mock(RestaurantDetailDao::class.java)
+        googleMapsService = mock(GoogleMapsService::class.java)
+        restaurantDetailDao = mock(RestaurantDetailDao::class.java)
         fakeLocation = mock(Location::class.java)
+        restaurantRepository = RestaurantRepository(googleMapsService, restaurantDetailDao)
     }
 
     @Test
@@ -42,14 +44,13 @@ class ApiServiceTest {
         `when`(googleMapsService.getNearRestaurant("0.0,0.0",10,"restaurant",BuildConfig.GOOGLE_MAP_API_KEY))
             .thenReturn(FakeDataProviderUnitTest.nearRestaurantList)
 
-        val restaurantRepository = RestaurantRepository(googleMapsService, restaurantDetailDao)
         val nearRestaurant = restaurantRepository.getAllNearRestaurant(fakeLocation, 10)
 
         verify(googleMapsService,times(1)).getNearRestaurant(anyString(), anyInt(), anyString(), anyString())
         verify(googleMapsService, never()).getPlaces(anyString(),anyString(),anyString(),anyString(),anyInt(),anyString())
         verify(googleMapsService, never()).getDetails( anyString(),anyString(),anyString())
 
-        Assert.assertEquals(16, nearRestaurant?.size)
+        Assert.assertEquals(16, nearRestaurant.size)
     }
 
     @Test
@@ -61,7 +62,6 @@ class ApiServiceTest {
         given(restaurantDetailDao.getRestaurantDetailsById(FAKE_RESTAURANT_ID)).willReturn(
             getRestaurantDetailFromNearByRestaurant(FakeDataProviderUnitTest.nearRestaurantDetail.result!!))
 
-        val restaurantRepository = RestaurantRepository(googleMapsService, restaurantDetailDao)
         val restaurantDetail = restaurantRepository.getDetailRestaurant(FAKE_RESTAURANT_ID)
 
         val inOrder = inOrder(restaurantDetailDao, googleMapsService)
@@ -73,7 +73,7 @@ class ApiServiceTest {
         verify(googleMapsService, never()).getPlaces(anyString(),anyString(),anyString(),anyString(),anyInt(),anyString())
         verify(googleMapsService, never()).getNearRestaurant( anyString(),anyInt(),anyString(),anyString())
 
-        assert(restaurantDetail.id.equals(FAKE_RESTAURANT_ID))
+        assert(restaurantDetail.id == FAKE_RESTAURANT_ID)
         assert(restaurantDetail.name.equals("L'Ambroisie"))
     }
 
@@ -86,7 +86,6 @@ class ApiServiceTest {
         given(restaurantDetailDao.getRestaurantDetailsById(FAKE_RESTAURANT_ID)).willReturn(
             getRestaurantDetailFromNearByRestaurant(FakeDataProviderUnitTest.nearRestaurantDetail.result!!))
 
-        val restaurantRepository = RestaurantRepository(googleMapsService, restaurantDetailDao)
         val restaurantDetail = restaurantRepository.getDetailRestaurant(FAKE_RESTAURANT_ID)
 
         val inOrder = inOrder(restaurantDetailDao, googleMapsService)
@@ -99,7 +98,7 @@ class ApiServiceTest {
         verify(googleMapsService, never()).getPlaces(anyString(),anyString(),anyString(),anyString(),anyInt(),anyString())
         verify(googleMapsService, never()).getNearRestaurant( anyString(),anyInt(),anyString(),anyString())
 
-        assert(restaurantDetail.id.equals(FAKE_RESTAURANT_ID))
+        assert(restaurantDetail.id == FAKE_RESTAURANT_ID)
         assert(restaurantDetail.name.equals("L'Ambroisie"))
     }
 
@@ -115,7 +114,6 @@ class ApiServiceTest {
         given(restaurantDetailDao.restaurantExists(FAKE_RESTAURANT_ID)).willReturn(true)
         given(restaurantDetailDao.getRestaurantDetailsTimestamp(FAKE_RESTAURANT_ID)).willReturn(System.currentTimeMillis() - 1)
 
-        val restaurantRepository = RestaurantRepository(googleMapsService, restaurantDetailDao)
         val restaurantDetail = restaurantRepository.getDetailRestaurant(FAKE_RESTAURANT_ID)
 
         val inOrder = inOrder(restaurantDetailDao, googleMapsService)
@@ -126,15 +124,15 @@ class ApiServiceTest {
         verify(googleMapsService, never()).getPlaces(anyString(),anyString(),anyString(),anyString(),anyInt(),anyString())
         verify(googleMapsService, never()).getNearRestaurant( anyString(),anyInt(),anyString(),anyString())
 
-        assert(restaurantDetail.id.equals(FAKE_RESTAURANT_ID))
+        assert(restaurantDetail.id == FAKE_RESTAURANT_ID)
         assert(restaurantDetail.name.equals("L'Ambroisie"))
     }
 
     companion object{
-        val FAKE_RESTAURANT_ID = "ChIJK-TZ1v9x5kcRvQoSvNJ21Vo"
+        const val FAKE_RESTAURANT_ID = "ChIJK-TZ1v9x5kcRvQoSvNJ21Vo"
     }
 
-    private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
+    private fun <T> any(type: Class<T>): T = Mockito.any(type)
 
     private fun getRestaurantDetailFromNearByRestaurant(restaurant: NearByRestaurant): RestaurantDetailEntity {
         return RestaurantDetailEntity(

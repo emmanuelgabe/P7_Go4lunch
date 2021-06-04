@@ -12,6 +12,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,7 +24,6 @@ import com.emmanuel.go4lunch.MainViewModel
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.ui.settings.SettingsFragment
 import com.emmanuel.go4lunch.utils.FetchLocationEvent
-import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_FINE_LOCATION
 import com.emmanuel.go4lunch.utils.hideKeyboard
 import com.emmanuel.go4lunch.utils.isSameDay
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -39,6 +41,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationFab: FloatingActionButton
     private var isFirstZoom = true
     private val mainViewModel: MainViewModel by activityViewModels()
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,9 +54,37 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
         locationFab.setOnClickListener {
             registerLocationUpdate()
         }
+        requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission())
+            { isGranted: Boolean ->
+                if (isGranted) {
+                    registerLocationUpdate()
+                } else {
+                    showPermissionDialog()
+                }
+                updateLocationUI()
+            }
         supportFragmentManager.getMapAsync(this)
         initObserver()
         return rootView
+    }
+
+    private fun registerLocationUpdate() {
+        when{
+            isPermissionLocationGranted() -> {
+                EventBus.getDefault().post(FetchLocationEvent())
+            }
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) -> {
+                showPermissionDialog()
+            }
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+        updateLocationUI()
     }
 
     private fun initObserver() {
@@ -164,32 +195,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback {
                 Log.e("Exception: %s", e.message, e)
             }
         }
-    }
-
-    private fun registerLocationUpdate() {
-        if (isPermissionLocationGranted()) {
-            EventBus.getDefault().post(FetchLocationEvent())
-        } else {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_PERMISSIONS_CODE_FINE_LOCATION
-            )
-        }
-        updateLocationUI()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == REQUEST_PERMISSIONS_CODE_FINE_LOCATION) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                showPermissionDialog()
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                registerLocationUpdate()
-            }
-        }
-        updateLocationUI()
     }
 
     private fun addMarker(placesSearchId: List<String>? = null) {

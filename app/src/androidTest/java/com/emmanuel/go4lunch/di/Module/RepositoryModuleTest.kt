@@ -15,8 +15,8 @@ class RepositoryModuleTest {
 
     @Singleton
     @Provides
-     fun provideWorkmateRepository(firestoreService: FirestoreService): WorkmateRepository {
-        return WorkmateRepository(firestoreService)
+     fun provideWorkmateRepository(fireStoreService: FirestoreService): WorkmateRepository {
+        return WorkmateRepository(fireStoreService)
     }
 
     @Singleton

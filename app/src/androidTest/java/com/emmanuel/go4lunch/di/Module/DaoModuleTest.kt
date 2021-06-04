@@ -9,10 +9,10 @@ import javax.inject.Singleton
 
 @Module
 class DaoModuleTest(context: Context) {
-    val database = RestaurantDetailDatabase.getRestaurantDetailDatabase(context)
+    val dataBase = RestaurantDetailDatabase.getRestaurantDetailDatabase(context)
     @Singleton
     @Provides
     fun provideRestaurantDetailDao(): RestaurantDetailDao {
-        return database.restaurantDetailDao()
+        return dataBase.restaurantDetailDao()
     }
 }

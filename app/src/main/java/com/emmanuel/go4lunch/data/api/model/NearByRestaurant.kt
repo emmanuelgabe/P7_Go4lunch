@@ -1,7 +1,6 @@
 package com.emmanuel.go4lunch.data.api.model
 
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
 
 data class NearByRestaurant(
     @SerializedName("place_id")

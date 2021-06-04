@@ -13,7 +13,7 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [ApiModule::class, RepositoryModule::class, /*ContextModule::class,*/ DaoModule::class, FireStoreModule::class])
+@Component(modules = [ApiModule::class, RepositoryModule::class, DaoModule::class, FireStoreModule::class])
 interface AppComponent {
     fun inject(activity: AuthenticationActivity)
     fun inject(activity: MainActivity)

@@ -11,8 +11,6 @@ import com.emmanuel.go4lunch.data.model.Workmate
 import java.text.SimpleDateFormat
 import java.util.*
 
-const val REQUEST_PERMISSIONS_CODE_FINE_LOCATION: Int = 5000
-const val REQUEST_PERMISSIONS_CODE_CALL_PHONE: Int = 5100
 const val MAX_WITH_ICON = 60
 const val MAX_WITH_IMAGE = 400
 const val PLACE_OFFSET = 2

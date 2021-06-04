@@ -71,11 +71,13 @@ class WorkmatesFragment : Fragment(),WorkmateAdapter.Interaction {
     private fun updateWorkmateList(workmateSearchList: List<Workmate>? = null) {
         if (workmateViewModel.restaurantLiveData.value != null && mainViewModel.workmatesLiveData.value != null) {
             if (workmateSearchList == null ){
-                mAdapter.submitList(mainViewModel.workmatesLiveData.value!!.toList(),
+                mAdapter.submitList(
+                    mainViewModel.workmatesLiveData.value!! as MutableList<Workmate>,
                     workmateViewModel.restaurantLiveData.value!!
                 )
             } else {
-                mAdapter.submitList(workmateSearchList,
+                mAdapter.submitList(
+                    workmateSearchList as MutableList<Workmate>,
                     workmateViewModel.restaurantLiveData.value!!
                 )
             }

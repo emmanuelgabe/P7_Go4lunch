@@ -5,14 +5,14 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
+import androidx.multidex.MultiDexApplication
 import com.emmanuel.go4lunch.di.AppComponent
 import com.emmanuel.go4lunch.di.DaggerAppComponent
-import com.emmanuel.go4lunch.di.modules.ContextModule
 import com.emmanuel.go4lunch.di.modules.DaoModule
 import com.emmanuel.go4lunch.utils.NOTIFICATION_LUNCH_CHANNEL_ID
 import com.google.android.libraries.places.api.Places
 
-open class App : Application() {
+open class App : MultiDexApplication() {
     lateinit var appComponent: AppComponent
 
     override fun onCreate() {
@@ -25,7 +25,6 @@ open class App : Application() {
 
     protected open fun initDagger(): AppComponent {
         return DaggerAppComponent.builder()
-            // .contextModule(ContextModule(applicationContext))
             .daoModule(DaoModule(applicationContext))
             .build()
     }

@@ -60,7 +60,7 @@ class SettingFragmentTest {
         var notificationPreference = sharedPreferences.getBoolean(SettingsFragment.KEY_PREF_NOTIFICATION_PREFERENCE,false)
         var notificationHour = sharedPreferences.getString(SettingsFragment.KEY_PREF_NOTIFICATION_HOUR_PREFERENCE,"12")!!
             .toInt()
-        // check devauld value befor change
+        // check default value before change
         assertEquals(notificationPreference, true)
         assertEquals(notificationHour, 11)
         // open hour notification dialog

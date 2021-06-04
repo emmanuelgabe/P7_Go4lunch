@@ -63,42 +63,51 @@ class RestaurantDetailViewModel(
             }
         }
         updateFavoriteRestaurant = viewModelScope.launch(Dispatchers.IO) {
+            updateWorkmateFavoriteRestaurant(
+                currentWorkmate,
+                workmates)
+        }
+    }
 
-            if (currentWorkmate.restaurantFavorite != null) {
-                // if user has already restaurant in favorite
-                if (currentWorkmate.restaurantFavorite.equals(currentRestaurantsDetailLiveData.value?.id)) {
-                    // if user favorite restaurant is the current restaurant display
-                    currentWorkmate.restaurantFavorite = null
-                    currentWorkmate.favoriteDate = null
-                    workmateRepository.updateWorkmate(currentWorkmate)
-                    // delete old restaurant favorite information if never user from all workmates
-                    if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.id,workmates,currentWorkmate.uid))
-                        workmateRepository.deleteRestaurant(currentRestaurantsDetailLiveData.value!!.id)
-                } else {
-                    // if user favorite restaurant is not the current restaurant display
-                    val oldFavoriteId: String? = currentWorkmate.restaurantFavorite
-                    currentWorkmate.restaurantFavorite = currentRestaurantsDetailLiveData.value?.id
-                    currentWorkmate.favoriteDate = Calendar.getInstance().time
-                    workmateRepository.updateWorkmate(currentWorkmate)
-                    // delete old restaurant favorite information if never user from all workmates
-                    if (restaurantIsNeverUse(oldFavoriteId!!, workmates, currentWorkmate.uid))
-                        workmateRepository.deleteRestaurant(oldFavoriteId)
-                    // add new restaurant favorite information if not already add by an other user
-                    if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.id, workmates, currentWorkmate.uid))
-                        addRestaurant(RestaurantDetail(currentRestaurantsDetailLiveData.value?.id!!, currentRestaurantsDetailLiveData.value?.name))
-                }
-            } else { // if user has no restaurant in favorite
-                // check if favorite information has already add by an other user
-                if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.id, workmates, currentWorkmate.uid))
-                    addRestaurant(RestaurantDetail(currentRestaurantsDetailLiveData.value?.id!!, currentRestaurantsDetailLiveData.value?.name))
+    /**
+     * Updates the user's favorite restaurant according to the current one.
+     * The list of favorite restaurant names is updated, the unused ones are deleted
+     */
+    private fun updateWorkmateFavoriteRestaurant(currentWorkmate: Workmate, workmates: List<Workmate>) {
+        if (currentWorkmate.restaurantFavorite != null) {
+            // if user has already restaurant in favorite
+            if (currentWorkmate.restaurantFavorite.equals(currentRestaurantsDetailLiveData.value?.id)) {
+                // if user favorite restaurant is the current restaurant display
+                currentWorkmate.restaurantFavorite = null
+                currentWorkmate.favoriteDate = null
+                workmateRepository.updateWorkmate(currentWorkmate)
+                // delete old restaurant favorite information if never user from all workmates
+                if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.id,workmates,currentWorkmate.uid))
+                    workmateRepository.deleteRestaurant(currentRestaurantsDetailLiveData.value!!.id)
+            } else {
+                // if user favorite restaurant is not the current restaurant display
+                val oldFavoriteId: String? = currentWorkmate.restaurantFavorite
                 currentWorkmate.restaurantFavorite = currentRestaurantsDetailLiveData.value?.id
                 currentWorkmate.favoriteDate = Calendar.getInstance().time
                 workmateRepository.updateWorkmate(currentWorkmate)
-                }
+                // delete old restaurant favorite information if never user from all workmates
+                if (restaurantIsNeverUse(oldFavoriteId!!, workmates, currentWorkmate.uid))
+                    workmateRepository.deleteRestaurant(oldFavoriteId)
+                // add new restaurant favorite information if not already add by an other user
+                if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.id, workmates, currentWorkmate.uid))
+                    addRestaurant(RestaurantDetail(currentRestaurantsDetailLiveData.value?.id!!, currentRestaurantsDetailLiveData.value?.name))
             }
+        } else { // if user has no restaurant in favorite
+            // check if favorite information has already add by an other user
+            if (restaurantIsNeverUse(currentRestaurantsDetailLiveData.value!!.id, workmates, currentWorkmate.uid))
+                addRestaurant(RestaurantDetail(currentRestaurantsDetailLiveData.value?.id!!, currentRestaurantsDetailLiveData.value?.name))
+            currentWorkmate.restaurantFavorite = currentRestaurantsDetailLiveData.value?.id
+            currentWorkmate.favoriteDate = Calendar.getInstance().time
+            workmateRepository.updateWorkmate(currentWorkmate)
         }
-    
-    fun getWorkmateWithUpdateLike(currentWorkmate: Workmate): Workmate {
+    }
+
+    private fun getWorkmateWithUpdateLike(currentWorkmate: Workmate): Workmate {
         val newLikeList = mutableListOf<String>()
         currentWorkmate.restaurantsIdLike?.let {
             newLikeList.addAll(currentWorkmate.restaurantsIdLike!!)

@@ -1,5 +1,8 @@
-package com.emmanuel.go4lunch.utils
+package com.emmanuel.go4lunch
 
+import com.emmanuel.go4lunch.utils.MAX_WITH_ICON
+import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
+import com.emmanuel.go4lunch.utils.isSameDay
 import junit.framework.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith

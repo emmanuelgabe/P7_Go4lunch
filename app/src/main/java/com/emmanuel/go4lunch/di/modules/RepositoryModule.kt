@@ -15,8 +15,8 @@ open class RepositoryModule {
 
     @Singleton
     @Provides
-    open fun provideWorkmateRepository(firestoreService: FirestoreService): WorkmateRepository {
-        return WorkmateRepository(firestoreService)
+    open fun provideWorkmateRepository(fireStoreService: FirestoreService): WorkmateRepository {
+        return WorkmateRepository(fireStoreService)
     }
 
     @Singleton

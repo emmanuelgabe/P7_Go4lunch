@@ -16,6 +16,7 @@ import com.emmanuel.go4lunch.databinding.RestaurantItemBinding
 import com.emmanuel.go4lunch.utils.MAX_WITH_ICON
 import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
 import com.squareup.picasso.Picasso
+import java.lang.StringBuilder
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -24,20 +25,20 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
 
     var  lastKnownLocation: Location? = null
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<RestaurantDetail>() {
+    private val diffCallBack = object : DiffUtil.ItemCallback<RestaurantDetail>() {
 
         override fun areItemsTheSame(
             oldItem: RestaurantDetail,
             newItem: RestaurantDetail
         ): Boolean {
-            return  oldItem.id.equals(newItem.id)
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(
             oldItem: RestaurantDetail,
             newItem: RestaurantDetail
         ): Boolean {
-         return  oldItem.equals(newItem)
+         return oldItem == newItem
         }
 
         override fun getChangePayload(oldItem: RestaurantDetail, newItem: RestaurantDetail): Any {
@@ -51,7 +52,7 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
         }
     }
 
-    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+    private val differ = AsyncListDiffer(this, diffCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return ViewHolder(
@@ -67,7 +68,7 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder -> {
-                holder.bind(differ.currentList.get(position))
+                holder.bind(differ.currentList[position])
             }
         }
     }
@@ -78,7 +79,7 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
                 if (payloads.isEmpty())
                     super.onBindViewHolder(holder, position, payloads)
                 else {
-                    val bundle = payloads.get(0) as Bundle
+                    val bundle = payloads[0] as Bundle
                     val count: Int = bundle.get("count") as Int
                     holder.bindItemCount(count)
                 }
@@ -112,7 +113,7 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
             binding.restaurantItemWorkmatesNumberTextView.animation = translateAnim
         }
 
-        fun bind(restaurantDetail: RestaurantDetail) = with(itemView) {
+        fun bind(restaurantDetail: RestaurantDetail) {
             itemView.setOnClickListener {
                 interaction?.onItemSelected(restaurantDetail)
             }
@@ -125,13 +126,28 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
                binding.restaurantItemRatingBar.rating = 0F
            }
 
-            if (restaurantDetail.businessStatus == "CLOSED_TEMPORARILY" || restaurantDetail.businessStatus == "CLOSED_PERMANENTLY") {
-                binding.restaurantItemTimetableTextView.text =
-                    binding.root.context.getString(R.string.fragment_list_view_close_statut_restaurant)
-                binding.restaurantItemTimetableTextView.setTextColor(Color.RED)
-            } else {
-                binding.restaurantItemTimetableTextView.text =
-                    getOpeningHourDayFromWeekList(restaurantDetail, binding)
+            when (restaurantDetail.businessStatus) {
+                "CLOSED_PERMANENTLY" -> {
+                    binding.restaurantItemTimetableTextView.text =
+                        binding.root.context.getString(R.string.fragment_list_view_close_permanently_restaurant)
+                    binding.restaurantItemTimetableTextView.setTextColor(Color.RED)
+                }
+                "CLOSED_TEMPORARILY" -> {
+                    binding.restaurantItemTimetableTextView.text =
+                        binding.root.context.getString(R.string.fragment_list_view_close_temporarily_restaurant)
+                    binding.restaurantItemTimetableTextView.setTextColor(Color.RED)
+                }
+                else -> {
+                    val timeTableToday = StringBuilder()
+                    timeTableToday.append(getOpeningHourDayFromWeekList(restaurantDetail, binding))
+                    if (timeTableToday.equals("Closed")) {
+                        binding.restaurantItemTimetableTextView.setTextColor(Color.RED)
+                        timeTableToday.append(R.string.fragment_list_view_close_today_restaurant)
+                    } else {
+                        binding.restaurantItemTimetableTextView.setTextColor(Color.BLACK)
+                    }
+                    binding.restaurantItemTimetableTextView.text = timeTableToday
+                }
             }
 
             lastKnownLocation?.let {

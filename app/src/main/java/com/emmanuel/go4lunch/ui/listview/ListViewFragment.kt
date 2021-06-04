@@ -10,6 +10,9 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -26,7 +29,6 @@ import com.emmanuel.go4lunch.data.model.Workmate
 import com.emmanuel.go4lunch.databinding.FragmentListViewBinding
 import com.emmanuel.go4lunch.ui.settings.SettingsFragment
 import com.emmanuel.go4lunch.utils.FetchLocationEvent
-import com.emmanuel.go4lunch.utils.REQUEST_PERMISSIONS_CODE_FINE_LOCATION
 import com.emmanuel.go4lunch.utils.isSameDay
 import org.greenrobot.eventbus.EventBus
 import java.util.*
@@ -35,6 +37,7 @@ class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
     private lateinit var binding: FragmentListViewBinding
     private lateinit var mAdapter: ListViewAdapter
     private val mainViewModel: MainViewModel by activityViewModels()
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,40 +52,41 @@ class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
         binding.listViewRecyclerView.layoutManager = LinearLayoutManager(activity)
         mAdapter = ListViewAdapter(this)
         binding.listViewRecyclerView.adapter = mAdapter
+        requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission())
+        { isGranted: Boolean ->
+            if (isGranted) {
+                registerLocationUpdate()
+            } else {
+                binding.fragmentListViewMessageInformation.text =
+                    getString(R.string.fragment_list_view_message_no_permission)
+                showPermissionDialog()
+            }
+        }
         initObserver()
         updateRestaurantList()
         registerLocationUpdate()
         return rootView
     }
 
-    private fun registerLocationUpdate() {
-        if (isPermissionLocationGranted()) {
-            EventBus.getDefault().post(FetchLocationEvent())
-            if (!binding.fragmentListViewSwipeContainer.isVisible) {
-                binding.fragmentListViewProgressBar.visibility = View.VISIBLE
-                binding.fragmentListViewMessageInformation.text =
-                    getString(R.string.fragment_list_view_message_search_position)
+    private fun registerLocationUpdate(){
+        when{
+            isPermissionLocationGranted() -> {
+                EventBus.getDefault().post(FetchLocationEvent())
+                if (!binding.fragmentListViewSwipeContainer.isVisible) {
+                    binding.fragmentListViewProgressBar.visibility = View.VISIBLE
+                    binding.fragmentListViewMessageInformation.text =
+                        getString(R.string.fragment_list_view_message_search_position)
+                }
             }
-        } else {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_PERMISSIONS_CODE_FINE_LOCATION
-            )
-            binding.fragmentListViewSwipeContainer.isRefreshing = false
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == REQUEST_PERMISSIONS_CODE_FINE_LOCATION) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                binding.fragmentListViewMessageInformation.text =
-                    getString(R.string.fragment_list_view_message_no_permission)
-                showPermissionDialog()
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                registerLocationUpdate()
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) -> {
+              showPermissionDialog()
+            }
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                binding.fragmentListViewSwipeContainer.isRefreshing = false
             }
         }
     }
@@ -187,18 +191,18 @@ class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
                 updateRestaurantList(restaurantsPlaceSearch)
             })
         mainViewModel.lastKnownLocation.observe(viewLifecycleOwner,
-            { lastKnownLocation ->
+            {
                 val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
                 val radiusPreference = sharedPreferences.getInt(SettingsFragment.KEY_PREF_RESTAURANT_RADIUS,1000)
                 mainViewModel.getAllNearRestaurant(radiusPreference)
                 })
         mainViewModel.nearRestaurantsLiveData.observe(viewLifecycleOwner,
-            { nearRestaurant ->
+            {
                 mainViewModel.getAllDetailRestaurant()
             })
     }
 
-    fun getRestaurantDetailWithWorkmateCount(
+    private fun getRestaurantDetailWithWorkmateCount(
         workmates: List<Workmate>, restaurants: List<RestaurantDetailEntity>
     ): MutableList<RestaurantDetail> {
         val updateRestaurantDetailList = mutableListOf<RestaurantDetail>()
@@ -235,7 +239,6 @@ class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
                 workmateCount = null
             )
             restaurantDetail.workmateCount = count
-            // restaurant.workmateCount = workmateCount
             updateRestaurantDetailList.add(restaurantDetail)
         }
         return updateRestaurantDetailList

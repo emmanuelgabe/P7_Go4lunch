@@ -5,7 +5,6 @@ package com.emmanuel.go4lunch.utils
 import com.emmanuel.go4lunch.data.api.response.NearByRestaurantDetailResponse
 import com.emmanuel.go4lunch.data.api.response.NearByRestaurantListResponse
 import com.google.common.reflect.TypeToken
-import retrofit2.Response
 import java.lang.reflect.Type
 
 object FakeDataProviderUnitTest {

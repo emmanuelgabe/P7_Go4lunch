@@ -8,7 +8,7 @@ import com.emmanuel.go4lunch.utils.OkHttpProvider
 import com.jakewharton.espresso.OkHttp3IdlingResource
 
 open class BaseInstrumentedTest {
-    var instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
+    private var instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
     lateinit var component: AppComponentTest
 
     protected fun initialize(){

@@ -7,7 +7,7 @@ import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.database.RestaurantDetailDao
 import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
 
-class RestaurantRepository(
+open class RestaurantRepository(
     private val googleMapService: GoogleMapsService,
     private val restaurantDetailDao: RestaurantDetailDao
 ) {
@@ -15,13 +15,24 @@ class RestaurantRepository(
     suspend fun getAllNearRestaurant(
         lastKnownLocation: Location?,
         radius: Int
-    ): List<NearByRestaurant>? {
-        val response =
-            googleMapService.getNearRestaurant(
-                "${lastKnownLocation?.latitude},${lastKnownLocation?.longitude}", radius,
+    ): List<NearByRestaurant> {
+        val response = googleMapService.getNearRestaurant(
+            "${lastKnownLocation?.latitude},${lastKnownLocation?.longitude}", radius,
+            "restaurant",
+            BuildConfig.GOOGLE_MAP_API_KEY,
+        )
+
+        while ((response.results.size < MAX_NEAR_RESTAURANT && !response.nextPageToken.isNullOrBlank())){
+            val nextPageResponse =  googleMapService.getNearRestaurantNextPage("${lastKnownLocation?.latitude},${lastKnownLocation?.longitude}", radius,
                 "restaurant",
-                BuildConfig.GOOGLE_MAP_API_KEY
+                BuildConfig.GOOGLE_MAP_API_KEY,
+                response.nextPageToken!!
             )
+            response.nextPageToken.equals(nextPageResponse.nextPageToken)
+            for (restaurants in nextPageResponse.results){
+                response.results.add(restaurants)
+            }
+        }
         return response.results
     }
 
@@ -98,5 +109,6 @@ class RestaurantRepository(
 
     companion object {
         const val TIME_BEFORE_UPDATE = 172800000 // 2 days in ms
+        const val MAX_NEAR_RESTAURANT = 60 // must be a multiple of 20
     }
 }

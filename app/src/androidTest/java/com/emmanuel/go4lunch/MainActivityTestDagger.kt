@@ -23,7 +23,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import javax.inject.Inject
 
@@ -59,10 +58,10 @@ class MainActivityTestDagger : BaseInstrumentedTest() {
         location.time = System.currentTimeMillis()
         lm.setTestProviderLocation("providerName", location)
 
-        Mockito.`when`(googleMapsService.getNearRestaurant("", 0, "", ""))
+/*        Mockito.`when`(googleMapsService.getNearRestaurant("", 0, "", ""))
             .thenReturn(FakeDataProvider.nearRestaurantList)
         Mockito.`when`(googleMapsService.getDetails("", "", ""))
-            .thenReturn(FakeDataProvider.nearRestaurantDetail)
+            .thenReturn(FakeDataProvider.nearRestaurantDetail)*/
 
         //  onView(withId(R.id.map)).check(matches(isDisplayed()))
 

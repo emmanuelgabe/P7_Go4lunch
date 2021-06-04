@@ -16,18 +16,18 @@ import com.squareup.picasso.Picasso
 class RestaurantDetailAdapter :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Workmate>() {
+    private val diffCallBack = object : DiffUtil.ItemCallback<Workmate>() {
 
         override fun areItemsTheSame(oldItem: Workmate, newItem: Workmate): Boolean {
-            return oldItem.uid.equals(newItem.uid)
+            return oldItem.uid == newItem.uid
         }
 
         override fun areContentsTheSame(oldItem: Workmate, newItem: Workmate): Boolean {
-            return oldItem.equals(newItem)
+            return oldItem == newItem
         }
 
     }
-    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+    private val differ = AsyncListDiffer(this, diffCallBack)
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -44,7 +44,7 @@ class RestaurantDetailAdapter :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is RestaurantDetailViewHolder -> {
-                holder.bind(differ.currentList.get(position))
+                holder.bind(differ.currentList[position])
             }
         }
     }

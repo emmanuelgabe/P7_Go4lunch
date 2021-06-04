@@ -3,12 +3,10 @@ package com.emmanuel.go4lunch.data.repository
 import android.location.Location
 import com.emmanuel.go4lunch.BuildConfig
 import com.emmanuel.go4lunch.data.api.GoogleMapsService
-import com.emmanuel.go4lunch.data.api.RetrofitBuilder
 import com.emmanuel.go4lunch.data.api.response.PlaceAutoComplete
 import com.emmanuel.go4lunch.utils.PLACE_OFFSET
-import javax.inject.Inject
 
-class PlaceRepository(private val googleMapsService: GoogleMapsService) {
+open class PlaceRepository(private val googleMapsService: GoogleMapsService) {
 
     suspend fun getPlaces(
         input: String,

@@ -1,7 +1,6 @@
 package com.emmanuel.go4lunch.data.api
 
 
-import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.api.response.NearByRestaurantDetailResponse
 import com.emmanuel.go4lunch.data.api.response.NearByRestaurantListResponse
 import com.emmanuel.go4lunch.data.api.response.PlaceAutoComplete
@@ -25,6 +24,15 @@ interface GoogleMapsService {
         @Query("key") key: String
     ): NearByRestaurantListResponse
 
+    @GET("/maps/api/place/nearbysearch/json")
+    suspend fun getNearRestaurantNextPage(
+        @Query("location", encoded = false) location: String,
+        @Query("radius") radius: Int,
+        @Query("type") type: String,
+        @Query("key") key: String,
+        @Query("pagetoken") pageToken: String
+    ): NearByRestaurantListResponse
+
     @GET("/maps/api/place/autocomplete/json")
     suspend fun getPlaces(
         @Query("offset") offset: String,
@@ -34,5 +42,4 @@ interface GoogleMapsService {
         @Query("radius") radius: Int,
         @Query("key") key: String
     ): Response<PlaceAutoComplete>
-
 }

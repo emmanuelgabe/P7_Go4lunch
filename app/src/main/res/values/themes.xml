@@ -30,7 +30,7 @@
     <style name="RatingBar" parent="Widget.AppCompat.RatingBar">
         <item name="android:progressDrawable">@drawable/rating_stars_layer</item>
         <item name="colorControlNormal">@color/quantum_yellow600</item>
-        <item name="colorControlActivated">@color/fui_transparent</item>
+        <item name="colorControlActivated">#00000000</item>
     </style>
     <!-- Progress bar-->
     <style name="progressBar" >

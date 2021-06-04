@@ -25,15 +25,13 @@
     <string name="detail_restaurant_button_like">AIMER</string>
     <string name="description_gps_location_button">bouton de localisation GPS</string>
     <string name="activity_authentication_text_view_subtitle">Trouvez un bon restaurant et invitez vos collègues à déjeuner!</string>
-    <string name="authentication_activity_error_no_internet">Échec en raison d\'un manque de connexion réseau</string>
     <string name="fragment_list_view_message_download">Téléchargement des informations sur les restaurants et les utilisateurs</string>
-    <string name="fragment_list_view_close_permanently_restaurant">"Fermé définitivement  "</string>
+    <string name="fragment_list_view_close_permanently_restaurant">"Fermé définitivement"</string>
     <string name="alert_dialog_neutral_button">Annuler</string>
     <string name="alert_dialog_permission_button_cancel">Annuler</string>
     <string name="detail_restaurant_button_call">APPELER</string>
     <string name="error_authentication_failed">Échec de l\'authentification</string>
     <string name="alert_dialog_title">Attention</string>
-    <string name="authentication_activity_error_unknown">Une erreur est survenue</string>
     <string name="setting_fragment_message_account_delete">Votre compte a été supprimé</string>
     <string name="setting_fragment_dialog_message_account_delete">Êtes-vous sur de vouloir supprimer votre compte ?\nToutes vos données seront supprimé\nLa suppression sera irréversible.</string>
     <string name="setting_fragment_dialog_title_account_delete">Suppression du compte</string>
@@ -59,7 +57,7 @@
     <string name="settings_preference_dialog_title_notification_hour">"Séléctioner une heure "</string>
     <string name="settings_preference_summary_map_zoom">"Zoom de la carte par défaut  "</string>
     <string name="settings_preference_summary_radius">Restaurant search radius</string>
-    <string name="fragment_list_view_close_today_restaurant">"aujourd’hui "</string>
+    <string name="fragment_list_view_close_today_restaurant">"Fermé aujourd’hui "</string>
     <string name="drawer_toast_message_no_launch">"Vous n'avez pas encore choisi de restaurant.  "</string>
     <string name="fragment_list_view_close_temporarily_restaurant">Fermé temporairement</string>
 </resources>

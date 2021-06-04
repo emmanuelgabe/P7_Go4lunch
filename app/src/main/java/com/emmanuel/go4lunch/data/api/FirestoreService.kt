@@ -3,11 +3,11 @@ package com.emmanuel.go4lunch.data.api
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 
-class FirestoreService(firestore: FirebaseFirestore) {
+class FirestoreService(fireStore: FirebaseFirestore) {
 
     // --- COLLECTION REFERENCE ---
-    private val usersCollectionRef = firestore.collection(COLLECTION_USERS)
-    private val restaurantsCollectionRef = firestore.collection(COLLECTION_RESTAURANTS)
+    private val usersCollectionRef = fireStore.collection(COLLECTION_USERS)
+    private val restaurantsCollectionRef = fireStore.collection(COLLECTION_RESTAURANTS)
 
     fun updateUser(id: String, user: Map<String, Any?>) {
         usersCollectionRef.document(id).update(user)

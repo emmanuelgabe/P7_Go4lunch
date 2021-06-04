@@ -21,21 +21,21 @@ class WorkmateAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var mRestaurants = mutableListOf<RestaurantDetail>()
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Workmate>() {
+    private val diffCallBack = object : DiffUtil.ItemCallback<Workmate>() {
 
         override fun areItemsTheSame(oldItem: Workmate, newItem: Workmate): Boolean {
-            return oldItem.uid.equals(newItem.uid)
+            return oldItem.uid == newItem.uid
         }
 
         override fun areContentsTheSame(oldItem: Workmate, newItem: Workmate): Boolean {
-           return oldItem.equals(newItem)
+           return oldItem == newItem
         }
 
     }
-    private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
+    private val differ = AsyncListDiffer(this, diffCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return WorkamteViewHolder(
+        return WorkmateViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.workmates_item,
                 parent,
@@ -47,8 +47,8 @@ class WorkmateAdapter(private val interaction: Interaction? = null) :
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is WorkamteViewHolder -> {
-                holder.bind(differ.currentList.get(position))
+            is WorkmateViewHolder -> {
+                holder.bind(differ.currentList[position])
             }
         }
     }
@@ -57,13 +57,16 @@ class WorkmateAdapter(private val interaction: Interaction? = null) :
         return differ.currentList.size
     }
 
-    fun submitList(list: List<Workmate>,restaurantList: List<RestaurantDetail>) {
+    fun submitList(workmates: MutableList<Workmate>, restaurantList: List<RestaurantDetail>) {
+        workmates.sortBy { it.restaurantFavorite }
+        workmates.sortBy { it.favoriteDate }
+        workmates.reverse()
         mRestaurants.clear()
         mRestaurants.addAll(restaurantList)
-        differ.submitList(list)
+        differ.submitList(workmates)
     }
 
-    inner class WorkamteViewHolder
+    inner class WorkmateViewHolder
     constructor(
         itemView: View,
         private val interaction: Interaction?

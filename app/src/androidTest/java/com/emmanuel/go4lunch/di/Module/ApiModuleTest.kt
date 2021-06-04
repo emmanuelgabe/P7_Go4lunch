@@ -24,8 +24,8 @@ class ApiModuleTest {
 
     @Singleton
     @Provides
-    fun provideFireStoreService(firestore: FirebaseFirestore): FirestoreService {
-        return FirestoreService(firestore)
+    fun provideFireStoreService(fireStore: FirebaseFirestore): FirestoreService {
+        return FirestoreService(fireStore)
     }
 
     @Singleton

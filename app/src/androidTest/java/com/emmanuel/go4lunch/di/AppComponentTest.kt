@@ -9,7 +9,7 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [ApiModuleTest::class, RepositoryModuleTest::class, /*ContextModule::class,*/ DaoModuleTest::class, FireStoreModuleTest::class])
+@Component(modules = [ApiModuleTest::class, RepositoryModuleTest::class, DaoModuleTest::class, FireStoreModuleTest::class])
     interface AppComponentTest: AppComponent {
     fun inject(activity: MainActivityTestDagger)
 }

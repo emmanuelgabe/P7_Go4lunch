@@ -1,7 +1,6 @@
 package com.emmanuel.go4lunch
 
 import android.content.Intent
-import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.text.Editable

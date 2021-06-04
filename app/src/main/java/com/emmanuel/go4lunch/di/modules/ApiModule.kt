@@ -9,13 +9,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-const val GOOGLE_MAP_BASE_URL = "https://maps.googleapis.com"
-
 @Module
-open class ApiModule {
+class ApiModule {
     @Singleton
     @Provides
-    open fun provideRetrofit(): Retrofit {
+    fun provideRetrofit(): Retrofit {
         val retrofitBuilder: Retrofit.Builder by lazy {
             Retrofit.Builder()
                 .baseUrl(GOOGLE_MAP_BASE_URL)
@@ -26,13 +24,17 @@ open class ApiModule {
 
     @Singleton
     @Provides
-    open fun provideFireStoreService(firestore: FirebaseFirestore): FirestoreService {
-        return FirestoreService(firestore)
+    fun provideFireStoreService(fireStore: FirebaseFirestore): FirestoreService {
+        return FirestoreService(fireStore)
     }
 
     @Singleton
     @Provides
-    open fun provideGoogleMapService(retrofit: Retrofit): GoogleMapsService {
+    fun provideGoogleMapService(retrofit: Retrofit): GoogleMapsService {
         return retrofit.create(GoogleMapsService::class.java)
+    }
+
+    companion object {
+        const val GOOGLE_MAP_BASE_URL = "https://maps.googleapis.com"
     }
 }

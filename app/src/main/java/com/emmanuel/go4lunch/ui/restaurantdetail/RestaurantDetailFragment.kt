@@ -12,7 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -29,7 +32,10 @@ import com.emmanuel.go4lunch.databinding.FragmentRestaurantDetailBinding
 import com.emmanuel.go4lunch.di.ViewModelFactory
 import com.emmanuel.go4lunch.notification.NotificationWorker
 import com.emmanuel.go4lunch.ui.settings.SettingsFragment
-import com.emmanuel.go4lunch.utils.*
+import com.emmanuel.go4lunch.utils.MAX_WITH_IMAGE
+import com.emmanuel.go4lunch.utils.ResetSearchView
+import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
+import com.emmanuel.go4lunch.utils.isSameDay
 import com.squareup.picasso.Picasso
 import org.greenrobot.eventbus.EventBus
 import java.util.*
@@ -43,6 +49,7 @@ class RestaurantDetailFragment : Fragment() {
     private lateinit var mAdapter: RestaurantDetailAdapter
     private lateinit var restaurantDetailViewModel: RestaurantDetailViewModel
     private val mainViewModel: MainViewModel by activityViewModels()
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +68,15 @@ class RestaurantDetailFragment : Fragment() {
         mAdapter = RestaurantDetailAdapter()
         restaurantDetailViewModel.init(arguments?.getString("restaurantId")!!)
         initObserver()
+        requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission())
+            { isGranted: Boolean ->
+                if (isGranted) {
+                    callRestaurant()
+                } else {
+                    showPermissionDialog()
+                }
+            }
         return view
     }
 
@@ -115,13 +131,21 @@ class RestaurantDetailFragment : Fragment() {
         binding.fragmentDetailButtonCall.setOnClickListener {
             if (currentRestaurant.phoneNumber != null) {
                 if (currentRestaurant.phoneNumber.isNotBlank()) {
-                    if (isPermissionCallGranted()) {
-                        callRestaurant()
-                    } else {
-                        requestPermissions(
-                            arrayOf(Manifest.permission.CALL_PHONE),
-                            REQUEST_PERMISSIONS_CODE_CALL_PHONE
-                        )
+                    when{
+                        ContextCompat.checkSelfPermission(
+                            requireContext(), Manifest.permission.CALL_PHONE
+                        ) == PackageManager.PERMISSION_GRANTED -> {
+                            callRestaurant()
+                        }
+                        ActivityCompat.shouldShowRequestPermissionRationale(
+                            requireActivity(),
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) -> {
+                            showPermissionDialog()
+                        }
+                        else -> {
+                            requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+                        }
                     }
                 }
             } else {
@@ -216,16 +240,6 @@ class RestaurantDetailFragment : Fragment() {
         startActivity(intent)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
-        if (requestCode == REQUEST_PERMISSIONS_CODE_CALL_PHONE) {
-            if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                showPermissionDialog()
-            }
-        }
-    }
-
     private fun showPermissionDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.apply {
@@ -244,10 +258,6 @@ class RestaurantDetailFragment : Fragment() {
         val dialog = builder.create()
         dialog.show()
     }
-
-    private fun isPermissionCallGranted() = ContextCompat.checkSelfPermission(
-        requireContext(), Manifest.permission.CALL_PHONE
-    ) == PackageManager.PERMISSION_GRANTED
 
     private fun updateWorkmateList(workmateSearchList: List<Workmate>? = null) {
         val workmates = mutableListOf<Workmate>()
@@ -304,8 +314,8 @@ class RestaurantDetailFragment : Fragment() {
         val workRequest: OneTimeWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
             .setInputData(workerData)
             .setConstraints(workerConstraints)
-            .setInitialDelay(20, TimeUnit.SECONDS) // 20s for check
-            //.setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+            //.setInitialDelay(20, TimeUnit.SECONDS)
+            .setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
                 OneTimeWorkRequest.MIN_BACKOFF_MILLIS,

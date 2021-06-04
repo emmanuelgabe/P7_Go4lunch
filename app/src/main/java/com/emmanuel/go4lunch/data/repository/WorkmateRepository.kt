@@ -8,9 +8,8 @@ import com.emmanuel.go4lunch.utils.UpdateWorkmatesEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import org.greenrobot.eventbus.EventBus
-import javax.inject.Inject
 
-class WorkmateRepository(private val firestoreService: FirestoreService) {
+open class WorkmateRepository(private val fireStoreService: FirestoreService) {
 
     fun createWorkmate(user: Workmate) {
         val userDataMap = mapOf(
@@ -20,11 +19,11 @@ class WorkmateRepository(private val firestoreService: FirestoreService) {
             "restaurantsLike" to user.restaurantsIdLike,
             "restaurantFavorite" to user.restaurantFavorite
         )
-        firestoreService.createUser(user.uid, userDataMap)
+        fireStoreService.createUser(user.uid, userDataMap)
     }
 
     fun getAllRestaurants(): CollectionReference {
-        return firestoreService.getAllRestaurants()
+        return fireStoreService.getAllRestaurants()
     }
 
     fun updateWorkmate(workmate: Workmate) {
@@ -36,26 +35,26 @@ class WorkmateRepository(private val firestoreService: FirestoreService) {
             "restaurantFavorite" to workmate.restaurantFavorite,
             "favoriteDate" to workmate.favoriteDate
         )
-        firestoreService.updateUser(workmate.uid, workmateDataMap)
+        fireStoreService.updateUser(workmate.uid, workmateDataMap)
     }
 
     fun addRestaurant(restaurant: RestaurantDetail) {
-        firestoreService.createRestaurant(
+        fireStoreService.createRestaurant(
             restaurant.id,
             mapOf<String, Any?>("name" to restaurant.name)
         )
     }
 
     fun deleteRestaurant(id: String) {
-        firestoreService.deleteRestaurant(id)
+        fireStoreService.deleteRestaurant(id)
     }
 
     fun deleteWorkmate(id: String) {
-        firestoreService.deleteUser(id)
+        fireStoreService.deleteUser(id)
     }
 
     fun addWorkmatesSnapshotListener() {
-        firestoreService.getAllUserCollectionReference().addSnapshotListener { snapshot, error ->
+        fireStoreService.getAllUserCollectionReference().addSnapshotListener { snapshot, error ->
             if (error != null) return@addSnapshotListener
             if (snapshot != null) {
                 val workmateList = mutableListOf<Workmate>()
