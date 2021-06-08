@@ -56,7 +56,7 @@ class MainViewModel(
                 }
             }
             placeJob = viewModelScope.launch(Dispatchers.IO) {
-                if (input.length >= 3) {
+                if (input.length > 3) {
 
                     val placeResponse =
                         placeRepository.getPlaces(input, lastKnownLocation.value!!, radius)
