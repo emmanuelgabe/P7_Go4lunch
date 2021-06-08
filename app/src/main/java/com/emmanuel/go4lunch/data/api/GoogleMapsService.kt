@@ -26,9 +26,6 @@ interface GoogleMapsService {
 
     @GET("/maps/api/place/nearbysearch/json")
     suspend fun getNearRestaurantNextPage(
-        @Query("location", encoded = false) location: String,
-        @Query("radius") radius: Int,
-        @Query("type") type: String,
         @Query("key") key: String,
         @Query("pagetoken") pageToken: String
     ): NearByRestaurantListResponse

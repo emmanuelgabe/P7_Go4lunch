@@ -56,11 +56,13 @@ class MainViewModel(
                 }
             }
             placeJob = viewModelScope.launch(Dispatchers.IO) {
-                delay(500)
-                val placeResponse =
-                    placeRepository.getPlaces(input, lastKnownLocation.value!!, radius)
-                if (placeResponse != null) {
-                    placesAutocompleteLiveData.postValue(placeResponse.predictions)
+                if (input.length >= 3) {
+
+                    val placeResponse =
+                        placeRepository.getPlaces(input, lastKnownLocation.value!!, radius)
+                    if (placeResponse != null) {
+                        placesAutocompleteLiveData.postValue(placeResponse.predictions)
+                    }
                 }
             }
         }

@@ -3,24 +3,23 @@ package com.emmanuel.go4lunch.ui.listview
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.emmanuel.go4lunch.R
 import com.emmanuel.go4lunch.data.model.RestaurantDetail
 import com.emmanuel.go4lunch.databinding.RestaurantItemBinding
 import com.emmanuel.go4lunch.utils.MAX_WITH_ICON
 import com.emmanuel.go4lunch.utils.getPhotoUrlFromReference
 import com.squareup.picasso.Picasso
-import java.lang.StringBuilder
 import java.util.*
 import kotlin.math.roundToInt
 
-class ListViewAdapter(private val interaction: Interaction? = null) :
+class ListViewAdapter(private val restaurantItemListener: RestaurantItemListener? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var  lastKnownLocation: Location? = null
@@ -61,7 +60,7 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
                 parent,
                 false
             ),
-            interaction
+            restaurantItemListener
         )
     }
 
@@ -99,7 +98,7 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
     inner class ViewHolder
     constructor(
         itemView: View,
-        private val interaction: Interaction?
+        private val interaction: RestaurantItemListener?
     ) : RecyclerView.ViewHolder(itemView) {
 
         val binding = RestaurantItemBinding.bind(itemView)
@@ -138,11 +137,11 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
                     binding.restaurantItemTimetableTextView.setTextColor(Color.RED)
                 }
                 else -> {
-                    val timeTableToday = StringBuilder()
-                    timeTableToday.append(getOpeningHourDayFromWeekList(restaurantDetail, binding))
-                    if (timeTableToday.equals("Closed")) {
+                    var timeTableToday: String
+                    timeTableToday = (getOpeningHourDayFromWeekList(restaurantDetail, binding))
+                    if (timeTableToday == "Closed") {
                         binding.restaurantItemTimetableTextView.setTextColor(Color.RED)
-                        timeTableToday.append(R.string.fragment_list_view_close_today_restaurant)
+                        timeTableToday = binding.root.context.getString(R.string.fragment_list_view_close_today_restaurant)
                     } else {
                         binding.restaurantItemTimetableTextView.setTextColor(Color.BLACK)
                     }
@@ -207,7 +206,7 @@ class ListViewAdapter(private val interaction: Interaction? = null) :
         }
     }
 
-    interface Interaction {
+    interface RestaurantItemListener {
         fun onItemSelected(item: RestaurantDetail)
     }
 }

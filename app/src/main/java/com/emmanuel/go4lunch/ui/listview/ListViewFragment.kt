@@ -33,7 +33,7 @@ import com.emmanuel.go4lunch.utils.isSameDay
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 
-class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
+class ListViewFragment : Fragment(), ListViewAdapter.RestaurantItemListener {
     private lateinit var binding: FragmentListViewBinding
     private lateinit var mAdapter: ListViewAdapter
     private val mainViewModel: MainViewModel by activityViewModels()
@@ -127,13 +127,15 @@ class ListViewFragment : Fragment(), ListViewAdapter.Interaction {
                     } else {  // Display near restaurants corresponding to the search
                         val restaurantPlaceIdSearch = mutableListOf<String>()
                         for (restaurant in restaurantsPlacesSearch) {
-                            if (restaurant.types.contains("restaurant"))
+                            if (restaurant.types.contains("restaurant")) {
                                 restaurantPlaceIdSearch.add(restaurant.place_id)
+                            }
                         }
                         val restaurantDetailSearchList = mutableListOf<RestaurantDetailEntity>()
                         for (restaurantDetail in mainViewModel.restaurantsDetailLiveData.value!!) {
-                            if (restaurantPlaceIdSearch.contains(restaurantDetail.id))
+                            if (restaurantPlaceIdSearch.contains(restaurantDetail.id)) {
                                 restaurantDetailSearchList.add(restaurantDetail)
+                            }
                         }
                         mAdapter.submitRestaurantDetailList(
                             getRestaurantDetailWithWorkmateCount(

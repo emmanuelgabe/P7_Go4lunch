@@ -17,33 +17,19 @@ import com.emmanuel.go4lunch.utils.isSameDay
 import com.squareup.picasso.Picasso
 import java.util.*
 
-class WorkmateAdapter(private val interaction: Interaction? = null) :
+class WorkmateAdapter(private val workmateItemListener: WorkmateItemListener? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var mRestaurants = mutableListOf<RestaurantDetail>()
 
     private val diffCallBack = object : DiffUtil.ItemCallback<Workmate>() {
-
         override fun areItemsTheSame(oldItem: Workmate, newItem: Workmate): Boolean {
             return oldItem.uid == newItem.uid
         }
-
         override fun areContentsTheSame(oldItem: Workmate, newItem: Workmate): Boolean {
            return oldItem == newItem
         }
-
     }
     private val differ = AsyncListDiffer(this, diffCallBack)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return WorkmateViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.workmates_item,
-                parent,
-                false
-            ),
-            interaction
-        )
-    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
@@ -52,10 +38,23 @@ class WorkmateAdapter(private val interaction: Interaction? = null) :
             }
         }
     }
-
     override fun getItemCount(): Int {
         return differ.currentList.size
     }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return WorkmateViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.workmates_item,
+                parent,
+                false
+            ),
+            workmateItemListener
+        )
+    }
+
+
+
+
 
     fun submitList(workmates: MutableList<Workmate>, restaurantList: List<RestaurantDetail>) {
         workmates.sortBy { it.restaurantFavorite }
@@ -69,7 +68,7 @@ class WorkmateAdapter(private val interaction: Interaction? = null) :
     inner class WorkmateViewHolder
     constructor(
         itemView: View,
-        private val interaction: Interaction?
+        private val interaction: WorkmateItemListener?
     ) : RecyclerView.ViewHolder(itemView) {
         val binding = WorkmatesItemBinding.bind(itemView)
 
@@ -120,7 +119,7 @@ class WorkmateAdapter(private val interaction: Interaction? = null) :
         }
     }
 
-    interface Interaction {
+    interface WorkmateItemListener {
         fun onItemSelected(workmate: Workmate)
     }
 }

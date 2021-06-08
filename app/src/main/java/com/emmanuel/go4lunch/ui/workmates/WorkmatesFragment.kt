@@ -17,7 +17,7 @@ import com.emmanuel.go4lunch.databinding.FragmentWorkmatesBinding
 import com.emmanuel.go4lunch.di.ViewModelFactory
 import javax.inject.Inject
 
-class WorkmatesFragment : Fragment(),WorkmateAdapter.Interaction {
+class WorkmatesFragment : Fragment(),WorkmateAdapter.WorkmateItemListener {
     @Inject lateinit var factory: ViewModelFactory
     private lateinit var binding: FragmentWorkmatesBinding
     private lateinit var mAdapter: WorkmateAdapter

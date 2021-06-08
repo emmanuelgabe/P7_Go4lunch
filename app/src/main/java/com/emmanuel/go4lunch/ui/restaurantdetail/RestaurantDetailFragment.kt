@@ -214,8 +214,7 @@ class RestaurantDetailFragment : Fragment() {
                 binding.fragmentDetailRestaurantFab.setImageResource(R.drawable.ic_check_favorite_restaurant)
                 val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
                 val notificationPreference = sharedPreferences.getBoolean(
-                    SettingsFragment.KEY_PREF_NOTIFICATION_PREFERENCE,
-                    false
+                    SettingsFragment.KEY_PREF_NOTIFICATION_PREFERENCE,true
                 )
                 if (notificationPreference)
                     setUpAlarmManager()

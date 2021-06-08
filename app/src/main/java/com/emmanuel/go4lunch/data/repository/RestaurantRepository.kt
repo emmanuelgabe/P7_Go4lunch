@@ -6,6 +6,7 @@ import com.emmanuel.go4lunch.data.api.GoogleMapsService
 import com.emmanuel.go4lunch.data.api.model.NearByRestaurant
 import com.emmanuel.go4lunch.data.database.RestaurantDetailDao
 import com.emmanuel.go4lunch.data.database.model.RestaurantDetailEntity
+import kotlinx.coroutines.delay
 
 open class RestaurantRepository(
     private val googleMapService: GoogleMapsService,
@@ -23,13 +24,13 @@ open class RestaurantRepository(
         )
 
         while ((response.results.size < MAX_NEAR_RESTAURANT && !response.nextPageToken.isNullOrBlank())){
-            val nextPageResponse =  googleMapService.getNearRestaurantNextPage("${lastKnownLocation?.latitude},${lastKnownLocation?.longitude}", radius,
-                "restaurant",
+           delay(2000)
+            val nextPageResponse =  googleMapService.getNearRestaurantNextPage(
                 BuildConfig.GOOGLE_MAP_API_KEY,
                 response.nextPageToken!!
             )
-            response.nextPageToken.equals(nextPageResponse.nextPageToken)
-            for (restaurants in nextPageResponse.results){
+            response.nextPageToken = nextPageResponse.nextPageToken
+            for (restaurants in nextPageResponse.results) {
                 response.results.add(restaurants)
             }
         }
